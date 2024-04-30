@@ -1,0 +1,143 @@
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+  height: 100vh;
+}
+
+h1 {
+  font-size: calc(1.3rem + .6vw);
+  text-align: left;
+}
+
+.add {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+} 
+
+/*tutors*/
+
+.form-container {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 300px;
+}
+.form-container h1 {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+.form-container section {
+  margin-bottom: 15px;
+}
+.form-container label {
+  font-weight: bold;
+}
+.form-container input[type="text"],
+.form-container input[type="email"] {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+.form-container button {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.form-container button:hover {
+  background-color: #0056b3;
+}
+.error {
+  color: red;
+  font-size: 12px;
+}
+.form-container input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none; /* For older versions of webkit browsers */
+  -moz-appearance: none; /* For Firefox */
+  /* Add custom styling here */
+}
+
+.classes {
+  overflow: scroll;
+  padding: 5px;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+label {
+  cursor: pointer; 
+  padding: 5px;
+  width: 100%;
+}
+
+.highlighted {
+  background-color: rgb(146, 146, 136); 
+}
+
+/*tutors*/
+
+.tutor_info {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  padding: 10px;
+}
+
+.courses_container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.class-box {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 10px;
+  max-width: 250px;
+  flex: 1 1 250px;
+  margin: 10px;
+  cursor: pointer;
+}
+
+.class-box h3 {
+  font-size: 1.1em;
+  margin: 0 0 5px 0;
+  color: #007bff;
+}
+
+.class-box p {
+  font-size: 0.9em;
+  color: #555;
+  margin: 0;
+}
+
+.class-box:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/*
+.tutor_schedule {
+  height: auto;
+}
+*/
