@@ -101,6 +101,7 @@ label {
   align-items: center;
   flex-direction: column;
   padding: 10px;
+  color: red;
 }
 
 .courses_container {
