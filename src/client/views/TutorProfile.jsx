@@ -23,8 +23,8 @@ function TutorProfile() {
                 const tutorData = TutorResponse.data.tutor_info;
                 const coursesData = coursesResponse.data.tutor_classes;
     
-                console.log("Classes:", tutorData);
-                console.log("Majors:", coursesData);
+                console.log("Tutor:", tutorData);
+                console.log("Courses:", coursesData);
     
                 setTutor(tutorData);
                 setCourse(coursesData);
@@ -54,13 +54,15 @@ function TutorProfile() {
 
         <section className="courses_container">
         {courses.map(c => 
-        <Link to={`/sessions/${tutor_id}/${c.course_id}`}>
-            <div className="class-box" key={c.course_id}>
+        <Link to={`/sessions/${tutor_id}/${c.course_id}`} key={c.course_id}>
+            <div className="class-box" id={c.course_id}>
             <h3>{c.course_name}</h3>
             <p>{c.course_code}</p>
         </div>
         </Link>)}
         </section>
+
+        <Link to={'/'}>Go Home</Link>
         </>
     )
 

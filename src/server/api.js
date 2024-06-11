@@ -134,16 +134,17 @@ api.route("/courses/:tutor_id")
 });
 
 //tutor_sessions
-api.route('/sessions/:tutor_id/:course_id')
+api.route('/sessions/:tutor_id?/:course_id?')
 .get(async (req, res) => {
     try {
         const id = req.params.tutor_id
         const course = req.params.course_id
-        const sessions = await connection.query(` SELECT s.session_id as 'session_id', CONCAT(u.first_name, ' ', u.last_name) as 'tutor_name', s.student_id as 'student',  c.course_name as 'course_name', s.session_totalhours as 'total_hours'
+
+        if(id || course) {
+             const sessions = await connection.query(` SELECT s.session_id as 'session_id', CONCAT(u.first_name, ' ', u.last_name) as 'tutor_name', s.student_id as 'student',  c.course_name as 'course_name', s.session_totalhours as 'total_hours'
         FROM sessions s JOIN tutors t on s.tutor_id = t.tutor_id
         JOIN users u ON u.user_id = t.user_id
-        JOIN tutor_courses tc ON t.tutor_id = tc.tutor_id
-        JOIN courses c ON tc.course_id = c.course_id
+        JOIN courses c ON s.course_id = c.course_id
         WHERE t.tutor_id = ${id} AND s.course_id = ${course}
         GROUP BY session_id, tutor_name, student, total_hours
         ORDER BY course_name;`, {
@@ -151,6 +152,18 @@ api.route('/sessions/:tutor_id/:course_id')
         })
 
         res.status(200).json({ sessions });
+        } else {
+            const sessions = await connection.query(` SELECT s.session_id as 'session_id', CONCAT(u.first_name, ' ', u.last_name) as 'tutor_name', s.student_id as 'student',  c.course_name as 'course_name', s.session_totalhours as 'total_hours', t.tutor_id as 'tutor_id'
+            FROM sessions s JOIN tutors t on s.tutor_id = t.tutor_id
+            JOIN users u ON u.user_id = t.user_id
+            JOIN courses c ON s.course_id = c.course_id
+            GROUP BY session_id, tutor_name, student, total_hours
+            ORDER BY tutor_name, course_name;`, {
+                type: QueryTypes.SELECT
+            })
+
+        res.status(200).json({ sessions });
+        }
     }
     catch(e) {
         console.error(e)
@@ -178,26 +191,6 @@ api.route('/sessions/:tutor_id/:course_id')
         sessions
     });
 
-})
-
-api.route('/sessions')
-.get(async (req, res) => {
-    try {
-        const sessions = await connection.query(` SELECT s.session_id as 'session_id', CONCAT(u.first_name, ' ', u.last_name) as 'tutor_name', s.student_id as 'student',  c.course_name as 'course_name', s.session_totalhours as 'total_hours', t.tutor_id as 'tutor_id'
-        FROM sessions s JOIN tutors t on s.tutor_id = t.tutor_id
-        JOIN users u ON u.user_id = t.user_id
-        JOIN tutor_courses tc ON t.tutor_id = tc.tutor_id
-        JOIN courses c ON tc.course_id = c.course_id
-        GROUP BY session_id, tutor_name, student, total_hours
-        ORDER BY tutor_name, course_name;`, {
-            type: QueryTypes.SELECT
-        })
-
-        res.status(200).json({ sessions });
-    }
-    catch(e) {
-        console.error(e)
-    }
 })
 
 //classes
