@@ -15,6 +15,7 @@ import AddMajor from "./views/AddMajor";
 import AddSemester from "./views/AddSemester";
 import Session from "./views/Sessions";
 import AddSession from "./views/AddSession";
+import Login from "./views/Login";
 
 //import App from "./App";
 
@@ -62,6 +63,9 @@ const router = createBrowserRouter([
   {
     path: "/sessions/add/:tutor_id/:course_id",
     element: <AddSession/>
+  }, {
+    path: "/login",
+    element: <Login/>
   }
 
 ], {basename: "/"});

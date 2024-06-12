@@ -142,7 +142,148 @@ label {
 }
 */
 
+/*Login (este es el diseño de testeo, luego lo podes cambiar todo)*/
 
-/* buenas tardes inge :P /*
+.login-body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  margin: 0;
+}
 
-/* la quiero mucho ingeniera guapa*/
+.login-main {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 1em;
+  width: 80%;
+}
+
+a:visited {
+  color: inherit;
+}
+
+.login-img {
+  width: 100%;
+}
+
+.login-img img {
+  width: 100%;
+  height: 100%;
+}
+
+.form {
+  width: 100%;
+  background-color: #fff;
+  order: 1;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  width: 100%;
+  padding: 0 1em 0 1em;
+}
+
+.login-user {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 2em;
+}
+
+.login-user input {
+  width: 100%;
+  padding: 1em;
+  border: none;
+  outline: none;
+  border-bottom: 2px solid #000;
+}
+
+.login-user input:focus {
+  border: 2px solid #000;
+  background-color: #f4f5f0;
+}
+
+.login-user button {
+  width: 100%;
+  padding: 1em;
+  border: none;
+  outline: none;
+  background-color: #000;
+  color: #fff;
+  cursor: pointer;
+}
+
+.login-user button:hover {
+  background-color: #a2a790;
+}
+
+.btn-form {
+  background-color: #fff;
+  cursor: pointer;
+}
+
+.form-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  transition: all 0.5s ease-in-out;
+  position: relative;
+  overflow: hidden;
+}
+
+
+#login {
+  /*display: none;*/
+}
+
+#login .login-img {
+  order: 2; 
+  transition: all 0.8s ease;
+}
+
+#sign-up .login-img {
+  transition: all 0.8s ease;
+}
+
+.moving-img {
+  position: absolute;
+  width: 50%; 
+  height: 100%; 
+  transition: transform 0.8s ease;
+}
+#forgotpass-btn {
+  margin-right: auto;
+  margin-left: 20px;
+  font-size: 0.8rem;
+  color: #507db9;
+}
+
+#forgotpass-btn:hover {
+  color: #8d9ba4;
+  border-bottom: 2px solid #8d9ba4;
+  transition: border-bottom 100ms ease-in;
+}
+
+.btn-sign, .btn {
+  font-size: 1rem;
+}
+
+#signup-btn, #login-btn {
+  justify-content: center;
+}
+
+#signup-btn:hover, #login-btn:hover {
+  border: 1px solid #000;
+}
+
+
+
+/*Aqui termina el diseño del login*/
