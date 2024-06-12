@@ -22,16 +22,14 @@ const User = connection.define('User', {
         allowNull: true
     }, 
     role: {
-        type: DataTypes.ENUM('tutor', 'student'),
-        allowNull: false
+        type: DataTypes.ENUM('tutor', 'student')
     }, 
     password_hash: {
         type: DataTypes.STRING,
         allowNull: true
     }, 
     is_admin: {
-        type: DataTypes.ENUM('yes', 'no'),
-        allowNull: false
+        type: DataTypes.ENUM('yes', 'no')
     }, 
     ku_id: {
         type: DataTypes.STRING,
