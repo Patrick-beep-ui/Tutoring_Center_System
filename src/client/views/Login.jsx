@@ -50,7 +50,7 @@ export default function Login() {
     };
 
     return (
-        <div className="form-container">
+        <div className="login-form-container">
             <form onSubmit={isLoginForm ? handleSubmit(handleLogin) : handleSubmit(handleSignUp)} className="form">
                 {/* Conditional rendering based on whether it's login or signup form */}
                 {isLoginForm ? (
