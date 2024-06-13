@@ -1,6 +1,8 @@
 import express from 'express';
 import {QueryTypes} from "sequelize";
 import connection from "./connection.js";
+import isAuth from './modules/auth.js';
+import isAdmin from './modules/admin.js';
 
 import Course from "./models/Course.js";
 import Contact from "./models/Contact.js";
@@ -135,7 +137,7 @@ api.route("/courses/:tutor_id")
 
 //tutor_sessions
 api.route('/sessions/:tutor_id?/:course_id?')
-.get(async (req, res) => {
+.get([isAuth], async (req, res) => {
     try {
         const id = req.params.tutor_id
         const course = req.params.course_id

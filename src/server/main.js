@@ -40,8 +40,22 @@ passport.use(
         return done(null, false, { message: "Incorrect username" });
       }
 
-      const passwordsMatch = bcrypt.compareSync(password, user.password_hash);
+      // Check if the stored password is hashed or not
+      const isPasswordHashed = user.password_hash.startsWith('$2b$');
+      
+      let passwordsMatch;
+      if (isPasswordHashed) {
+        passwordsMatch = bcrypt.compareSync(password, user.password_hash);
+      } else {
+        passwordsMatch = (password === user.password_hash);
+      }
+
       if (passwordsMatch) {
+        // If the password was not hashed, hash it now and update the database
+        if (!isPasswordHashed) {
+          user.password_hash = bcrypt.hashSync(password, 10);
+          await user.save();
+        }
         return done(null, user);
       } else {
         return done(null, false, { message: "Incorrect password" });
@@ -51,6 +65,7 @@ passport.use(
     }
   })
 );
+
 
 
 passport.serializeUser((user, done) => {
@@ -73,6 +88,7 @@ app.post(
   (req, res) => {
     req.session.name = req.body.email;
     req.session.save();
+    console.log(req.user)
     if (req.user) {
       res.status(200).json({ message: "User authenticated", user: req.user });
     } else {

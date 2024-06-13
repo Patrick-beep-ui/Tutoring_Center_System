@@ -33,7 +33,8 @@ const User = connection.define('User', {
     }, 
     ku_id: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
+        unique: true
     }
 }, {
     tableName: 'users',

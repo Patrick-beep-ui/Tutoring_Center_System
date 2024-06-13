@@ -229,7 +229,7 @@ a:visited {
   cursor: pointer;
 }
 
-.form-container {
+.login-form-container {
   display: flex;
   justify-content: space-between;
   align-items: center;
