@@ -18,8 +18,12 @@ const api = express.Router({mergeParams: true});
 
 // Endpoint to check authentication
 api.route('/auth')
-.get(isAuth, (req, res) => {
-    res.status(200).send('User is authenticated');
+.get(isAuth, async (req, res) => {
+    const id = req.user.user_id;
+    const user = await User.findByPk(id);
+    res.status(200).json({
+        user
+    });
 });
 
 //tutors

@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import {v4 as uuid} from "uuid";
-import { Link } from "react-router-dom";
+import { Link, useOutletContext  } from "react-router-dom";
 import { Toaster, toast } from 'sonner';
 import "../App.css"
 
 function Home() {
     const [session, setSession] = useState([]);
+    const { user } = useOutletContext();
 
     useEffect(() => {
         const getSessions = async () => {
@@ -24,7 +25,10 @@ function Home() {
     }, [])
 
     return(
-        <>Home
+        <>
+      <div>
+        <Link to={`/profile/${user.user_id}`}>Hello, {user ? user.first_name+ ' ' +user.last_name : "User"}</Link>
+      </div>
         
         <h1>Sessions</h1>
 
