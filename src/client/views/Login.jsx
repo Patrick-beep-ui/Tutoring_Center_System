@@ -4,49 +4,49 @@ import { useForm } from "react-hook-form";
 import axios from "axios";
 
 export default function Login() {
-    const [imgVisibility, setImgVisibility] = useState('hidden');
     const [isLoginForm, setIsLoginForm] = useState(true); // State to track whether login form is active
     const [loading, setLoading] = useState(false); // State to track loading state
     const { register, handleSubmit, formState: { errors } } = useForm();
+    const [error, setError] = useState("");
     const navigate = useNavigate();
 
     const toggleForm = () => {
-        setIsLoginForm(!isLoginForm); // Toggle between login and signup forms
+        setIsLoginForm(!isLoginForm); 
     };
 
     const handleSignUp = async (formData) => {
-        setLoading(true); // Set loading to true at the beginning of the request
+        setLoading(true);
+        const validDomains = ["keiseruniversity.edu", "student.keiseruniversity.edu"];
+        const emailDomain = formData.email.split('@')[1];
+        
+        if (!validDomains.includes(emailDomain)) {
+          setError("Please use your institutional email (e.g., @keiseruniversity.edu or @student.keiseruniversity.edu)");
+          setLoading(false);
+          return;
+        }
+
         try {
             const response = await axios.post('/signup', formData);
             console.log(response.data);
         } catch (error) {
             console.error(error.response?.data || error.message);
         } finally {
-            setLoading(false); // Set loading to false at the end of the request
+            setLoading(false);
         }
     };
 
     const handleLogin = async (formData) => {
-        setLoading(true); // Set loading to true at the beginning of the request
+        setLoading(true);
         try {
             await axios.post("/login", formData);
             console.log("Login Successful");
             navigate('/');
         } catch (error) {
             console.error(error.response?.data || error.message);
+              
         } finally {
-            setLoading(false); // Set loading to false at the end of the request
+            setLoading(false);
         }
-    };
-
-    const logoutUser = async () => {
-       try {
-        const response = await axios.post('logout');
-        console.log('Logout Successful', response);
-       }
-       catch(error) {
-        console.error(error.response?.data || error.message);
-       }
     };
 
     return (
@@ -88,6 +88,11 @@ export default function Login() {
                             <div className="form-group">
                                 <input type="email" {...register("email", {required: true})} id="new-user-email" placeholder="Email" />
                             </div>
+                            {error && (
+                                <div className="error-message">
+                                    {error}
+                                </div>
+                            )}
                             <div className="form-group">
                                 <input type="password" {...register("password_hash", {required: true})} id="new-user-password" placeholder="Password" />
                             </div>

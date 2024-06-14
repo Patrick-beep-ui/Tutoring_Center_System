@@ -36,29 +36,36 @@ passport.use(
         attributes: ['user_id', 'email', 'password_hash']
       });
 
+      console.log('Email:', email);
+      console.log('Entered Password:', password);
+
       if (!user) {
-        return done(null, false, { message: "Incorrect username" });
+        console.log('User not found');
+        return done(null, false, { message: 'Incorrect username' });
       }
 
-      // Check if the stored password is hashed or not
-      const isPasswordHashed = user.password_hash.startsWith('$2b$');
-      
+      const storedHash = user.password_hash;
+      console.log('Stored Hash:', storedHash);
+
       let passwordsMatch;
-      if (isPasswordHashed) {
-        passwordsMatch = bcrypt.compareSync(password, user.password_hash);
+      if (storedHash.startsWith('$2a$')) {
+        passwordsMatch = bcrypt.compareSync(password, storedHash);
       } else {
-        passwordsMatch = (password === user.password_hash);
-      }
-
-      if (passwordsMatch) {
-        // If the password was not hashed, hash it now and update the database
-        if (!isPasswordHashed) {
-          user.password_hash = bcrypt.hashSync(password, 10);
+        const defaultPasswordHash = bcrypt.hashSync(user.password_hash, 10);
+        passwordsMatch = bcrypt.compareSync(password, defaultPasswordHash);
+        
+        if (passwordsMatch) {
+          user.password_hash = defaultPasswordHash;
           await user.save();
         }
+      }
+
+      console.log('Passwords Match:', passwordsMatch);
+
+      if (passwordsMatch) {
         return done(null, user);
       } else {
-        return done(null, false, { message: "Incorrect password" });
+        return done(null, false, { message: 'Incorrect password' });
       }
     } catch (err) {
       return done(err);
@@ -112,6 +119,19 @@ app.post('/signup', async (req, res) => {
   }
 });
 
+/*
+app.post('/check/:id?/:email?', async(req, res) => {
+  const {id, email} = req.params
+
+  const userID = await User.findByPk(id)
+  const userEmail = User.findOne({ where: { email } });
+
+  if(userID || userEmail) {
+    return res.status(400).send('Username or email already exists');
+  }
+
+})
+*/
 
 // app.get('/logout', (req, res) => {
 //     req.logout();
