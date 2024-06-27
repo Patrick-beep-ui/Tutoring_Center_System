@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import axios from "axios";
+import CAE from "../assets/CAE.jpg";
 
 export default function Login() {
     const [isLoginForm, setIsLoginForm] = useState(true); // State to track whether login form is active
@@ -50,18 +51,22 @@ export default function Login() {
     };
 
     return (
+        <section className="login-main">
         <div className="login-form-container">
-            <form onSubmit={isLoginForm ? handleSubmit(handleLogin) : handleSubmit(handleSignUp)} className="form">
+            <form onSubmit={isLoginForm ? handleSubmit(handleLogin) : handleSubmit(handleSignUp)} className="form login-form">
                 {/* Conditional rendering based on whether it's login or signup form */}
                 {isLoginForm ? (
                     <>
+                    <img src={CAE} alt="Tutoring Center Logo" className="cae-logo"/>
                         <div className="login-user" id="login-user">
-                            <h1>Log In</h1>
+                            <p>Welcome to The Writing Studio and Tutoring Center</p>
                             <div className="form-group">
-                                <input type="email" {...register("email", {required: true})} id="email" placeholder="Email" />
+                                <label for="email" className="login-label">KU Email</label>
+                                <input type="email" {...register("email", {required: true})} id="email" />
                             </div>
                             <div className="form-group">
-                                <input type="password" {...register("password_hash", {required: true})} id="user-password" placeholder="Password" />
+                                <label for="user-password" className="login-label">Your password</label>
+                                <input type="password" {...register("password_hash", {required: true})} id="user-password" />
                             </div>
                             <span className="btn-form" id="forgotpass-btn"><a href="">Forgot Password?</a></span>
                             <div className="form-group">
@@ -69,8 +74,9 @@ export default function Login() {
                                     {loading ? 'Logging in...' : 'Login'}
                                 </button>
                             </div>
-                            <span className="btn-form" id="sign-up-btn" onClick={toggleForm}>Sign-Up</span>
                         </div>
+                        <p className="community-label">New to our Community</p>
+                        <a className="btn-form" id="sign-up-btn" onClick={toggleForm}>Create an Account</a>
                     </>
                 ) : (
                     <>
@@ -107,5 +113,6 @@ export default function Login() {
                 )}
             </form>
         </div>
+        </section>
     );
 }
