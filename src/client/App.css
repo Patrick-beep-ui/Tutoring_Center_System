@@ -1,6 +1,6 @@
 :root {
   --blue: #1F49AB;
-  --yellow: #F3B752;
+  --yellow: #EEAF32;
   --black: #333333;
   --white: #FFFEF6;
   --gray: #949494;
@@ -226,7 +226,7 @@ a:visited {
   margin: 20px;
 }
 
-.login-user input {
+.login-user input, .signup-form input {
   width: 100%;
   padding: 0.5em;
   border: 1px solid var(--gray);
@@ -237,20 +237,20 @@ a:visited {
   border: 1px solid #000;
 }
 
-.login-user p {
+.login-user p, .signup-header p {
   font-size: 1.4rem;
   font-weight: 600;
   margin-bottom: 0;
   padding-top: 20px;
 }
 
-.login-label {
+.login-label, .signup-label {
   text-align: left;
   font-size: 0.8rem;
   color: var(--gray);
 }
 
-.login-user button, #sign-up-btn {
+.login-user button, #sign-up-btn, #signup-btn {
   width: 100%;
   padding: 0.6em;
   background-color: var(--yellow);
@@ -267,11 +267,6 @@ a:visited {
 .btn-form {
   background-color: #fff;
   cursor: pointer;
-}
-
-
-#login {
-  /*display: none;*/
 }
 
 #login .login-img {
@@ -354,3 +349,68 @@ a:visited {
 
 
 /*Aqui termina el diseño del login*/
+
+/*Signup*/
+
+.sign-up-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  height: 100%;
+}
+
+.signup-img {
+  background: url("../../../public/img/Keiser LAC.jpg");
+  background-size: cover;
+  background-position: center;
+}
+
+.signup-cae-logo {
+  margin-left: 15px;
+}
+
+.signup-header {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  flex-direction: column;
+  padding: 0 20px;
+}
+
+.signup-header span {
+  font-size: 0.8rem;
+}
+
+.signup-form {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  flex-direction: column;
+  gap: 0.5em;
+  height: 100%;
+  padding: 30px;
+  padding-right: 50px;
+}
+
+.signup-form input, #signup-btn {
+  width: 80%;
+}
+
+#signup-btn {
+  margin-top: 10px;
+  width: 50%;
+  border: none;
+  color: var(--white);
+}
+
+.signup-cae-logo {
+  height: 50px;
+  width: 50px;
+}
+
+.signup-error-message {
+  font-size: 0.8rem;
+  text-align: left;
+  padding-left: 20px;
+}
+
+/* Aqui Termina el Signup*/

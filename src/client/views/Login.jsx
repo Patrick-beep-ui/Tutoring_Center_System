@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import CAE from "../assets/CAE.jpg";
@@ -76,7 +76,7 @@ export default function Login() {
                             </div>
                         </div>
                         <p className="community-label">New to our Community</p>
-                        <a className="btn-form" id="sign-up-btn" onClick={toggleForm}>Create an Account</a>
+                        <Link to={'/signup'} className="btn-form" id="sign-up-btn" >Create an Account</Link>
                     </>
                 ) : (
                     <>
