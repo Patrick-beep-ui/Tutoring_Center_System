@@ -17,6 +17,7 @@ import AddSemester from "./views/AddSemester";
 import Session from "./views/Sessions";
 import AddSession from "./views/AddSession";
 import Login from "./views/Login";
+import Signup from "./views/Signup";
 
 //Components
 import Auth from "./components/Auth";
@@ -77,6 +78,9 @@ const router = createBrowserRouter([
   {
     path: "/login",
     element: <Login />
+  }, {
+    path: "/signup",
+    element: <Signup />
   }
 ], { basename: "/" });
 
