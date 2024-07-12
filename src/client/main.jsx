@@ -19,6 +19,10 @@ import AddSession from "./views/AddSession";
 import Login from "./views/Login";
 import Signup from "./views/Signup";
 
+import Graph from "./views/Chart";
+import SideBar from "./components/Sidebar";
+import Header from "./components/Header";
+
 //Components
 import Auth from "./components/Auth";
 
@@ -72,6 +76,10 @@ const router = createBrowserRouter([
       {
         path: "/sessions/add/:tutor_id/:course_id",
         element: <AddSession />
+      }, 
+      {
+        path: "/header",
+        element: <Header />
       }
     ]
   },
@@ -81,6 +89,12 @@ const router = createBrowserRouter([
   }, {
     path: "/signup",
     element: <Signup />
+  } , {
+    path: "/chart",
+    element: <Graph />
+  } , {
+    path: "/sidebar", 
+    element: <SideBar />
   }
 ], { basename: "/" });
 
