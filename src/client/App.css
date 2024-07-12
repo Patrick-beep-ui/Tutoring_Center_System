@@ -11,6 +11,13 @@
   src: url(/public/fonts/Poppins-Regular.ttf);
 }
 
+@font-face {
+  font-family: 'Poppins';
+  src: url(/public/fonts/Poppins-Bold.ttf) format('truetype');
+  font-weight: 700; 
+  font-style: normal; 
+}
+
 * {
   font-family: Poppins;
   box-sizing: border-box;
@@ -414,3 +421,86 @@ a:visited {
 }
 
 /* Aqui Termina el Signup*/
+
+/* Home */
+
+canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* Aqui termina el Home */
+
+
+/* Header */
+
+.heading {
+  display: flex;
+  align-content: center;
+  justify-content: space-between;
+  background-color: var(--yellow);
+  position: fixed;
+  width: 100%;
+}
+
+.heading-phrase {
+  padding-left: 110px;
+} 
+
+.heading-phrase p {
+  padding-top: 20px;
+  font-weight: 700;
+}
+
+.user-welcome {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding-right: 20px;
+}
+
+.user-link, .user-icon {
+  padding-right: 20px;
+  padding-top: 10px;
+  text-decoration: none;
+}
+
+.user-link:visited {
+  color: inherit;
+}
+
+.user-icon {
+  font-size: 1.2rem;
+  padding-right: 10px;
+}
+
+/* Sidebar */
+
+.sidebar {
+  background-color: var(--blue);
+  width: 80px;
+  transition: width 0.3s;
+  position: fixed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sidebar:hover {
+  width: 200px;
+}
+
+.sidebar-nav {
+  min-height: 100vh;
+}
+
+.nav-logo {
+  width: 70px;
+  height: 70px;
+  padding-left: 10px;
+}
+
+.nav-logo img {
+  width: 100%;
+  height: 100%;
+}

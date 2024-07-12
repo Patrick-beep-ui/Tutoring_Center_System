@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import {v4 as uuid} from "uuid";
-import { Link, useOutletContext  } from "react-router-dom";
+import { Link, useOutletContext, Outlet } from "react-router-dom";
 import { Toaster, toast } from 'sonner';
+import Graph from "../components/Graph";
 import "../App.css"
 
 function Home() {
@@ -26,13 +27,14 @@ function Home() {
 
     return(
         <>
-      <div>
-        <Link to={`/profile/${user.user_id}`}>Hello, {user ? user.first_name+ ' ' +user.last_name : "User"}</Link>
+      <div className="user-welcome">
+        <Link to={`/profile/${user.user_id}`} className="user-link">Hello, {user ? user.first_name+ ' ' +user.last_name : "User"}</Link>
       </div>
-        
-        <h1>Sessions</h1>
 
-        <section className="mt-4">
+      {/*<Graph data={session} />*/}
+
+        <section className="container sessions-container">
+        <h1>Sessions</h1>
             <table className="table table-striped">
                 <thead className="table-dark">
                     <tr>
@@ -71,6 +73,8 @@ function Home() {
         <Link to={'/majors'}>See All Majors</Link>
         </section>
     </section>
+
+    <Outlet context={{ session }} />
 
         </>
     )
