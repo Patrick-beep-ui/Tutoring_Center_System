@@ -4,6 +4,7 @@ import {v4 as uuid} from "uuid";
 import { Link, useOutletContext, Outlet } from "react-router-dom";
 import { Toaster, toast } from 'sonner';
 import Graph from "../components/Graph";
+import Header from "../components/Header";
 import "../App.css"
 
 function Home() {
@@ -27,13 +28,9 @@ function Home() {
 
     return(
         <>
-      <div className="user-welcome">
-        <Link to={`/profile/${user.user_id}`} className="user-link">Hello, {user ? user.first_name+ ' ' +user.last_name : "User"}</Link>
-      </div>
+        <Header/>
 
-      {/*<Graph data={session} />*/}
-
-        <section className="container sessions-container">
+        <section className="sessions-container section">
         <h1>Sessions</h1>
             <table className="table table-striped">
                 <thead className="table-dark">
@@ -63,16 +60,18 @@ function Home() {
             </table>
 
 
-        <section>
-        <Link to={'/tutors'}>See All Tutors</Link>
+            <section className="home-links">
+                <div>
+                <Link to={'/tutors'}>See All Tutors</Link>
+                </div>
+                <div>
+                <Link to={'/classes'}>See All Classes</Link>
+                </div>
+                <div>
+                <Link to={'/majors'}>See All Majors</Link>
+                </div>
+            </section>
         </section>
-        <section>
-        <Link to={'/classes'}>See All Classes</Link>
-        </section>
-        <section>
-        <Link to={'/majors'}>See All Majors</Link>
-        </section>
-    </section>
 
     <Outlet context={{ session }} />
 
