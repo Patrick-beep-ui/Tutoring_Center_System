@@ -18,6 +18,13 @@
   font-style: normal; 
 }
 
+@font-face {
+  font-family: 'Poppins';
+  src: url(/public/fonts/Poppins-SemiBold.ttf) format('truetype');
+  font-weight: 500; 
+  font-style: normal; 
+}
+
 * {
   font-family: Poppins;
   box-sizing: border-box;
@@ -525,4 +532,49 @@ canvas {
 
 .nav-links a, .nav-setting a {
   font-size: 1.5rem;
+}
+
+/* Report */
+
+.counters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, auto));
+  gap: 2rem;
+  padding-top: 20px;
+}
+
+.counter-container {
+  border: 1px solid var(--gray);
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  height: 200px;
+  text-align: left;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.report-description p:first-of-type {
+  font-weight: 500;
+  font-size: 1.3rem;
+  margin-bottom: 0;
+}
+
+.report-description p:last-of-type {
+  font-size: 0.8rem;
+  color: var(--gray);
+  margin-top: 2px;
+}
+
+.report-data {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.report-data p {
+  font-size: 1.5rem;
+  margin-bottom: 0;
+  font-weight: 700;
 }
