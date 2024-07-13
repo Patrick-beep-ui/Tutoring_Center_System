@@ -39,6 +39,13 @@ body {
   height: 100vh;
 }
 
+.section {
+  width: 100%;
+  height: 100%;
+  padding: 70px 20px 20px;
+  padding-left: 90px;
+}
+
 h1 {
   font-size: calc(1.3rem + .6vw);
   text-align: left;
@@ -429,6 +436,12 @@ canvas {
   height: 100% !important;
 }
 
+.home-links {
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+}
+
 /* Aqui termina el Home */
 
 
@@ -439,7 +452,7 @@ canvas {
   align-content: center;
   justify-content: space-between;
   background-color: var(--yellow);
-  position: fixed;
+  position: absolute;
   width: 100%;
 }
 
@@ -478,9 +491,9 @@ canvas {
 
 .sidebar {
   background-color: var(--blue);
-  width: 80px;
+  width: 70px;
   transition: width 0.3s;
-  position: fixed;
+  position: absolute;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -494,13 +507,22 @@ canvas {
   min-height: 100vh;
 }
 
+.nav-menu {
+  display: flex;
+  justify-content: space-between;
+}
+
 .nav-logo {
-  width: 70px;
-  height: 70px;
+  width: 60px;
+  height: 60px;
   padding-left: 10px;
 }
 
 .nav-logo img {
   width: 100%;
   height: 100%;
+}
+
+.nav-links a, .nav-setting a {
+  font-size: 1.5rem;
 }

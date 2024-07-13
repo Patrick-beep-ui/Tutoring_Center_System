@@ -5,6 +5,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min';
 
 //Views
+import App from "./App";
 import Home from "./views/Home";
 import Tutors from "./views/Tutors";
 import AddTutor from "./views/AddTutor";
@@ -98,10 +99,11 @@ const router = createBrowserRouter([
   }
 ], { basename: "/" });
 
-ReactDOM.createRoot(document.getElementById("root")).render(
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(
   <RouterProvider router={router}>
-  <React.StrictMode>
-    <Login />
-  </React.StrictMode>
-</RouterProvider>
+    <React.StrictMode>
+      <Login />
+    </React.StrictMode>
+  </RouterProvider>
 );

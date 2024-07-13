@@ -6,15 +6,21 @@ import Picture1 from "/img/Picture1.svg";
 function SideBar() {
     return (
         <div className='sidebar'>
-          <Navbar variant="dark" className="flex-column" style={{ minHeight: '100vh' }}>
+          <Navbar variant="dark" className="flex-column nav-menu" style={{ minHeight: '100vh' }}>
             <Navbar.Brand href="#home" className='nav-logo'>
                 <img src="/img/Picture1.svg" alt="CAE-logo" />
                 </Navbar.Brand>
             <Nav className="flex-column nav-links">
               <Nav.Link href="#item1">
               <i class='bx bx-food-menu'></i></Nav.Link>
-              <Nav.Link href="#item2">Item 2</Nav.Link>
-              <Nav.Link href="#item3">Item 3</Nav.Link>
+              <Nav.Link href="#item2"><i class='bx bx-group'></i></Nav.Link>
+              <Nav.Link href="#item3"><i class='bx bx-chalkboard'></i>
+              </Nav.Link>
+              <Nav.Link href="#item2"><i class='bx bx-bar-chart'></i>
+              </Nav.Link>
+            </Nav>
+            <Nav className='nav-setting'>
+              <Nav.Link><i class='bx bx-cog'></i></Nav.Link>
             </Nav>
           </Navbar>
         </div>
