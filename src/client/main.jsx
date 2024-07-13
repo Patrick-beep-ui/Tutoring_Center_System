@@ -17,6 +17,8 @@ import AddMajor from "./views/AddMajor";
 import AddSemester from "./views/AddSemester";
 import Session from "./views/Sessions";
 import AddSession from "./views/AddSession";
+import Report from "./views/Report";
+
 import Login from "./views/Login";
 import Signup from "./views/Signup";
 
@@ -81,6 +83,10 @@ const router = createBrowserRouter([
       {
         path: "/header",
         element: <Header />
+      }, 
+      {
+        path: "/report",
+        element: <Report />
       }
     ]
   },

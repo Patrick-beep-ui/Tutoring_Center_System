@@ -22,7 +22,7 @@ const User = connection.define('User', {
         allowNull: true
     }, 
     role: {
-        type: DataTypes.ENUM('tutor', 'student')
+        type: DataTypes.ENUM('tutor', 'student', 'faculty')
     }, 
     password_hash: {
         type: DataTypes.STRING,

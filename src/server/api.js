@@ -302,5 +302,35 @@ api.route("/terms")
     }
 })
 
+//Reports
+
+api.route("/report")
+.get(async (req, res) => {
+    try {
+        const tutors = await Tutor.count();
+        const sessions = await TutorSession.count();
+        const tutor_courses = await TutorCourse.count({
+            distinct: true,
+            col: 'course_id'
+        });
+        const students = await User.count({
+            where: {
+                role: 'student'
+            }
+        });
+        res.status(200).json({
+            report: {
+                tutors: tutors,
+                sessions: sessions,
+                tutor_courses: tutor_courses,
+                students: students
+              }
+        })
+    }
+    catch(e) {
+        console.error(e);
+    }
+});
+
 
 export default api
