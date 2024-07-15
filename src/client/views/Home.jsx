@@ -31,34 +31,34 @@ function Home() {
         <Header/>
 
         <section className="sessions-container section">
-        <h1>Sessions</h1>
+        <div className="table-container">
             <table className="table table-striped">
-                <thead className="table-dark">
+                <thead className="bg-light">
                     <tr>
-                        <th scope="col">Session ID</th>
+                        {/*<th scope="col">Session ID</th>*/}
                         <th scope="col">Tutor</th>
                         <th scope="col">Student</th>
                         <th scope="col">Course</th>
                         <th scope="col">Total Hours</th>
-                        <th></th>
-                        <th></th>
+                        {/*<th></th>
+                        <th></th>*/}
                     </tr>
                 </thead>
                 <tbody>
                     {session.map(s =>
                     <tr key={uuid()}>
-                        <td>{s.session_id}</td>
+                        {/*<td>{s.session_id}</td>*/}
                        <td> <Link to={`/profile/${s.tutor_id}`}>{s.tutor_name}</Link></td>
                         <td>{s.student}</td>
                         <td>{s.course_name}</td>
                         <td>{s.total_hours}</td>
-                        <td><i className='bx bx-pencil edit'></i></td>
-                        <td name='major_id' value={s.session_id} onClick={(event) => deleteStudent(event)}><i className='bx bx-trash delete'></i></td>
+                        {/*<td><i className='bx bx-pencil edit'></i></td>*/}
+                        {/*<td name='major_id' value={s.session_id} onClick={(event) => deleteStudent(event)}><i className='bx bx-trash delete'></i></td>*/}
                     </tr>    
                         )}
                 </tbody>
             </table>
-
+        </div>
 
             <section className="home-links">
                 <div>
