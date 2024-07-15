@@ -25,6 +25,7 @@ import Signup from "./views/Signup";
 import Graph from "./views/Chart";
 import SideBar from "./components/Sidebar";
 import Header from "./components/Header";
+import Test from "./views/Test";
 
 //Components
 import Auth from "./components/Auth";
@@ -102,6 +103,9 @@ const router = createBrowserRouter([
   } , {
     path: "/sidebar", 
     element: <SideBar />
+  }, {
+    path: "/test",
+    element: <Test/>
   }
 ], { basename: "/" });
 

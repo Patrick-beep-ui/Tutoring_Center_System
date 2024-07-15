@@ -11,12 +11,12 @@ function SideBar() {
                 <img src="/img/Picture1.svg" alt="CAE-logo" />
                 </Navbar.Brand>
             <Nav className="flex-column nav-links">
-              <Nav.Link href="#item1">
+              <Nav.Link href="/classes">
               <i class='bx bx-food-menu'></i></Nav.Link>
-              <Nav.Link href="#item2"><i class='bx bx-group'></i></Nav.Link>
-              <Nav.Link href="#item3"><i class='bx bx-chalkboard'></i>
+              <Nav.Link href="/tutors"><i class='bx bx-group'></i></Nav.Link>
+              <Nav.Link href="/"><i class='bx bx-chalkboard'></i>
               </Nav.Link>
-              <Nav.Link href="#item2"><i class='bx bx-bar-chart'></i>
+              <Nav.Link href="/report"><i class='bx bx-bar-chart'></i>
               </Nav.Link>
             </Nav>
             <Nav className='nav-setting'>
