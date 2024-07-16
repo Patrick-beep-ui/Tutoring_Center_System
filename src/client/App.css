@@ -614,6 +614,11 @@ canvas {
   justify-content: space-around;
 }
 
+.courses-container {
+  max-height: 620px;
+  overflow: hidden;
+}
+
 .counters, .courses {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, auto));
@@ -623,6 +628,7 @@ canvas {
 
 .courses {
   padding-top: 10px;
+  scroll-snap-type: x mandatory;
 }
 
 .counter-container, .course-container {
@@ -639,6 +645,14 @@ canvas {
 
 .course-container {
   height: 150px;
+  transition: transform 0.3s, box-shadow 0.3s;
+  user-select: none;
+  scroll-snap-align: start;
+}
+
+.course-container:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .report-description p:first-of-type, .course-description p:first-of-type {
@@ -698,11 +712,35 @@ canvas {
 
 .add-class {
   width: 100px;
-  margin-top: 15px;
-  font-size: 0.9rem;
+  margin-top: 10px;
+  font-size: 0.8rem;
   text-decoration: none;
   background-color: var(--blue);
   color: var(--white);
-  padding: 5px;
-  border-radius: 10px;
+  padding: 10px;
+  border-radius: 15px;
+}
+
+.arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+}
+
+.arrow:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.arrow.left {
+  left: 70px;
+}
+
+.arrow.right {
+  right: 10px;
 }
