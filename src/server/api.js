@@ -209,7 +209,16 @@ api.route('/sessions/:tutor_id?/:course_id?')
 api.route("/classes")
 .get(async (req, res) => {
     try {   
-        const courses = await Course.findAll();
+        const courses = await connection.query(`SELECT 
+        c.*, 
+        COUNT(DISTINCT tc.tutor_id) AS tutors_counter
+    FROM 
+        courses c 
+        LEFT JOIN tutor_courses tc ON c.course_id = tc.course_id
+    GROUP BY 
+        c.course_id;`, {
+            type: QueryTypes.SELECT
+        })
 
         res.status(200).json({
             courses

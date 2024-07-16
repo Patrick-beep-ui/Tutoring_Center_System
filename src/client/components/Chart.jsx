@@ -52,7 +52,7 @@ const Graph = () => {
           setChartData({
             labels: labels,
             datasets: [{
-              label: 'Number of Sessions per Tutor',
+              label: 'Number of Sessions Tutor',
               data: dataPoints,
               backgroundColor: '#1F49AB',
               borderColor: 'rgba(75,192,192,1)',
@@ -68,10 +68,41 @@ const Graph = () => {
     getSessions();
   }, []);
 
+  const options = {
+    maintainAspectRatio: false,
+    responsive: true,
+    scales: {
+      x: {
+        beginAtZero: true,
+        ticks: {
+          font: {
+            size: 10
+          }
+        }
+      },
+      y: {
+        beginAtZero: true,
+        ticks: {
+          font: {
+            size: 10
+          }
+        }
+      }
+    },
+    plugins: {
+      legend: {
+        labels: {
+          font: {
+            size: 12 
+          }
+        }
+      }
+    }
+  };
+
   return (
-    <div>
-      <h1>Sessions per Tutor</h1>
-      <Bar data={chartData} />
+    <div style={{ width: '100%', height: '100%', padding: '10px', textAlign: 'center' }}>
+      <Bar data={chartData} options={options}/>
     </div>
   );
 };

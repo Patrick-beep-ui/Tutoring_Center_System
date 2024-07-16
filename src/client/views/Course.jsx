@@ -3,6 +3,8 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 import {v4 as uuid} from "uuid";
 import { Link } from "react-router-dom";
+import Header from "../components/Header";
+import '.././App.css';
 
 function ClassName() {
     const [course, setCourse] = useState([]);
@@ -24,9 +26,25 @@ function ClassName() {
 
     return(
         <>
-        <h1>Classes</h1>
+        <Header/>
 
-        <section className="mt-4">
+        <section className="courses-container section">
+            <section className="courses">
+                {course.map(c => 
+                    <div className="course-container">
+                        <div className="course-description">
+                            <p>{c.course_code}</p>
+                            <p>{c.course_name}</p>
+                        </div>
+                        <div className="course-tutors">
+                            <p>{c.tutors_counter} Tutors</p>
+                            <a href="">See Tutors</a>
+                        </div>
+                    </div>
+                    )}
+            </section>
+        
+        {/*
             <table className="table table-striped">
                 <thead className="table-dark">
                     <tr>
@@ -49,12 +67,11 @@ function ClassName() {
                         )}
                 </tbody>
             </table>
+                    */}
 
 
-    
+    <Link to={"/classes/add"} className="add-class" style={{ color: 'var(--white)'}}>Add Course</Link>
     </section>
-
-        <Link to={"/classes/add"}>Add Class</Link>
         </>
     )
 

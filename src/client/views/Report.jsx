@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useOutletContext, Outlet } from "react-router-dom";
 import axios from "axios";
 import {v4 as uuid} from "uuid";
 import Header from "../components/Header";
+import Graph from "../components/Chart";
 
 function Report() {
     const [report, setReport] = useState([
     ]);
+    const { session } = useOutletContext();
+    console.log(session)
 
     useEffect(() => {
         const getReport = async () => {
@@ -68,6 +71,13 @@ function Report() {
                         <p>{report.tutor_courses}</p>
                         <a href="">See all Tutor Courses</a>
                     </div>
+                </div>
+            </section>
+            <section className="graphs">
+                <div className="sessions-graph">
+                    <Graph/>
+                </div>
+                <div>
                 </div>
             </section>
         </section>
