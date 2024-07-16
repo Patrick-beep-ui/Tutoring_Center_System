@@ -453,11 +453,11 @@ a:visited {
 
 /* General table styles */
 .table-container {
-  max-height: 600px;
+  max-height: 550px;
   border-radius: 10px;
   border: 1px solid #ddd;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  margin-top: 5px;
+  margin-top: 10px;
   overflow-y: auto;
 }
 
@@ -606,16 +606,26 @@ canvas {
   color: var(--white);
 }
 
-/* Report */
+/* Report and Courses */
 
-.counters {
+.report-container, .courses-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+
+.counters, .courses {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, auto));
   gap: 2rem;
   padding-top: 20px;
 }
 
-.counter-container {
+.courses {
+  padding-top: 10px;
+}
+
+.counter-container, .course-container {
   border: 1px solid var(--gray);
   border-radius: 5px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -627,26 +637,72 @@ canvas {
   justify-content: space-between;
 }
 
-.report-description p:first-of-type {
+.course-container {
+  height: 150px;
+}
+
+.report-description p:first-of-type, .course-description p:first-of-type {
   font-weight: 500;
   font-size: 1.3rem;
   margin-bottom: 0;
 }
 
-.report-description p:last-of-type {
+.course-description p:first-of-type {
+  color: var(--blue);
+}
+
+.report-description p:last-of-type, .course-description p:last-of-type {
   font-size: 0.8rem;
   color: var(--gray);
   margin-top: 2px;
-}
+} 
 
-.report-data {
+.report-data, .course-tutors {
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
 }
 
-.report-data p {
+.report-data p, .course-tutors p {
   font-size: 1.5rem;
   margin-bottom: 0;
   font-weight: 700;
+}
+
+.course-tutors p {
+  font-size: 1rem;
+}
+
+.course-tutors a {
+  font-size: 0.8rem;
+}
+
+.course-tutors a:hover {
+  color: var(--dark-gray);
+}
+
+.graphs {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.sessions-graph {
+  border: 1px solid var(--gray);
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-top: 12px;
+  width: 98%;
+}
+
+.add-class {
+  width: 100px;
+  margin-top: 15px;
+  font-size: 0.9rem;
+  text-decoration: none;
+  background-color: var(--blue);
+  color: var(--white);
+  padding: 5px;
+  border-radius: 10px;
 }

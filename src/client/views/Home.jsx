@@ -73,7 +73,7 @@ function Home() {
             </section>
         </section>
 
-    <Outlet context={{ session }} />
+    <Outlet context={ session } />
 
         </>
     )

@@ -22,7 +22,7 @@ import Report from "./views/Report";
 import Login from "./views/Login";
 import Signup from "./views/Signup";
 
-import Graph from "./views/Chart";
+import Graph from "./components/Chart";
 import SideBar from "./components/Sidebar";
 import Header from "./components/Header";
 import Test from "./views/Test";
