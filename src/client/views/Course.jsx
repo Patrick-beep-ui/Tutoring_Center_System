@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import {v4 as uuid} from "uuid";
@@ -8,6 +8,9 @@ import '.././App.css';
 
 function ClassName() {
     const [course, setCourse] = useState([]);
+    const scrollRef = useRef(null);
+    const [currentPage, setCurrentPage] = useState(0);
+    const [itemsPerPage, setItemsPerPage] = useState(2);
 
     useEffect(() => {
         const getClasses = async () => {
@@ -22,15 +25,47 @@ function ClassName() {
             }
         }
         getClasses();
+
+        const handleResize = () => {
+            if (window.innerWidth <= 600) {
+                setItemsPerPage(3);
+            } else if (window.innerWidth <= 1200) {
+                setItemsPerPage(9);
+            } else {
+                setItemsPerPage(15);
+            }
+        }
+
+        handleResize();
+        window.addEventListener("resize", handleResize);
+
+        return () => {
+            window.removeEventListener("resize", handleResize);
+        }
     }, [])
+
+      const nextPage = () => {
+        if (currentPage < Math.ceil(course.length / itemsPerPage) - 1) {
+            setCurrentPage(currentPage + 1);
+        }
+    }
+
+    const prevPage = () => {
+        if (currentPage > 0) {
+            setCurrentPage(currentPage - 1);
+        }
+    }
+
+    const currentCourses = course.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage);
 
     return(
         <>
         <Header/>
 
         <section className="courses-container section">
-            <section className="courses">
-                {course.map(c => 
+        <button className="arrow left" onClick={prevPage} disabled={currentPage === 0}>←</button>
+            <section className="courses" ref={scrollRef}>
+                {currentCourses.map(c => 
                     <div className="course-container">
                         <div className="course-description">
                             <p>{c.course_code}</p>
@@ -42,36 +77,14 @@ function ClassName() {
                         </div>
                     </div>
                     )}
+
             </section>
-        
-        {/*
-            <table className="table table-striped">
-                <thead className="table-dark">
-                    <tr>
-                        <th scope="col">ID</th>
-                        <th scope="col">Class Name</th>
-                        <th scope="col">Class Code</th>
-                        <th></th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {course.map(course =>
-                    <tr key={uuid()}>
-                        <td>{course.course_id}</td>
-                        <td>{course.course_name}</td>
-                        <td>{course.course_code}</td>
-                        <td><i className='bx bx-pencil edit'></i></td>
-                        <td name='major_id' value={course.course_id} onClick={(event) => deleteStudent(event)}><i className='bx bx-trash delete'></i></td>
-                    </tr>    
-                        )}
-                </tbody>
-            </table>
-                    */}
 
-
-    <Link to={"/classes/add"} className="add-class" style={{ color: 'var(--white)'}}>Add Course</Link>
     </section>
+    
+    <Link to={"/classes/add"} className="add-class" style={{ color: 'var(--white)'}}>Add Course</Link>
+    <button className="arrow right" onClick={nextPage} disabled={currentPage >= Math.ceil(course.length / itemsPerPage) - 1}>→</button>
+    
         </>
     )
 
