@@ -6,6 +6,7 @@ import passport from 'passport';
 import { Strategy as LocalStrategy} from 'passport-local';
 import User from "./models/User.js";
 import bcrypt from 'bcryptjs';
+import cors from 'cors';
 
 const app = express();
 
@@ -24,6 +25,7 @@ app.use(expressSession({
 app.use(express.urlencoded({extended: false}));
 app.use(express.json());
 app.use(passport.authenticate('session'));
+app.use(cors());
 
 app.use('/api', api);
 

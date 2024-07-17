@@ -3,6 +3,7 @@ import {QueryTypes} from "sequelize";
 import connection from "./connection.js";
 import isAuth from './modules/auth.js';
 import isAdmin from './modules/admin.js';
+import upload from './modules/uploadMiddleware.js';
 
 import Course from "./models/Course.js";
 import Contact from "./models/Contact.js";
@@ -340,6 +341,16 @@ api.route("/report")
         console.error(e);
     }
 });
+
+api.post('/uploadProfilePic', upload.single('profilePic'), (req, res) => {
+    console.log('File received:', req.file);
+    res.status(200).json({
+        message: 'Profile picture uploaded successfully'
+    });
+});
+
+
+
 
 
 export default api

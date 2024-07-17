@@ -138,7 +138,7 @@ label {
   background-color: rgb(146, 146, 136); 
 }
 
-/*tutors*/
+/* Profile */
 
 .tutor_info {
   display: flex;
@@ -179,6 +179,25 @@ label {
 
 .class-box:hover {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* ProfilePictureUpload  */
+.crop-container {
+  position: relative;
+  width: 100%;
+  height: 400px;
+  background: #333;
+}
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.slider-container {
+  width: 50%;
 }
 
 /*
