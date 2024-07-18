@@ -140,18 +140,102 @@ label {
 
 /* Profile */
 
-.tutor_info {
+.profile-info {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 15px;
+  margin-bottom: 15px;
+  background-color: var(--white);
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.user-picture-container {
+  width: 250px;
+  height: 250px;
+  border-radius: 50%;
+  margin-left: 30px;
+}
+
+.user-picture-container img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+}
+
+.save-picture-btn {
+  color: var(--white);
+}
+
+.user-info-container {
+  margin-right: auto;
+  margin-left: 30px;
+}
+
+.tutor-info {
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
   padding: 10px;
+  text-align: left;
 }
 
-.courses_container {
+.tutor-info p {
+  text-align: left;
+}
+
+.tutor-info-data p:first-of-type, #schedule-heading{
+  font-weight: 500;
+  font-size: 1.3rem;
+  margin-bottom: 0;
+}
+
+.tutor-info-data p:last-of-type, .schedules p {
+  font-size: 0.9rem;
+  color: var(--gray);
+  margin-top: 2px;
+}
+
+.tutor-info-description {
+  width: 100%;
+  text-align: left;
+  font-size: 0.9rem;
+}
+
+.tutor-schedule {
+  margin-right: auto;
+  padding: 15px;
+  border: 1px solid var(--gray);
+  border-radius: 10px;
+}
+
+.tutor-schedule p {
+  margin: 2px;
+  text-align: left;
+}
+
+#schedule-heading {
+  margin-bottom: 10px;
+}
+
+.schedules p {
+  font-size: 1rem;
+}
+
+.tutor-courses-container {
   display: flex;
   justify-content: center;
   align-items: center;
+  background-color: var(--white);
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  height: 250px;
+}
+
+.tutor-course a {
+  text-decoration: none;
 }
 
 .class-box {
@@ -168,20 +252,32 @@ label {
 .class-box h3 {
   font-size: 1.1em;
   margin: 0 0 5px 0;
-  color: #007bff;
+  color: var(--blue);
 }
 
 .class-box p {
   font-size: 0.9em;
-  color: #555;
   margin: 0;
+}
+
+.tutor-course-description  {
+  margin-bottom: 5px;
 }
 
 .class-box:hover {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
+.tutor-course-data p:first-of-type {
+  font-size: 1.2rem;
+}
+
+.tutor-course-data p:last-of-type {
+  font-weight: 400;
+}
+
 /* ProfilePictureUpload  */
+
 .crop-container {
   position: relative;
   width: 100%;
