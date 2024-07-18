@@ -3,6 +3,7 @@ import {QueryTypes} from "sequelize";
 import connection from "./connection.js";
 import isAuth from './modules/auth.js';
 import isAdmin from './modules/admin.js';
+import upload from './modules/uploadMiddleware.js';
 
 import Course from "./models/Course.js";
 import Contact from "./models/Contact.js";
@@ -130,10 +131,11 @@ api.route("/courses/:tutor_id")
 .get(async (req, res) => {
     try {
         const id  = req.params.tutor_id;
-        const tutor_classes = await connection.query(`SELECT c.course_name as 'course_name', c.course_code as 'course_code', tc.tutor_id as 'tutor_id', c.course_id as 'course_id'
+        const tutor_classes = await connection.query(`SELECT c.course_name as 'course_name', c.course_code as 'course_code', tc.tutor_id as 'tutor_id', c.course_id as 'course_id', count(s.course_id) as 'sessions'
         FROM courses c JOIN tutor_courses tc ON c.course_id = tc.course_id
         JOIN tutors t ON t.tutor_id = tc.tutor_id
-        WHERE tc.tutor_id = ${id}
+        LEFT JOIN sessions s ON s.course_id = c.course_id
+        WHERE tc.tutor_id = ${id} AND s.tutor_id = ${id}
         GROUP BY course_name, course_code, tutor_id;`, {
             type: QueryTypes.SELECT
         });
@@ -340,6 +342,16 @@ api.route("/report")
         console.error(e);
     }
 });
+
+api.post('/uploadProfilePic', upload.single('profilePic'), (req, res) => {
+    console.log('File received:', req.file);
+    res.status(200).json({
+        message: 'Profile picture uploaded successfully'
+    });
+});
+
+
+
 
 
 export default api
