@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 import {v4 as uuid} from "uuid";
 import { Link } from "react-router-dom";
 import { Toaster, toast } from 'sonner';
+import Header from "../components/Header";
 
 function Tutors() {
     const [tutors, setTutor] = useState([]);
@@ -26,37 +27,59 @@ function Tutors() {
 
     return(
         <>
-        {
-            <h1>Tutors</h1>}
-
-        <section className="mt-4">
-            <table className="table table-striped">
+        <Header/>
+        <section className="section tutors-container">
+            <div className="tutors-table-container">
+            <table className="table table-striped table align-middle mb-0">
                 <thead className="table-dark">
                     <tr>
-                        <th scope="col">ID</th>
                         <th scope="col">Name</th>
+                        <th scope="col">ID</th>
                         <th scope="col">Major</th>
                         <th className = "tutor_schedule" scope="col">Schedule</th>
-                        <th></th>
-                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
+
                     {tutors.map(student =>
                     <tr key={uuid()}> 
+                        <td>
+                            <div className="d-flex align-items-center">
+                            <Link to={`/profile/${student.id}`}>
+                                <img src={`/profile/tutor${student.id}.jpg`} alt={``} 
+                                style={{width: '45px', height: '45px'}}
+                                class="rounded-circle"/>
+                            </Link>
+                                <div className="ms-3 tutor-name-cell">
+                                    <p className="fw-bold mb-1" id="tutor-name">{student.tutor_name}</p>
+                                    <p className="text-muted mb-0">{student.tutor_email}</p>
+                                </div>
+                            </div>
+                        </td>
                         <td>{student.tutor_id}</td>
-                        <td><Link to={`/profile/${student.id}`}>{student.tutor_name}</Link></td>
-                        <td>{student.tutor_major}</td>
-                        <td>{student.tutor_schedule}</td>
-                        <td><i className='bx bx-pencil edit'></i></td>
-                        <td name='major_id' value={student.id} onClick={(event) => deleteStudent(event)}><i className='bx bx-trash delete'></i></td>
+                        <td>
+                        <p className="fw-normal mb-1">{student.tutor_major}</p>
+                        </td>
+                        <td>
+                            <div className="ms-3 tutor-schedule-cell">
+                                {student.tutor_schedule.split('\n').map((line, index) => (
+                                <p key={index} id="tutor-schedule" className="mb-1" >{line}</p>
+                                ))}
+                            </div>
+                        </td>
                     </tr>  
-                        )}
+                    )}
                 </tbody>
             </table>
+            </div>
+
+            {/*  
+                <td><i className='bx bx-pencil edit'></i></td>
+                        <td name='major_id' value={student.id} onClick={(event) => deleteStudent(event)}><i className='bx bx-trash delete'></i></td>
+            */}
 
 
-    <Link to={'/tutors/add'}>Add Tutor</Link>
+    {/*<Link to={'/tutors/add'}>Add Tutor</Link>*/}
     </section>
 
 

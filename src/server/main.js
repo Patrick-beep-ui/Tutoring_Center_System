@@ -143,10 +143,19 @@ app.post('/check/:id?/:email?', async(req, res) => {
 
 app.post('/logout', function(req, res, next) {
   req.logout(function(err) {
-    if (err) { return next(err); }
-    console.log(req.session)
+    if (err) {
+      return next(err);
+    }
+    req.session.destroy(function(err) {
+      if (err) {
+        return next(err);
+      }
+      res.clearCookie('connect.sid', { path: '/' }); 
+      res.status(200).send({ message: 'Logout successful' });
+    });
   });
 });
+
 
 // Protected Route
 app.get('/protected', (req, res) => {
