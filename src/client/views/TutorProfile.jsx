@@ -49,7 +49,10 @@ function TutorProfile() {
             <Profile tutorId={tutor_id} onImageUpload={handleImageUpload} />
                 <section className="profile-info">
                     <div className="user-picture-container">
+                        <label for="image-upload">
                         <img src={profilePicUrl} alt="Tutor Profile Picture" className="profile-picture" />
+                        <i class='bx bx-camera camera-label'></i>
+                        </label>
                     </div>
                     <div className="user-info-container">
                     {tutor.map(t =>

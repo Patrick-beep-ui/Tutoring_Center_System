@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef  } from 'react';
 import Cropper from 'react-easy-crop';
 import { Button, Slider, Typography } from '@mui/material';
 import axios from 'axios';
@@ -10,6 +10,7 @@ const Profile = ({ tutorId, onImageUpload }) => {
     const [zoom, setZoom] = useState(1);
     const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
     const [selectedFile, setSelectedFile] = useState(null);
+    const fileInputRef = useRef(null);
 
     const onCropComplete = useCallback((croppedArea, croppedAreaPixels) => {
         setCroppedAreaPixels(croppedAreaPixels);
@@ -77,6 +78,7 @@ const Profile = ({ tutorId, onImageUpload }) => {
             // Reset the imageSrc to close the cropping interface
             setImageSrc(null);
             setSelectedFile(null);
+            fileInputRef.current.value = '';
 
             // Call the onImageUpload callback to update the parent component
             onImageUpload();
@@ -86,9 +88,16 @@ const Profile = ({ tutorId, onImageUpload }) => {
         }
     };
 
+    const handleCancel = () => {
+        // Reset the imageSrc and selectedFile to cancel the cropping process
+        setImageSrc(null);
+        setSelectedFile(null);
+        fileInputRef.current.value = '';
+    };
+
     return (
         <div>
-            <input type="file" accept="image/*" onChange={onSelectFile} className="photo-input" />
+            <input type="file" accept="image/*" onChange={onSelectFile} className="photo-input" id='image-upload' ref={fileInputRef} hidden />
             {imageSrc && (
                 <div className="picture-input-container">
                     <div style={{ width: '80%', height: 400 }} className="select-picture-container">
@@ -134,6 +143,18 @@ const Profile = ({ tutorId, onImageUpload }) => {
                       }
                   }}
                     className="save-picture-btn">Save</Button>
+                    <Button onClick={handleCancel} 
+                    sx={{
+                      backgroundColor: 'red',
+                      color: 'white', 
+                      '&:hover': {
+                          backgroundColor: 'darkred', 
+                      },
+                      marginLeft: '10px'
+                  }}
+                    className="cancel-picture-btn">
+                        Cancel
+                    </Button>
                 </div>
             )}
         </div>
