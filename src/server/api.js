@@ -14,6 +14,7 @@ import Tutor from "./models/Tutor.js";
 import TutorCourse from "./models/TutorCourse.js";
 import TutorSession from "./models/TutorSession.js"
 import User from "./models/User.js";
+import SessionDetail from './models/SessionDetail.js';
 
 const api = express.Router({mergeParams: true});
 
@@ -154,8 +155,8 @@ api.route('/sessions/:tutor_id?/:course_id?')
         const id = req.params.tutor_id
         const course = req.params.course_id
 
-        if(id || course) {
-             const sessions = await connection.query(` SELECT s.session_id as 'session_id', CONCAT(u.first_name, ' ', u.last_name) as 'tutor_name', s.student_id as 'student',  c.course_name as 'course_name', s.session_totalhours as 'total_hours'
+        if(id && course) {
+             const sessions = await connection.query(` SELECT s.session_id as 'session_id', CONCAT(u.first_name, ' ', u.last_name) as 'tutor_name', s.student_id as 'student',  c.course_name as 'course_name', s.session_totalhours as 'total_hours', s.session_date as 'session_date'
         FROM sessions s JOIN tutors t on s.tutor_id = t.tutor_id
         JOIN users u ON u.user_id = t.user_id
         JOIN courses c ON s.course_id = c.course_id
@@ -166,8 +167,23 @@ api.route('/sessions/:tutor_id?/:course_id?')
         })
 
         res.status(200).json({ sessions });
-        } else {
-            const sessions = await connection.query(` SELECT s.session_id as 'session_id', CONCAT(u.first_name, ' ', u.last_name) as 'tutor_name', s.student_id as 'student',  c.course_name as 'course_name', s.session_totalhours as 'total_hours', t.tutor_id as 'tutor_id'
+        } 
+        else if(id) {
+            const sessions = await connection.query(` SELECT s.session_id as 'session_id', CONCAT(u.first_name, ' ', u.last_name) as 'tutor_name', s.student_id as 'student',  c.course_name as 'course_name', s.session_totalhours as 'total_hours', s.session_date as 'session_date'
+            FROM sessions s JOIN tutors t on s.tutor_id = t.tutor_id
+            JOIN users u ON u.user_id = t.user_id
+            JOIN courses c ON s.course_id = c.course_id
+            WHERE t.tutor_id = ${id}
+            GROUP BY session_id, tutor_name, student, total_hours
+            ORDER BY course_name;`, {
+                type: QueryTypes.SELECT
+            })
+    
+            res.status(200).json({ sessions });
+        }
+        
+        else {
+            const sessions = await connection.query(` SELECT s.session_id as 'session_id', CONCAT(u.first_name, ' ', u.last_name) as 'tutor_name', s.student_id as 'student',  c.course_name as 'course_name', s.session_totalhours as 'total_hours', t.tutor_id as 'tutor_id', s.session_date as 'session_date'
             FROM sessions s JOIN tutors t on s.tutor_id = t.tutor_id
             JOIN users u ON u.user_id = t.user_id
             JOIN courses c ON s.course_id = c.course_id
@@ -184,6 +200,8 @@ api.route('/sessions/:tutor_id?/:course_id?')
     }
 })
 .post(async (req, res) => {
+    try {
+        
     const tutor_id = req.params.tutor_id
     const course_id = req.params.course_id
 
@@ -198,13 +216,54 @@ api.route('/sessions/:tutor_id?/:course_id?')
     })
 
     await session.save();
+
+    const session_detail = new SessionDetail({
+        session_id: session.session_id,
+        session_time: req.body.session_time,
+        session_status: 'completed',
+        createdBy:tutor_id,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+    })
+
+    await session_detail.save();
+
     const sessions = await TutorSession.findAll()
 
     res.status(201).json({
         msg: 'Session added successfully',
         sessions
     });
+    }
+    catch(e) {
+        console.error(e)
+    }
 
+})
+
+
+//calendar_sessions
+api.route("/calendar-sessions/:tutor_id?")
+.get(async (req, res) => {
+    try {
+        const tutor_id = req.params.tutor_id
+
+        const sessions = await connection.query(`SELECT s.session_id as 'session_id', c.course_name as 'course_name', CONCAT(u.first_name, ' ', u.last_name) as 'scheduled_by', sd.session_time as 'session_time', FORMAT(s.session_totalhours, 0) as 'session_durarion' ,s.session_date as 'session_date', sd.session_status as 'session_status'
+        FROM sessions s JOIN tutors t on s.tutor_id = t.tutor_id
+        JOIN users u ON u.user_id = t.user_id
+        JOIN courses c ON s.course_id = c.course_id
+        JOIN session_details sd ON s.session_id = sd.session_id
+        WHERE t.tutor_id = ${tutor_id}
+        GROUP BY session_id, course_name, scheduled_by`, {
+            type: QueryTypes.SELECT
+        })
+
+        res.status(200).json({ sessions });
+    }
+    catch(e) {
+        console.error(e)
+        res.status(500).json({ error: 'Internal server error' });
+    }
 })
 
 //classes

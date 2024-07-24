@@ -58,6 +58,11 @@ function AddSession() {
                 {errors.code && <span>This field is required</span>}
             </section>
             <section>
+                <label>Start Time: </label>
+                <input type="time" {...register("session_time", {required: true})} />
+                {errors.code && <span>This field is required</span>}
+            </section>
+            <section>
                 <label>Session Hours:</label>
                 <input type="number" {...register("session_hours", {required: true})}/>
                 {errors.code && <span>This field is required</span>}
