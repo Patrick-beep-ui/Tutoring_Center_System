@@ -62,14 +62,25 @@ function TutorProfile() {
                                 <p>{t.tutor_email}</p>
                             </div>
                             <div className="tutor-info-description">
-                                <p>ID: {t.tutor_id}</p>
-                                <p>Major: {t.tutor_major}</p>
-                                <p>Contact Number: {t.contact}</p>
+                                <p> <strong>ID:</strong> {t.tutor_id}</p>
+                                <p><strong>Major: </strong>{t.tutor_major}</p>
+                                <p><strong>Contact Number: </strong>{t.contact}</p>
                             </div>
+                            {tutor.map(t => 
+                    <div className="tutor-sched" key={t.tutor_id}>
+                        <p id=""> <strong>Schedule: </strong></p>
+                        <div className="schedules">
+                            {t.tutor_schedule.split('\n').map((line, index) => (
+                            <p key={index}>{line}</p>
+                            ))}
+                        </div>
+                        <Link to={"/calendar"}><button className="btn btn-primary">View Calendar</button></Link>
+                    </div>
+                    )}
                         </div>
                     )}
                     </div>
-                    {tutor.map(t => 
+                    {/*tutor.map(t => 
                     <div className="tutor-schedule" key={t.tutor_id}>
                         <p id="schedule-heading">Tutor Schedule: </p>
                         <div className="schedules">
@@ -78,7 +89,7 @@ function TutorProfile() {
                             ))}
                         </div>
                     </div>
-)}
+                            )*/}
 
                 </section>
 

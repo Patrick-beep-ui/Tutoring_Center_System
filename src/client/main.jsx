@@ -25,6 +25,7 @@ import Signup from "./views/Signup";
 import Graph from "./components/Chart";
 import SideBar from "./components/Sidebar";
 import Header from "./components/Header";
+import MyCalendar from "./components/Calendar";
 import Test from "./views/Test";
 
 //Components
@@ -88,6 +89,9 @@ const router = createBrowserRouter([
       {
         path: "/report",
         element: <Report />
+      }, {
+        path: "/calendar",
+        element: <MyCalendar />
       }
     ]
   },
