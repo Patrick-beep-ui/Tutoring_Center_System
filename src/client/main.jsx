@@ -90,7 +90,7 @@ const router = createBrowserRouter([
         path: "/report",
         element: <Report />
       }, {
-        path: "/calendar",
+        path: "/calendar/:tutor_id",
         element: <MyCalendar />
       }
     ]

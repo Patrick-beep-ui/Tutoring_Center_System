@@ -248,7 +248,7 @@ api.route("/calendar-sessions/:tutor_id?")
     try {
         const tutor_id = req.params.tutor_id
 
-        const sessions = await connection.query(`SELECT s.session_id as 'session_id', c.course_name as 'course_name', CONCAT(u.first_name, ' ', u.last_name) as 'scheduled_by', sd.session_time as 'session_time', FORMAT(s.session_totalhours, 0) as 'session_durarion' ,s.session_date as 'session_date', sd.session_status as 'session_status'
+        const sessions = await connection.query(`SELECT s.session_id as 'session_id', c.course_name as 'course_name', CONCAT(u.first_name, ' ', u.last_name) as 'scheduled_by', sd.session_time as 'session_time', FORMAT(s.session_totalhours, 0) as 'session_duration' ,s.session_date as 'session_date', sd.session_status as 'session_status'
         FROM sessions s JOIN tutors t on s.tutor_id = t.tutor_id
         JOIN users u ON u.user_id = t.user_id
         JOIN courses c ON s.course_id = c.course_id
@@ -263,6 +263,47 @@ api.route("/calendar-sessions/:tutor_id?")
     catch(e) {
         console.error(e)
         res.status(500).json({ error: 'Internal server error' });
+    }
+})
+.post(async (req, res) => {
+    try {
+        const tutor_id = req.params.tutor_id
+
+        const session = new TutorSession({
+            tutor_id:tutor_id,
+            student_id: req.body.student_id,
+            course_id: req.body.course,
+            semester_id: req.body.semester_id,
+            session_date: req.body.session_date,
+            session_totalhours: req.body.session_hours
+        })
+
+        await session.save()
+
+        const session_detail = new SessionDetail({
+            session_id: session.session_id,
+            session_time: req.body.session_time,
+            session_status: 'scheduled',
+            createdBy: req.body.created_by,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        })
+
+        await session_detail.save()
+
+        const sessions = await TutorSession.findAll({
+            where: {
+                tutor_id: tutor_id
+            }
+        })
+
+        res.status(201).json({
+            msg: 'Session Scheduled Successfully',
+            sessions
+        })
+    }
+    catch(e) {
+
     }
 })
 

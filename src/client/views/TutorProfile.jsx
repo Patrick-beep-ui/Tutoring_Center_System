@@ -74,7 +74,7 @@ function TutorProfile() {
                             <p key={index}>{line}</p>
                             ))}
                         </div>
-                        <Link to={"/calendar"}><button className="btn btn-primary">View Calendar</button></Link>
+                        <Link to={`/calendar/${tutor_id}`}><button className="btn btn-primary">View Calendar</button></Link>
                     </div>
                     )}
                         </div>
