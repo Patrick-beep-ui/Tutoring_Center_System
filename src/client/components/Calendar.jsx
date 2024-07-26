@@ -6,6 +6,8 @@ import { useOutletContext, useParams } from 'react-router-dom';
 import Popup from 'reactjs-popup';
 import 'reactjs-popup/dist/index.css';
 import ScheduleSession from './ScheduleSession';
+import { ics } from 'ics';
+import { createEvent } from 'ics';
 
 const localizer = momentLocalizer(moment);
 
@@ -40,6 +42,50 @@ const MyCalendar = () => {
         }
     }, [user]);
 
+    const generateICSFile = (event) => {
+        const start = [
+            event.start.getFullYear(),
+            event.start.getMonth() + 1,
+            event.start.getDate(),
+            event.start.getHours(),
+            event.start.getMinutes()
+        ];
+        const end = [
+            event.end.getFullYear(),
+            event.end.getMonth() + 1,
+            event.end.getDate(),
+            event.end.getHours(),
+            event.end.getMinutes()
+        ];
+
+        const icsEvent = {
+            start,
+            end,
+            title: event.title,
+            description: `Session with tutor`,
+            location: 'Keiser University Latin American Campus',
+            url: window.location.href,
+            status: 'CONFIRMED',
+            busyStatus: 'BUSY',
+        };
+
+        createEvent(icsEvent, (error, value) => {
+            if (error) {
+                console.log(error);
+                return;
+            }
+            const blob = new Blob([value], { type: 'text/calendar' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'session.ics';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        });
+    };
+
+
     const Event = ({ event }) => (
         <Popup
         trigger={<div className="rbc-event-content" title={event.title}>{event.title}</div>}
@@ -50,8 +96,10 @@ const MyCalendar = () => {
     >
             <div className="popup-calendar-msg">
                 <strong>{event.title}</strong><br />
+                <p>{moment(event.start).format('h:mm a')} – {moment(event.end).format('h:mm a')}</p>
                 <em>Start: {event.start.toString()}</em><br />
                 <em>End: {event.end.toString()}</em>
+                <button className="btn btn-primary" onClick={() => generateICSFile(event)}>Remind me</button>
             </div>
         </Popup>
     );

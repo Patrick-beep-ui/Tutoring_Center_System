@@ -303,12 +303,12 @@ label {
   padding-top: 10px;
 }
 
-.tutor-calendar button {
+.tutor-calendar button, .popup-calendar-msg button {
   background-color: var(--blue);
   border-color: var(--blue);
 }
 
-.tutor-calendar button:hover {
+.tutor-calendar button:hover, .popup-calendar-msg button:hover {
   background-color: #252f6b;
   border-color: #252f6b;
 }
@@ -978,6 +978,23 @@ canvas {
 
 
 /* Calendar */
+
+.rbc-row-segment .rbc-event {
+  background-color: var(--blue);
+}
+
+.custom-popup-content {
+  border-radius: 10px;
+}
+
+.popup-calendar-msg {
+  padding: 5px;
+}
+
+.popup-calendar-msg button {
+  margin: 10px 0px 10px 0px;
+  display: block;
+}
 
 .popup-cell-msg ul li p {
   display: inline-block;
