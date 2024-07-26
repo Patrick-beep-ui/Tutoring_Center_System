@@ -8,6 +8,7 @@ import Profile from "../components/Picture";
 function TutorProfile() {
     const [tutor, setTutor] = useState([]);
     const [courses, setCourse] = useState([]);
+    const [session, setSession] = useState(0);
     const [profilePicUrl, setProfilePicUrl] = useState('');
     const { tutor_id } = useParams();
 
@@ -16,19 +17,23 @@ function TutorProfile() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const [TutorResponse, coursesResponse] = await Promise.all([
+                const [TutorResponse, coursesResponse, sessionResponse] = await Promise.all([
                     axios.get(`/api/tutors/${tutor_id}`),
-                    axios.get(`/api/courses/${tutor_id}`)
+                    axios.get(`/api/courses/${tutor_id}`),
+                    axios.get(`/api/session-status/${tutor_id}`)
                 ]);
 
                 const tutorData = TutorResponse.data.tutor_info;
                 const coursesData = coursesResponse.data.tutor_classes;
+                const sessionData = sessionResponse.data.scheduled_sessions
 
                 console.log("Tutor:", tutorData);
                 console.log("Courses:", coursesData);
+                console.log("Session:", sessionData);
 
                 setTutor(tutorData);
                 setCourse(coursesData);
+                setSession(sessionData);
                 setProfilePicUrl(`/public/profile/tutor${tutor_id}.jpg`);
             } catch (error) {
                 console.error("Error fetching data:", error);
@@ -37,6 +42,23 @@ function TutorProfile() {
 
         fetchData();
     }, [tutor_id]);
+
+    const renderSessions = (session) => {
+
+        const section = document.querySelector('.tutor-calendar');
+        if (session >= 1) {
+            const p = document.createElement('p');
+            const a = document.createElement('a');
+            a.textContent = `${session} scheduled sessions`;
+            a.href = '#'; 
+    
+            p.classList.add('scheduled-sessions-counter');
+            p.textContent = 'You have ';
+            p.appendChild(a);
+    
+            section.appendChild(p);
+        }
+    };
 
     const handleImageUpload = () => {
         setProfilePicUrl(`/public/profile/tutor${tutor_id}.jpg?${new Date().getTime()}`);
@@ -74,7 +96,14 @@ function TutorProfile() {
                             <p key={index}>{line}</p>
                             ))}
                         </div>
+                        <div className="tutor-calendar">
                         <Link to={`/calendar/${tutor_id}`}><button className="btn btn-primary">View Calendar</button></Link>
+                    {session >= 1 && (
+                        <p className="scheduled-sessions-counter">
+                            You have <a href={`/scheduled-sessions/${tutor_id}`}>{session} scheduled sessions</a>
+                        </p>
+                )}
+                        </div>
                     </div>
                     )}
                         </div>
@@ -94,6 +123,7 @@ function TutorProfile() {
                 </section>
 
                 <section className="tutor-courses-container">
+
                     {courses.map(c =>
                     <div className="tutor-course ">
 

@@ -174,13 +174,10 @@ label {
 
 .profile-info {
   display: flex;
-  /*
-  justify-content: space-around;
-  */
   justify-content: center;
   align-items: center;
-  padding: 15px;
-  margin-bottom: 15px;
+  padding: 10px 15px 10px 15px;
+  margin-bottom: 10px;
   background-color: var(--white);
   border-radius: 5px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -233,7 +230,6 @@ label {
 .tutor-info {
   display: flex;
   justify-content: center;
-  align-items: center;
   flex-direction: column;
   padding: 10px;
   text-align: left;
@@ -285,9 +281,6 @@ label {
   font-size: 1rem;
 }
 
-
-
-
 .tutor-sched {
   text-align: left;
   margin-right: auto;
@@ -304,8 +297,27 @@ label {
   margin-bottom: 2px;
 }
 
+.tutor-calendar {
+  display: flex;
+  align-items: center;
+  padding-top: 10px;
+}
 
+.tutor-calendar button {
+  background-color: var(--blue);
+  border-color: var(--blue);
+}
 
+.tutor-calendar button:hover {
+  background-color: #252f6b;
+  border-color: #252f6b;
+}
+
+.tutor-calendar p {
+  padding-bottom: 0;
+  margin-bottom: 0;
+  margin-left: 15px;
+}
 
 .tutor-courses-container {
   display: flex;

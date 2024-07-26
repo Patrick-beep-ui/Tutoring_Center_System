@@ -18,6 +18,8 @@ import AddSemester from "./views/AddSemester";
 import Session from "./views/Sessions";
 import AddSession from "./views/AddSession";
 import Report from "./views/Report";
+import ScheduledSessions from "./views/ScheduledSessions";
+import EditSession from "./views/EditSession";
 
 import Login from "./views/Login";
 import Signup from "./views/Signup";
@@ -82,6 +84,14 @@ const router = createBrowserRouter([
         path: "/sessions/add/:tutor_id/:course_id",
         element: <AddSession />
       }, 
+      {
+        path: "/scheduled-sessions/:tutor_id",
+        element: <ScheduledSessions />
+      },
+      {
+        path: "/session/edit/:session_id/:tutor_id?", //Tutor Id added to manage security later on
+        element: <EditSession />
+      },
       {
         path: "/header",
         element: <Header />
