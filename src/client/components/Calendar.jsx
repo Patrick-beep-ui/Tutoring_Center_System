@@ -93,8 +93,10 @@ const MyCalendar = () => {
 
                 ) : (
                     <div className="popup-cell-msg">
-                        <strong>Schedule a Session</strong><br />
-                        <em>Date: {value.toString()}</em>
+                        <strong>No Session Scheduled for Today</strong><br />
+                        <div className="schedule-session-container">
+                            <ScheduleSession tutor_id={tutor_id} selectedDate={formattedDate} onSubmit={close} />
+                        </div>
                     </div>
                 )
             )}

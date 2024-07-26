@@ -6,18 +6,18 @@ import { Link } from "react-router-dom";
 import SessionTable from "../components/SessionTable";
 import Header from "../components/Header";
 
-function Session() {
+
+function ScheduledSessions() {
     const [session, setSession] = useState([]);
     const {tutor_id} = useParams();
-    const {course_id} = useParams();
 
     useEffect(() => {
         const getSessions = async () => {
             try {
-                const response = await axios.get(`/api/sessions/${tutor_id}/${course_id}`)
+                const response = await axios.get(`/api/session-status/${tutor_id}/${true}`)
                 const {data} = response;
-                console.log(data.sessions)
-                setSession(data.sessions)
+                console.log(data.scheduled_sessions)
+                setSession(data.scheduled_sessions)
             }
             catch(e) {
                 console.error(e)
@@ -31,13 +31,13 @@ function Session() {
         <Header/>
         <section className="sessions-container section">
             <Link to={`/profile/${tutor_id}`} >Go Back</Link>
-            <SessionTable session={session} />
-    
-            <Link to={`/sessions/add/${tutor_id}/${course_id}`}>Add Session</Link>
+            <SessionTable session={session} isEditable={true} />
         </section>
+
         </>
     )
 
+
 }
 
-export default Session
+export default ScheduledSessions;

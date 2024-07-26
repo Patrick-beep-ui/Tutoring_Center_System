@@ -148,6 +148,114 @@ api.route("/courses/:tutor_id")
     }
 });
 
+// Profile Session Data
+api.route("/session-status/:tutor_id/:scheduled?")
+.get(async (req, res) => {
+    try {
+        const scheduled = req.params.scheduled
+        const id = req.params.tutor_id;
+
+        if(scheduled) {
+            const scheduled_sessions = await connection.query(` SELECT s.session_id as 'session_id', CONCAT(u.first_name, ' ', u.last_name) as 'tutor_name', s.student_id as 'student',  c.course_name as 'course_name', s.session_totalhours as 'total_hours', s.session_date as 'session_date'
+            FROM sessions s JOIN tutors t on s.tutor_id = t.tutor_id
+            JOIN users u ON u.user_id = t.user_id
+            JOIN courses c ON s.course_id = c.course_id
+            JOIN session_details sd ON s.session_id = sd.session_id
+            WHERE t.tutor_id = ${id} AND sd.session_status = 'scheduled'
+            GROUP BY session_id, tutor_name, student, total_hours
+            ORDER BY course_name;`, {
+                type: QueryTypes.SELECT
+            })
+
+            res.status(200).json({ scheduled_sessions });
+        }
+        else {
+            const scheduled_sessions = await SessionDetail.count({
+                distinct: true,
+                col: 'session_id',
+                include: [{
+                    model: TutorSession,
+                    where: { tutor_id: id }
+                }],
+                where: {
+                    session_status: 'scheduled'
+                }
+            });
+
+            res.status(200).json({
+                scheduled_sessions
+            });
+        }
+        
+    } catch (e) {
+        console.error(e);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+api.route("/edit-session/:session_id")
+.get(async (req, res) => {
+    try {
+        const session_id = req.params.session_id
+
+        const session = await connection.query(`SELECT s.session_id as 'session_id', c.course_name as 'course_name', CONCAT(u.first_name, ' ', u.last_name) as 'scheduled_by', sd.session_time as 'session_time', FORMAT(s.session_totalhours, 0) as 'session_durarion' ,s.session_date as 'session_date', sd.session_status as 'session_status'
+            FROM sessions s JOIN tutors t on s.tutor_id = t.tutor_id
+            JOIN users u ON u.user_id = t.user_id
+            JOIN courses c ON s.course_id = c.course_id
+            JOIN session_details sd ON s.session_id = sd.session_id
+            WHERE s.session_id = ${session_id}
+            GROUP BY session_id, course_name, scheduled_by;`, {
+                type: QueryTypes.SELECT
+            })
+
+            res.status(200).json({ session });
+
+    }
+    catch (e) {
+        console.error(e);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+})
+.put(async (req, res) => {
+    try {
+        const session_id = req.params.session_id
+        const {session_date, session_hours, feedback, session_time} = req.body;
+        
+        const session = await TutorSession.findOne({
+            where: {
+                session_id: session_id
+            }
+        })
+
+        await session.update({
+            session_date: session_date,
+            session_totalhours: session_hours,
+            feedback: feedback
+
+        })
+
+        const session_detail = await SessionDetail.findOne({
+            where: {
+                session_id: session_id
+            }
+        })
+
+        await session_detail.update({
+            session_time: session_time,
+            session_status: 'completed',
+            updatedAt: new Date()
+        })
+
+        res.json({
+            message: 'Session updated successfully'
+        })
+    }
+    catch(e) {
+        console.error(e);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+})
+
 //tutor_sessions
 api.route('/sessions/:tutor_id?/:course_id?')
 .get([isAuth], async (req, res) => {
