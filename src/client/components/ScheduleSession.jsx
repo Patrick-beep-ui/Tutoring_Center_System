@@ -5,8 +5,9 @@ import { Toaster, toast } from 'sonner';
 import axios from "axios";
 
 const ScheduleSession = (props) => {
-    const {register, handleSubmit, formState: { errors }} = useForm({model: "onChange"});
+    const {register, handleSubmit, formState: { errors }, setValue } = useForm({model: "onChange"});
     const [course, setCourse] = useState([]);
+    const [selectedCourse, setSelectedCourse] = useState('');
     const { user } = useOutletContext();
     const {tutor_id, selectedDate, onSubmit} = props;
 
@@ -16,6 +17,9 @@ const ScheduleSession = (props) => {
                 const response = await axios.get(`/api/courses/${tutor_id}`)
                 const {data} = response
                 setCourse(data.tutor_classes)
+
+                setSelectedCourse(data.tutor_classes[0].course_id);
+                setValue("course", data.tutor_classes[0].course_id);
             }
             catch(e) {
                 console.error(e)
@@ -24,6 +28,8 @@ const ScheduleSession = (props) => {
 
         getCourses();
     }, [])
+
+    //Comentario para hacer pull request
 
     const processData = async (formData) => {
         try {
@@ -58,7 +64,7 @@ const ScheduleSession = (props) => {
 
             <section>
                 <label>Course: </label>
-                <select {...register("course")}>
+                <select {...register("course")} value={selectedCourse} onChange={(e) => setSelectedCourse(e.target.value)}>
                     {course.map((c, index) => (
                         <option value={c.course_id} key={index}>
                             {c.course_name}
