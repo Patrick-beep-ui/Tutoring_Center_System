@@ -319,6 +319,52 @@ label {
   margin-left: 15px;
 }
 
+
+.info {
+  width: 320px;
+  padding: 9px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: start;
+  background: #D7F1FD;
+  border-radius: 8px;
+  box-shadow: 0px 0px 5px -3px #111;
+  margin-left: 10px;
+}
+
+.info__icon {
+  width: 20px;
+  height: 20px;
+  transform: translateY(-2px);
+  margin-right: 8px;
+}
+
+.info__icon path {
+  fill: #509AF8;
+}
+
+.info__title {
+  font-size: 14px;
+  color: #0C2A75;
+}
+
+.info__title a {
+  color: inherit;
+}
+
+.info__close {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  margin-left: auto;
+}
+
+.info__close path {
+  fill: #fff;
+}
+
+
 .tutor-courses-container {
   display: flex;
   justify-content: center;
@@ -1003,4 +1049,42 @@ canvas {
   padding-left: 5px;  
   margin-bottom: 0rem;
   height: 18px;
+}
+
+@media (max-width: 768px) {
+  .rbc-time-header {
+      display: block;
+  }
+
+  .rbc-time-content {
+      display: block;
+  }
+
+  .rbc-time-header-cell {
+      width: 100%;
+  }
+
+  .rbc-time-header-gutter,
+  .rbc-time-gutter {
+      width: 50px;
+  }
+
+  .rbc-time-slot {
+      height: 20px;
+  }
+}
+
+@media (max-width: 576px) {
+  .rbc-time-header,
+  .rbc-time-content,
+  .rbc-time-header-cell,
+  .rbc-time-header-gutter,
+  .rbc-time-gutter,
+  .rbc-time-slot {
+      font-size: 0.8rem;
+  }
+
+  .rbc-time-header-cell {
+      padding: 5px;
+  }
 }

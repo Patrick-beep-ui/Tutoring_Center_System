@@ -184,7 +184,7 @@ const MyCalendar = () => {
             startAccessor="start"
             endAccessor="end"
             titleAccessor="title"
-            style={{ height: 600 }}
+            style={{ height: 650 }}
             components={{
                 event: Event,
                 dateCellWrapper: props => <Cell {...props} sessions={sessions} />

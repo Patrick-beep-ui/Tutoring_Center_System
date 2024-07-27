@@ -33,23 +33,23 @@ const EditSessionForm = ({session, session_id}) => {
         className="form-container edit-session-form">
             <section>
                 <label>Course: </label>
-                <input type="text" {...register("course")} value={session[0].course_name} disabled />    
+                <input type="text" {...register("course")} value={session.course_name} disabled />    
             </section>
             <section>
                 <label>Scheduled By: </label>
-                <input type="text" {...register("created_by")} value={session[0].scheduled_by} disabled/>    
+                <input type="text" {...register("created_by")} value={session.scheduled_by} disabled/>    
             </section>
             <section>
                 <label>Date: </label>
-                <input type="date" {...register("session_date")} value={session[0].session_date} />
+                <input type="date" {...register("session_date")} value={session.session_date} />
             </section>
             <section>
                 <label>Start Time: </label>
-                <input type="time" {...register("session_time")} value={session[0].session_time} />    
+                <input type="time" {...register("session_time")} value={session.session_time} />    
             </section>
             <section>
                 <label>Duration: </label>
-                <input type="number" {...register("session_hours")} value={session[0].session_durarion} />    
+                <input type="number" {...register("session_hours")} value={session.session_durarion} />    
             </section>
             <section>
                 <label>Feedback: </label>
