@@ -356,13 +356,14 @@ api.route("/calendar-sessions/:tutor_id?")
     try {
         const tutor_id = req.params.tutor_id
 
-        const sessions = await connection.query(`SELECT s.session_id as 'session_id', c.course_name as 'course_name', CONCAT(u.first_name, ' ', u.last_name) as 'scheduled_by', sd.session_time as 'session_time', FORMAT(s.session_totalhours, 0) as 'session_duration' ,s.session_date as 'session_date', sd.session_status as 'session_status'
+        const sessions = await connection.query(`SELECT s.session_id as 'session_id', c.course_name as 'course_name', CONCAT(student.first_name, ' ', student.last_name) as 'scheduled_by', sd.session_time as 'session_time', FORMAT(s.session_totalhours, 0) as 'session_durarion' ,s.session_date as 'session_date', sd.session_status as 'session_status', CONCAT(u.first_name, ' ', u.last_name) as 'tutor', sd.createdBy as 'student_id'
         FROM sessions s JOIN tutors t on s.tutor_id = t.tutor_id
         JOIN users u ON u.user_id = t.user_id
         JOIN courses c ON s.course_id = c.course_id
         JOIN session_details sd ON s.session_id = sd.session_id
+        JOIN users student ON student.user_id = sd.createdBy
         WHERE t.tutor_id = ${tutor_id}
-        GROUP BY session_id, course_name, scheduled_by`, {
+        GROUP BY session_id, course_name, scheduled_by;`, {
             type: QueryTypes.SELECT
         })
 
