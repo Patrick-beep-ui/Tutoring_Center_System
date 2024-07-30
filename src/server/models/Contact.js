@@ -23,8 +23,7 @@ const Contact = connection.define('Contact', {
 
 Contact.belongsTo(Tutor, {
     foreignKey: {
-        field: 'tutor_id',
-        allowNull: false
+        field: 'tutor_id'
     }
 })
 

@@ -79,7 +79,7 @@ function Tutors() {
             */}
 
 
-    {/*<Link to={'/tutors/add'}>Add Tutor</Link>*/}
+    {<Link to={'/tutors/add'}>Add Tutor</Link>}
     </section>
 
 
