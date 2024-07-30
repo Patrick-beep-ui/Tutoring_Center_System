@@ -2,7 +2,6 @@ import { DataTypes } from "sequelize";
 import connection from "../connection.js";
 import User from "./User.js";
 import Major from "./Major.js";
-import Contact from "./Contact.js";
 
 const Tutor = connection.define('Tutor', {
     tutor_id: {
@@ -18,10 +17,6 @@ const Tutor = connection.define('Tutor', {
         type: DataTypes.STRING,
         allowNull: false
     },
-    phone_id: {
-        type: DataTypes.INTEGER,
-        allowNull: true
-    }, 
     major_id: {
         type: DataTypes.INTEGER // Remove allowNull: false
     }
@@ -36,11 +31,6 @@ Tutor.belongsTo(User, {
 
 Tutor.belongsTo(Major, {
     foreignKey: 'major_id' // Adjust the foreignKey option
-});
-
-Tutor.belongsTo(Contact, {
-    foreignKey: 'phone_id',
-    allowNull: true // Keep allowNull for the phone_id association
 });
 
 export default Tutor;
