@@ -15,6 +15,8 @@ import TutorCourse from "./models/TutorCourse.js";
 import TutorSession from "./models/TutorSession.js"
 import User from "./models/User.js";
 import SessionDetail from './models/SessionDetail.js';
+import Comment from './models/Comment.js';
+import SessionRating from './models/SessionRating.js';
 
 const api = express.Router({mergeParams: true});
 
@@ -66,13 +68,6 @@ api.route("/tutors")
         await user.save();
         const userId = user.user_id;
 
-        
-        const phone = new Contact({
-            phone_number: req.body.phone_number
-        })
-
-        await phone.save();
-
         console.log("User Id:" + userId);
 
         const tutor = new Tutor({
@@ -84,6 +79,14 @@ api.route("/tutors")
         });
 
         await tutor.save();
+
+                
+        const phone = new Contact({
+            tutor_id: tutor.id,
+            phone_number: req.body.phone_number
+        })
+
+        await phone.save();
 
         for(const classID of classIDs) {
             const tutorCourse = new TutorCourse({
@@ -114,7 +117,7 @@ api.route("/tutors/:tutor_id")
         const tutor_info = await connection.query(`SELECT CONCAT(u.first_name, ' ', u.last_name) as 'tutor_name', u.email as 'tutor_email', u.ku_id as 'tutor_id', m.major_name as 'tutor_major', t.official_schedule as 'tutor_schedule', c.phone_number as 'contact'
         FROM users u JOIN tutors t ON u.user_id = t.user_id
         JOIN majors m ON t.major_id = m.major_id
-        JOIN contacts c ON t.phone_id = c.phone_id
+        JOIN contacts c ON t.tutor_id = c.tutor_id
         WHERE t.tutor_id = ${id}
         GROUP BY tutor_name, tutor_email, tutor_id, tutor_major, tutor_schedule, contact
         ORDER BY tutor_id;`, {
