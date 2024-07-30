@@ -39,7 +39,7 @@ SessionRating.belongsTo(SessionDetail, {
     }
 })
 
-SessionRating.belongsToMany(User, {
+SessionRating.belongsTo(User, {
     foreignKey: {
         field: 'student_id',
         allowNull: false

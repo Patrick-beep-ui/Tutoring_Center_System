@@ -73,16 +73,16 @@ api.route("/tutors")
         const tutor = new Tutor({
             user_id: userId,
             official_schedule: req.body.schedule,
-            phone_id: phone.phone_id,
             major_id: req.body.major
 
         });
 
         await tutor.save();
+        const tutorId = tutor.tutor_id; 
 
                 
         const phone = new Contact({
-            tutor_id: tutor.id,
+            tutor_id: tutorId,
             phone_number: req.body.phone_number
         })
 
