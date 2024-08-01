@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import {v4 as uuid} from "uuid";
-import { Link, useOutletContext, Outlet } from "react-router-dom";
+import { Link, useOutletContext, Outlet, useNavigate } from "react-router-dom";
 import { Toaster, toast } from 'sonner';
 import Graph from "../components/Graph";
 import Header from "../components/Header";
@@ -10,6 +10,7 @@ import "../App.css"
 function Home() {
     const [session, setSession] = useState([]);
     const { user } = useOutletContext();
+    const navigate = useNavigate();
 
     useEffect(() => {
         const getSessions = async () => {
@@ -25,6 +26,14 @@ function Home() {
         }
         getSessions();
     }, [])
+
+    const redirect = (sessionId) => {
+        navigate(`/session/details/${sessionId}`);
+    }
+
+    const handleLinkClick = (event) => {
+        event.stopPropagation(); // Prevent event from triggering the row's onClick
+    }
 
     return(
         <>
@@ -46,9 +55,9 @@ function Home() {
                 </thead>
                 <tbody>
                     {session.map(s =>
-                    <tr key={uuid()}>
+                    <tr key={uuid()} className="session-info-row" onClick={() => redirect(s.session_id)} id={s.session_id} style={{cursor: 'pointer'}}>
                         {/*<td>{s.session_id}</td>*/}
-                       <td> <Link to={`/profile/${s.tutor_id}`}>{s.tutor_name}</Link></td>
+                       <td> <Link to={`/profile/${s.tutor_id}`} onClick={handleLinkClick}>{s.tutor_name}</Link></td>
                         <td>{s.student}</td>
                         <td>{s.course_name}</td>
                         <td>{s.total_hours}</td>
