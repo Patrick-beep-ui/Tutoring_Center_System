@@ -20,6 +20,7 @@ import AddSession from "./views/AddSession";
 import Report from "./views/Report";
 import ScheduledSessions from "./views/ScheduledSessions";
 import EditSession from "./views/EditSession";
+import SessionDetails from "./views/SessionDetails";
 
 import Login from "./views/Login";
 import Signup from "./views/Signup";
@@ -75,6 +76,10 @@ const router = createBrowserRouter([
       {
         path: "/terms/add",
         element: <AddSemester />
+      },
+      {
+        path: "session/details/:session_id?",
+        element: <SessionDetails />
       },
       {
         path: "/sessions/:tutor_id/:course_id",

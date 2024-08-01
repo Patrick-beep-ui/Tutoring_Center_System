@@ -27,6 +27,7 @@ const MyCalendar = () => {
             try {
                 const response = await fetch(`/api/calendar-sessions/${tutor_id}`);
                 const data = await response.json();
+                console.log(data.sessions)
 
                 setSessions(data.sessions.map(s => {
                     const sessionDate = moment(`${s.session_date}T${s.session_time}`);

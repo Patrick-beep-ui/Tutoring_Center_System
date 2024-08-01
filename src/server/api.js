@@ -259,6 +259,55 @@ api.route("/edit-session/:session_id")
     }
 })
 
+//session_details
+api.route("/session/details/:session_id")
+.get(async (req, res) => {
+    try {
+        const session_id = req.params.session_id
+
+        if(session_id) {
+            const session = await connection.query(`SELECT CONCAT(u.first_name, ' ', u.last_name) as 'tutor_name', c.course_name as 'course_name', s.session_date as 'session_date', s.student_id as 'student_id', FORMAT(s.session_totalhours, 0) as 'session_hours', 
+            s.feedback as 'session_feedback', sd.session_time as 'session_time'
+            FROM sessions s LEFT JOIN session_details sd ON s.session_id = sd.session_id
+            JOIN courses c ON s.course_id = c.course_id
+            JOIN tutors t ON s.tutor_id = t.tutor_id
+            JOIN users u ON u.user_id = t.user_id
+            WHERE s.session_id = ${session_id}
+            GROUP BY tutor_name, course_name, session_date, student_id, session_hours, session_time;`, {
+                type: QueryTypes.SELECT
+            })
+            res.status(200).json({ session });
+        }
+    }
+    catch(e) {
+        console.error(e);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+})
+
+api.route("/comments/:session_id")
+.get(async (req, res) => {
+    try {
+        const session_id = req.params.session_id
+
+        if(session_id) {
+            const comments = await connection.query(`SELECT c.comment_id, CONCAT(u.first_name, ' ', u.last_name) as 'student_name', c.content as 'comment', c.created_at as 'creation_date', u.user_id as 'user_id'
+            FROM comments c JOIN users u ON c.user_id = u.user_id
+            JOIN sessions s ON s.session_id = c.session_id
+            WHERE c.session_id = ${session_id}
+            GROUP BY student_name, comment;`, {
+                type: QueryTypes.SELECT
+            })
+
+            res.status(200).json({comments})
+        }
+    }
+    catch(e) {
+        console.error(e);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+})
+
 //tutor_sessions
 api.route('/sessions/:tutor_id?/:course_id?')
 .get([isAuth], async (req, res) => {
