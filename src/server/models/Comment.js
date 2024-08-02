@@ -33,14 +33,14 @@ const Comment = connection.define('Comment', {
 Comment.belongsTo(TutorSession, {
     foreignKey: {
         field: 'session_id',
-        allowNull: false
+        allowNull: true
     }
 })
 
 Comment.belongsTo(User, {
     foreignKey: {
         field: 'user_id',
-        allowNull: false
+        allowNull: true
     }
 })
 

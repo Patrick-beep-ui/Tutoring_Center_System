@@ -285,7 +285,7 @@ api.route("/session/details/:session_id")
     }
 })
 
-api.route("/comments/:session_id")
+api.route("/comments/:session_id/:comment_id?")
 .get(async (req, res) => {
     try {
         const session_id = req.params.session_id
@@ -301,6 +301,52 @@ api.route("/comments/:session_id")
 
             res.status(200).json({comments})
         }
+    }
+    catch(e) {
+        console.error(e);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+})
+.post(async (req, res) => {
+    try {
+        const session_id = req.params.session_id
+
+        const comment = new Comment({
+            session_id: session_id,
+            user_id: req.body.user_id,
+            content: req.body.content
+        })
+
+        await comment.save();
+
+        const comments = await connection.query(`SELECT c.comment_id, CONCAT(u.first_name, ' ', u.last_name) as 'student_name', c.content as 'comment', c.created_at as 'creation_date', u.user_id as 'user_id'
+            FROM comments c JOIN users u ON c.user_id = u.user_id
+            JOIN sessions s ON s.session_id = c.session_id
+            WHERE c.session_id = ${session_id}
+            GROUP BY student_name, comment;`, {
+                type: QueryTypes.SELECT
+            })
+
+            res.status(200).json({comments})
+    }
+    catch(e) {
+        console.error(e);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+})
+.delete(async (req, res) =>{
+    try {
+        const comment_id = req.params.comment_id
+
+        const comment = await Comment.findByPk(comment_id);
+
+        if (!comment) {
+            return res.status(404).json({ msg: 'Comment not found' });
+          }
+
+        await comment.destroy();
+
+        res.status(200).json({msg: 'Comment Deleted Successfully'});
     }
     catch(e) {
         console.error(e);
