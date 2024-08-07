@@ -9,7 +9,6 @@ import "../App.css"
 
 function Home() {
     const [session, setSession] = useState([]);
-    const { user } = useOutletContext();
     const navigate = useNavigate();
 
     useEffect(() => {

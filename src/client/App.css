@@ -9,19 +9,19 @@
 
 @font-face {
   font-family: Poppins;
-  src: url(/public/fonts/Poppins-Regular.ttf);
+  src: url(/fonts/Poppins-Regular.ttf);
 }
 
 @font-face {
   font-family: 'Poppins';
-  src: url(/public/fonts/Poppins-Bold.ttf) format('truetype');
+  src: url(/fonts/Poppins-Bold.ttf) format('truetype');
   font-weight: 700; 
   font-style: normal; 
 }
 
 @font-face {
   font-family: 'Poppins';
-  src: url(/public/fonts/Poppins-SemiBold.ttf) format('truetype');
+  src: url(/fonts/Poppins-SemiBold.ttf) format('truetype');
   font-weight: 500; 
   font-style: normal; 
 }
@@ -65,12 +65,6 @@ h1 {
   font-size: calc(1.3rem + .6vw);
   text-align: left;
 }
-
-.add {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-} 
 
 /* Tutors */
 
@@ -781,6 +775,7 @@ canvas {
 
 .session-details {
   width: 100%;
+  margin-bottom: 20px;
 }
 
 .session-data {
@@ -791,7 +786,8 @@ canvas {
   border: 1px solid #ddd;
   border-radius: 8px;
   padding: 0.5em;
-  background-color: #f9f9f9;
+  padding-top: 20px;
+  background-color: #fff;
 }
 
 .session-data-container {
@@ -808,10 +804,28 @@ canvas {
   margin-bottom: 0.5em;
 }
 
+.session-data-container .form-group p {
+  font-weight: 500;
+  font-size: 1.4rem;
+  margin-bottom: 2px;
+}
+
+.tutor-session-data {
+  margin-bottom: 30px !important;
+}
+
+.tutor-session-data span {
+  font-weight: 500;
+  font-size: 1.2rem;
+  color: var(--dark-gray);
+}
+
 .session-data-container .form-group label {
-  font-weight: bold;
-  margin-bottom: 0.1rem;
-  color: var(--blue);
+  font-weight: 500;
+  font-size: 0.9rem;
+  padding-left: 0px !important;
+  padding-bottom: 0px !important;
+  color: #574f4f;
 }
 
 .session-data-container .form-group input,
@@ -825,13 +839,26 @@ canvas {
   box-sizing: border-box;
 }
 
+.form-group-division {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; 
+  flex-direction: row !important;
+  gap: 20px; 
+}
+
+.fg-inside-division {
+  width: 250px;
+}
+
 .session-date-data {
   display: flex;
 }
 
-.form-group textarea {
-  resize: vertical;
-  min-height: 220px;
+#session-feedback {
+  font-size: 1rem;
+  font-weight: 400;
+  height: auto;
 }
 
 
@@ -1083,6 +1110,110 @@ canvas {
 }
 
 /* Aqui termina el Session Details */
+
+
+/* Add Session */
+
+.add-session-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.add-session-form-container {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-top: 5px;
+}
+
+.add-session-form {
+  width: 100%;
+  max-width: 500px;
+  padding: 20px 20px 10px 20px;
+}
+
+.session-data-container section input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.datetime-data {
+  display: flex;
+} 
+
+.datetime-data section input {
+  width: 90%;
+}
+
+#date-form-group input {
+  width: 100%;
+}
+
+.add-session-form label {
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+#time-form-group input,#time-form-group label  {
+  margin-left: 20px;
+}
+
+.session-outcomes-container  {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-bottom: 1px solid #dbd8d8ef;
+}
+
+.session-outcomes-container section {
+  width: 100%;
+  text-align: left;
+}
+
+.session-outcomes-container section textarea {
+  width: 100%;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.add-session-form-container button:last-of-type {
+  margin: 10px 0px 10px 0px;
+  background-color: #111;
+}
+
+.add-session-form-container button:last-of-type:hover {
+  background-color: #383636;
+}
+
+.add-session-form-container button:first-of-type:hover {
+  background-color: #c7bfbf;
+}
+
+.add-session-form-container button:first-of-type {
+  margin: 10px 10px 10px 10px;
+  background-color: #fff;
+  color: #000;
+}
+
+.add-session-btns, .add-session-btns .cancel-btn  {
+  text-align: right;
+  font-size: 0.9rem;
+}
+
+.add-session-btns button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s, border-color 0.3s, color 0.3s;
+}
 
 
 /* Header */

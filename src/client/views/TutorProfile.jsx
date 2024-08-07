@@ -107,10 +107,6 @@ function TutorProfile() {
                         <div class="info__title"> You have <a href={`/scheduled-sessions/${tutor_id}`}>{session} scheduled sessions</a> </div>
                         
                     </div>
-
-                        
-                        
-
                     
                     ) : (
                         null
