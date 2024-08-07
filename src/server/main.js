@@ -38,16 +38,12 @@ passport.use(
         attributes: ['user_id', 'email', 'password_hash']
       });
 
-      console.log('Email:', email);
-      console.log('Entered Password:', password);
-
       if (!user) {
         console.log('User not found');
         return done(null, false, { message: 'Incorrect username' });
       }
 
       const storedHash = user.password_hash;
-      console.log('Stored Hash:', storedHash);
 
       let passwordsMatch;
       if (storedHash.startsWith('$2a$')) {
@@ -97,7 +93,6 @@ app.post(
   (req, res) => {
     req.session.name = req.body.email;
     req.session.save();
-    console.log(req.user)
     if (req.user) {
       res.status(200).json({ message: "User authenticated", user: req.user });
     } else {

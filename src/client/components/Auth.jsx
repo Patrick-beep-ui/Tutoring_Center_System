@@ -33,7 +33,11 @@ const Auth = () => {
       }, [isLoading, isAuthenticated, navigate]);
     
       if (isLoading) {
-        return <div>Loading...</div>; // This can be replaced with a loading spinner or a different loading animation
+        return (
+          <svg viewBox="25 25 50 50" id="loading-state-svg">
+            <circle r="20" cy="50" cx="50" id="loading-state"></circle>
+          </svg>
+        );
       }
     
       return (

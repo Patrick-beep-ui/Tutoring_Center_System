@@ -18,29 +18,38 @@ function SessionDetails() {
   const {user} = useOutletContext();
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchSessionData = async () => {
       try {
-        const [sessionResponse, commentResponse] = await Promise.all([
-          axios.get(`/api/session/details/${session_id}`),
-          axios.get(`/api/comments/${session_id}`)
-        ]);
-
+        const sessionResponse = await axios.get(`/api/session/details/${session_id}`);
         const sessionData = sessionResponse.data.session;
-        const commentsData = commentResponse.data.comments;
-
+  
         console.log("Session: ", sessionData);
-        console.log("Comments: ", commentsData);
-
         setSession(sessionData);
-        setComment(commentsData);
-
       } catch (e) {
         console.error(e);
       }
-    }
+    };
+  
+    fetchSessionData();
+  }, [session_id]);
+  
 
-    fetchData();
-  }, [session_id || comment]);
+  useEffect(() => {
+    const fetchCommentsData = async () => {
+      try {
+        const commentResponse = await axios.get(`/api/comments/${session_id}`);
+        const commentsData = commentResponse.data.comments;
+  
+        console.log("Comments: ", commentsData);
+        setComment(commentsData);
+      } catch (e) {
+        console.error(e);
+      }
+    };
+  
+    fetchCommentsData();
+  }, []);  
+  
 
   const processData = async (formData) => {
     try {
@@ -69,7 +78,6 @@ function SessionDetails() {
       console.log(commentToRemove)
         const url = `/api/comments/${session_id}/${commentToRemove}`
         axios.delete(url)
-
         setIsRemoveOpen(false)
     } 
     catch(e) {
@@ -93,72 +101,37 @@ function SessionDetails() {
         {session.map(s => (
           <div className="session-data" key={s.id}>
             <div className="session-data-container">
-              <div className="form-group">
-                <label htmlFor={`course-${s.id}`}>Course:</label>
-                <input
-                  id={`course-${s.id}`}
-                  type="text"
-                  value={s.course_name}
-                  readOnly
-                />
+              <div className="form-group tutor-session-data">
+                <p>{s.course_name} Tutoring Session</p>
+                <span>Tutor: {s.tutor_name}</span>
               </div>
-              <div className="form-group">
-                <label htmlFor={`tutor-${s.id}`}>Tutor:</label>
-                <input
-                  id={`tutor-${s.id}`}
-                  type="text"
-                  value={s.tutor_name}
-                  readOnly
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor={`student-id-${s.id}`}>Student Id:</label>
-                <input
-                  id={`student-id-${s.id}`}
-                  type="text"
-                  value={s.student_id}
-                  readOnly
-                />
+              <div className="form-group form-group-division">
+                <div id="student-id-container" className="fg-inside-division">
+                  <label htmlFor={`student-id-${s.id}`}>Student ID:</label>
+                  <p>{s.student_id}</p>
+                </div>
+                <div id="date-container" className="fg-inside-division">
+                  <label htmlFor={`session-date-${s.id}`}>Session Date:</label>
+                  <p>{s.session_date}</p>
+                </div>
               </div>
               <div className="session-date-data">
-              <div className="form-group">
-                <label htmlFor={`session-date-${s.id}`}>Session Date:</label>
-                <input
-                  id={`session-date-${s.id}`}
-                  type="text"
-                  value={s.session_date}
-                  readOnly
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor={`session-time-${s.id}`}>Session Start Time:</label>
-                <input
-                  id={`session-time-${s.id}`}
-                  type="text"
-                  value={s.session_time}
-                  readOnly
-                />
+              <div className="form-group form-group-division">
+                <div className="fg-inside-division" id="start-time-container">
+                  <label htmlFor={`session-time-${s.id}`}>Session Start Time:</label>
+                  <p>{s.session_time}</p>
+                </div>
+                <div className="fg-inside-division" id="duration-container">
+                  <label htmlFor={`session-hours-${s.id}`}>Session Hours:</label>
+                  <p>{s.session_hours}</p>
+                </div>
               </div>
               </div>
             </div>
             <div className="session-data-container">
               <div className="form-group">
-                <label htmlFor={`session-hours-${s.id}`}>Session Hours:</label>
-                <input
-                  id={`session-hours-${s.id}`}
-                  type="text"
-                  value={s.session_hours}
-                  readOnly
-                />
-              </div>
-              <div className="form-group">
                 <label htmlFor={`session-feedback-${s.id}`}>Session Outcomes:</label>
-                <textarea
-                  id={`session-feedback-${s.id}`}
-                  value={s.session_feedback}
-                  readOnly
-                  style={{ flex: '1' }}
-                />
+                <p id={`session-feedback`} >{s.session_feedback}</p>
               </div>
             </div>
           </div>
