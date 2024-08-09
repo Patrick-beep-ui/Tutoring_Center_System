@@ -151,7 +151,8 @@ api.route("/courses/:tutor_id")
         FROM courses c JOIN tutor_courses tc ON c.course_id = tc.course_id
         JOIN tutors t ON t.tutor_id = tc.tutor_id
         LEFT JOIN sessions s ON s.course_id = c.course_id
-        WHERE tc.tutor_id = ${id} AND s.tutor_id = ${id}
+        JOIN session_details sd ON s.session_id = sd.session_id
+        WHERE tc.tutor_id = ${id} AND s.tutor_id = ${id} AND sd.session_status = 'completed'
         GROUP BY course_name, course_code, tutor_id;`, {
             type: QueryTypes.SELECT
         });
@@ -215,9 +216,9 @@ api.route("/edit-session/:session_id")
 
         const session = await connection.query(`SELECT s.session_id as 'session_id', c.course_name as 'course_name', CONCAT(u.first_name, ' ', u.last_name) as 'scheduled_by', sd.session_time as 'session_time', FORMAT(s.session_totalhours, 0) as 'session_durarion' ,s.session_date as 'session_date', sd.session_status as 'session_status'
             FROM sessions s JOIN tutors t on s.tutor_id = t.tutor_id
-            JOIN users u ON u.user_id = t.user_id
             JOIN courses c ON s.course_id = c.course_id
             JOIN session_details sd ON s.session_id = sd.session_id
+            JOIN users u ON u.user_id = sd.createdBy
             WHERE s.session_id = ${session_id}
             GROUP BY session_id, course_name, scheduled_by;`, {
                 type: QueryTypes.SELECT

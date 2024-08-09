@@ -30,29 +30,31 @@ const EditSessionForm = ({ session, session_id }) => {
         <form onSubmit={handleSubmit(processData)} className="form-container edit-session-form">
             <section>
                 <label>Course: </label>
-                <input type="text" {...register("course")} value={session[0].course_name} disabled />
+                <p>{session[0].course_name}</p>
             </section>
             <section>
                 <label>Scheduled By: </label>
-                <input type="text" {...register("created_by")} value={session[0].scheduled_by} disabled />
+                <p>{session[0].scheduled_by}</p>
             </section>
-            <section>
-                <label>Date: </label>
-                <input type="date" {...register("session_date")} defaultValue={session[0].session_date} />
-            </section>
-            <section>
-                <label>Start Time: </label>
-                <input type="time" {...register("session_time")} defaultValue={session[0].session_time} />
-            </section>
+            <div className="datetime-data">
+                <section>
+                    <label>Date: </label>
+                    <input type="date" {...register("session_date")} defaultValue={session[0].session_date} />
+                </section>
+                <section>
+                    <label>Start Time: </label>
+                    <input type="time" {...register("session_time")} defaultValue={session[0].session_time} />
+                </section>
+            </div>
             <section>
                 <label>Duration: </label>
                 <input type="number" {...register("session_hours")} defaultValue={session[0].session_durarion} />
             </section>
-            <section>
+            <section className="session-feedback-container">
                 <label>Feedback: </label>
                 <textarea cols="30" rows="10" {...register("feedback")}></textarea>
             </section>
-            <section>
+            <section className="edit-session-btn-container">
                 <button type="submit">Complete</button>
             </section>
         </form>
