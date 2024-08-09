@@ -79,7 +79,7 @@ function AddSession() {
                     <div className="session-outcomes-container">
                         <section>
                             <label>Outcomes:</label>
-                            <textarea cols="30" rows="4" {...register("feedback", {required: true})}></textarea>
+                            <textarea cols="30" rows="3" {...register("feedback", {required: true})}></textarea>
                             {errors.code && <span>This field is required</span>}
                         </section>
                     </div>

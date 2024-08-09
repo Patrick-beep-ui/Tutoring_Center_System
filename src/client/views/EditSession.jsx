@@ -31,7 +31,9 @@ function EditSession() {
         <Header/>
 
         <section className="edit-section-container section">
-            <EditSessionForm session={session} session_id={session_id}/>
+            <div className="edit-session-form-container">
+                <EditSessionForm session={session} session_id={session_id}/>
+            </div>
         </section>
        </>
 

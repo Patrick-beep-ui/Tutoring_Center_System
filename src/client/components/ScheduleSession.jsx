@@ -11,6 +11,8 @@ const ScheduleSession = (props) => {
     const { user } = useOutletContext();
     const {tutor_id, selectedDate, onSubmit} = props;
 
+    console.log(user.user_id)
+
     useEffect(() => {
         const getCourses = async () => {
             try {
