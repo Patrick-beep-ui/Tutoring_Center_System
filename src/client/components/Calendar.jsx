@@ -31,17 +31,20 @@ const MyCalendar = () => {
 
                 setSessions(data.sessions.map(s => {
                     const sessionDate = moment(`${s.session_date}T${s.session_time}`);
-                    const sessionTime = s.session_duration * 60 * 60 * 1000;
-
+                    const sessionDurationHours = parseInt(s.session_duration, 10);
+                
+                    const sessionEnd = moment(sessionDate).add(sessionDurationHours, 'hours').toDate();
+                
                     setTutor(s.tutor);
-
+                
                     return {
                         id: s.session_id,
                         title: `${s.course_name} - ${s.scheduled_by}`,
                         start: sessionDate.toDate(),
-                        end: sessionDate.add(sessionTime).toDate()
+                        end: sessionEnd
                     };
                 }));
+                
 
                 const isStudent = data.sessions.some(session => session.student_id === user.user_id);
                 setStudent(isStudent);
