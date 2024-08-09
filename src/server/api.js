@@ -4,6 +4,7 @@ import connection from "./connection.js";
 import isAuth from './modules/auth.js';
 import isAdmin from './modules/admin.js';
 import upload from './modules/uploadMiddleware.js';
+import { sendEmail } from './mail.js';
 
 import Course from "./models/Course.js";
 import Contact from "./models/Contact.js";
@@ -29,6 +30,17 @@ api.route('/auth')
         user
     });
 });
+
+api.post('/send-email', async (req, res) => {
+    const { to, subject, text } = req.body;
+  
+    try {
+      sendEmail(to, subject, text);
+      res.status(200).json({ message: 'Email sent successfully' });
+    } catch (error) {
+      res.status(500).json({ message: 'Failed to send email', error: error.message });
+    }
+  });
 
 //tutors
 api.route("/tutors")
@@ -490,7 +502,7 @@ api.route("/calendar-sessions/:tutor_id?")
         const session_detail = new SessionDetail({
             session_id: session.session_id,
             session_time: req.body.session_time,
-            session_status: 'scheduled',
+            session_status: 'pending',
             createdBy: req.body.created_by,
             createdAt: new Date(),
             updatedAt: new Date(),
@@ -498,21 +510,101 @@ api.route("/calendar-sessions/:tutor_id?")
 
         await session_detail.save()
 
+        const tutor = await Tutor.findByPk(tutor_id);
+        const tutor_user = await User.findByPk(tutor.user_id);
+        const student = await User.findByPk(req.body.created_by)
+
+        const emailText = `
+            Hey ${tutor_user.first_name} ${tutor_user.last_name},
+
+            You've received a session request from ${student.first_name} ${student.last_name}.
+
+            Session Details:
+            - Course: ${req.body.course}
+            - Date: ${req.body.session_date}
+            - Time: ${req.body.session_time}
+            - Hours: ${req.body.session_hours}
+
+            Please click on the links below to accept or decline the session:
+
+            Accept: http://localhost:3000/api/calendar-sessions/accept/${session.session_id}
+            Decline: http://localhost:3000/api/calendar-sessions/decline/${session.session_id}
+        `;
+
+        await sendEmail(tutor_user.email, 'New Session Request', emailText);
+
+        res.status(201).json({
+            msg: 'Session request sent to the tutor. Waiting for acceptance.',
+        });
+
+        /*
         const sessions = await TutorSession.findAll({
             where: {
                 tutor_id: tutor_id
             }
         })
 
+        
+
         res.status(201).json({
             msg: 'Session Scheduled Successfully',
             sessions
         })
+
+        */
     }
     catch(e) {
 
     }
 })
+
+api.route("/calendar-sessions/accept/:session_id")
+.get(async (req, res) => {
+    try {
+        const session_id = req.params.session_id;
+
+        // Find the session
+        const session = await SessionDetail.findByPk(session_id);
+
+        if (!session) {
+            return res.status(404).json({ msg: 'Session not found' });
+        }
+
+        await session.update({
+            session_status: 'scheduled'
+        });
+
+        res.json({ msg: 'Session accepted successfully' });
+    } catch (e) {
+        console.error(e);
+        res.status(500).json({ msg: 'Error accepting the session' });
+    }
+});
+
+api.route("/calendar-sessions/decline/:session_id")
+.get(async (req, res) => {
+    try {
+        const session_id = req.params.session_id;
+
+        // Find the session
+        const session = await TutorSession.findByPk(session_id);
+        const session_detail = await SessionDetail.findByPk(session_id);
+
+        if (!session) {
+            return res.status(404).json({ msg: 'Session not found' });
+        }
+
+        // Update the session status to declined or delete the session
+        
+        session.tutor_id = null;
+        await session.save();
+
+        res.json({ msg: 'Session declined successfully' });
+    } catch (e) {
+        console.error(e);
+        res.status(500).json({ msg: 'Error declining the session' });
+    }
+});
 
 //classes
 api.route("/classes")
