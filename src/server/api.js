@@ -466,7 +466,7 @@ api.route("/calendar-sessions/:tutor_id?")
     try {
         const tutor_id = req.params.tutor_id
 
-        const sessions = await connection.query(`SELECT s.session_id as 'session_id', c.course_name as 'course_name', CONCAT(student.first_name, ' ', student.last_name) as 'scheduled_by', sd.session_time as 'session_time', FORMAT(s.session_totalhours, 0) as 'session_durarion' ,s.session_date as 'session_date', sd.session_status as 'session_status', CONCAT(u.first_name, ' ', u.last_name) as 'tutor', sd.createdBy as 'student_id'
+        const sessions = await connection.query(`SELECT s.session_id as 'session_id', c.course_name as 'course_name', CONCAT(student.first_name, ' ', student.last_name) as 'scheduled_by', sd.session_time as 'session_time', FORMAT(s.session_totalhours, 0) as 'session_duration' ,s.session_date as 'session_date', sd.session_status as 'session_status', CONCAT(u.first_name, ' ', u.last_name) as 'tutor', sd.createdBy as 'student_id'
         FROM sessions s JOIN tutors t on s.tutor_id = t.tutor_id
         JOIN users u ON u.user_id = t.user_id
         JOIN courses c ON s.course_id = c.course_id
@@ -527,8 +527,8 @@ api.route("/calendar-sessions/:tutor_id?")
 
             Please click on the links below to accept or decline the session:
 
-            Accept: http://localhost:3000/api/calendar-sessions/accept/${session.session_id}
-            Decline: http://localhost:3000/api/calendar-sessions/decline/${session.session_id}
+            Accept: http://localhost:3000/api/calendar-session/accept/${session.session_id}
+            Decline: http://localhost:3000/api/calendar-session/decline/${session.session_id}
         `;
 
         await sendEmail(tutor_user.email, 'New Session Request', emailText);
@@ -558,7 +558,7 @@ api.route("/calendar-sessions/:tutor_id?")
     }
 })
 
-api.route("/calendar-sessions/accept/:session_id")
+api.route("/calendar-session/accept/:session_id")
 .get(async (req, res) => {
     try {
         const session_id = req.params.session_id;
@@ -581,7 +581,7 @@ api.route("/calendar-sessions/accept/:session_id")
     }
 });
 
-api.route("/calendar-sessions/decline/:session_id")
+api.route("/calendar-session/decline/:session_id")
 .get(async (req, res) => {
     try {
         const session_id = req.params.session_id;
