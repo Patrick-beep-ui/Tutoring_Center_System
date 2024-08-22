@@ -828,6 +828,16 @@ canvas {
   color: #574f4f;
 }
 
+.student-session-data {
+  border-radius: 5px;
+  background-color: #c9ccce;
+  padding: 4px;
+}
+
+.student-session-data p {
+  font-size: 1.1rem !important;
+}
+
 .session-data-container .form-group input,
 .session-data-container .form-group textarea {
   border: 1px solid #ccc;
