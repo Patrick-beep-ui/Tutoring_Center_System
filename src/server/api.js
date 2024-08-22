@@ -147,13 +147,13 @@ api.route("/courses/:tutor_id")
 .get(async (req, res) => {
     try {
         const id  = req.params.tutor_id;
-        const tutor_classes = await connection.query(`SELECT c.course_name as 'course_name', c.course_code as 'course_code', tc.tutor_id as 'tutor_id', c.course_id as 'course_id', count(s.course_id) as 'sessions'
+        const tutor_classes = await connection.query(`SELECT c.course_name as 'course_name', c.course_code as 'course_code', tc.tutor_id as 'tutor_id', c.course_id as 'course_id', COUNT(CASE WHEN sd.session_status = 'completed' THEN s.course_id END) AS 'sessions'
         FROM courses c JOIN tutor_courses tc ON c.course_id = tc.course_id
         JOIN tutors t ON t.tutor_id = tc.tutor_id
         LEFT JOIN sessions s ON s.course_id = c.course_id
-        JOIN session_details sd ON s.session_id = sd.session_id
-        WHERE tc.tutor_id = ${id} AND s.tutor_id = ${id} AND sd.session_status = 'completed'
-        GROUP BY course_name, course_code, tutor_id;`, {
+        LEFT JOIN session_details sd ON s.session_id = sd.session_id
+        WHERE tc.tutor_id = ${id}
+        GROUP BY course_name, course_code, tutor_id, course_id;`, {
             type: QueryTypes.SELECT
         });
 
@@ -280,13 +280,15 @@ api.route("/session/details/:session_id")
 
         if(session_id) {
             const session = await connection.query(`SELECT CONCAT(u.first_name, ' ', u.last_name) as 'tutor_name', c.course_name as 'course_name', s.session_date as 'session_date', s.student_id as 'student_id', FORMAT(s.session_totalhours, 0) as 'session_hours', 
-            s.feedback as 'session_feedback', sd.session_time as 'session_time'
+            s.feedback as 'session_feedback', sd.session_time as 'session_time', su.user_id AS 'student_user_id',
+            CONCAT(su.first_name, ' ', su.last_name) AS 'student_name'
             FROM sessions s LEFT JOIN session_details sd ON s.session_id = sd.session_id
             JOIN courses c ON s.course_id = c.course_id
             JOIN tutors t ON s.tutor_id = t.tutor_id
             JOIN users u ON u.user_id = t.user_id
+            LEFT JOIN users su ON su.ku_id = s.student_id
             WHERE s.session_id = ${session_id}
-            GROUP BY tutor_name, course_name, session_date, student_id, session_hours, session_time;`, {
+            GROUP BY tutor_name, course_name, session_date, student_id, session_hours, session_time, student_user_id, student_name;`, {
                 type: QueryTypes.SELECT
             })
             res.status(200).json({ session });

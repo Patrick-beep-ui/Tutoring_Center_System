@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { v4 as uuid } from "uuid";
-import { useParams, useOutletContext } from "react-router-dom";
+import { useParams, useOutletContext, Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import Header from "../components/Header";
 import Popup from "reactjs-popup";
@@ -15,6 +15,9 @@ function SessionDetails() {
   const [isOpen, setIsOpen] = useState(false);
   const [isRemoveOpen, setIsRemoveOpen] = useState(false);
   const [commentToRemove, setCommentToRemove] = useState(null);
+
+  //variable to check if the student who received the session is enrolled in the system
+  const [studentIsOnSystem, setStudentIsOnSystem] = useState(false);
   const {user} = useOutletContext();
 
   useEffect(() => {
@@ -25,6 +28,12 @@ function SessionDetails() {
   
         console.log("Session: ", sessionData);
         setSession(sessionData);
+
+        if (sessionData[0].student_name && sessionData[0].student_user_id != null) {
+          setStudentIsOnSystem(true);
+          console.log(true);
+        }
+
       } catch (e) {
         console.error(e);
       }
@@ -107,8 +116,24 @@ function SessionDetails() {
               </div>
               <div className="form-group form-group-division">
                 <div id="student-id-container" className="fg-inside-division">
-                  <label htmlFor={`student-id-${s.id}`}>Student ID:</label>
-                  <p>{s.student_id}</p>
+                  {studentIsOnSystem ? (
+                    <>
+                      <label>Student: </label>
+                      <Link to={`/profile/${s.student_user_id}`}>
+                      <div className="d-flex align-items-center student-session-data">
+                        <img src={`/profile/tutor${s.student_user_id}.jpg`} alt="" style={{width: '45px', height: '40px'}} class="rounded-circle"/>
+                        <div className="ms-3">
+                          <p>{s.student_name}</p>
+                        </div>
+                      </div>
+                      </Link>
+                    </>
+                  ) : (
+                    <>
+                      <label htmlFor={`student-id-${s.id}`}>Student ID:</label>
+                      <p>{s.student_id}</p>
+                    </>
+                  )}
                 </div>
                 <div id="date-container" className="fg-inside-division">
                   <label htmlFor={`session-date-${s.id}`}>Session Date:</label>
