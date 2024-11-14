@@ -476,7 +476,7 @@ api.route("/calendar-sessions/:tutor_id?")
         JOIN session_details sd ON s.session_id = sd.session_id
         JOIN users student ON student.user_id = sd.createdBy
         WHERE t.tutor_id = ${tutor_id}
-        GROUP BY session_id, course_name, scheduled_by;`, {
+        GROUP BY session_id, course_name, scheduled_by, session_time, session_status, createdBy;`, {
             type: QueryTypes.SELECT
         })
 

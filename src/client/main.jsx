@@ -6,6 +6,7 @@ import 'bootstrap/dist/js/bootstrap.bundle.min';
 
 //Views
 import App from "./App";
+import MainDashboard from "./views/MainDashboard";
 import Home from "./views/Home";
 import Tutors from "./views/Tutors";
 import AddTutor from "./views/AddTutor";
@@ -109,6 +110,10 @@ const router = createBrowserRouter([
         element: <MyCalendar />
       }
     ]
+  },
+  {
+    path: "/dashboard/",
+    element: <MainDashboard />
   },
   {
     path: "/login",
