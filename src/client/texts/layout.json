@@ -1,0 +1,26 @@
+{
+    "header": {
+        "title": "Writing Studio Center",
+        "user-icon": "bx bx-user user-icon",
+        "sidebar": [
+            {
+                "navbarClassname": "flex-column nav-menu"
+            }
+        ],
+        "logo": "/logo.png",
+        "links": [
+            {
+                "label": "Home",
+                "url": "/"
+            },
+            {
+                "label": "About",
+                "url": "/about"
+            },
+            {
+                "label": "Contact",
+                "url": "/contact"
+            }
+        ]
+    }
+}

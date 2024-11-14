@@ -6,6 +6,7 @@ import { Toaster, toast } from 'sonner';
 import Graph from "../components/Graph";
 import Header from "../components/Header";
 import "../App.css"
+import texts from "../texts/layout.json";
 
 function Home() {
     const [session, setSession] = useState([]);
