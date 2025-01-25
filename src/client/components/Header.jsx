@@ -7,7 +7,10 @@ import texts from "../texts/layout.json";
 const Header = () => {
     const { user } = useOutletContext();
     const location = useLocation();
+    const [id, setId] = useState(0);
     const currentPath = location.pathname;
+
+   console.log(user)
 
     const isActive = currentPath === `/profile/${user.user_id}`;
 

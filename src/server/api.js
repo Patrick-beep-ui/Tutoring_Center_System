@@ -83,6 +83,7 @@ api.route("/tutors")
         console.log("User Id:" + userId);
 
         const tutor = new Tutor({
+            tutor_id: userId,
             user_id: userId,
             official_schedule: req.body.schedule,
             major_id: req.body.major
@@ -220,7 +221,7 @@ api.route("/edit-session/:session_id")
             JOIN session_details sd ON s.session_id = sd.session_id
             JOIN users u ON u.user_id = sd.createdBy
             WHERE s.session_id = ${session_id}
-            GROUP BY session_id, course_name, scheduled_by;`, {
+            GROUP BY session_id, course_name, scheduled_by, session_time, session_date, session_status;`, {
                 type: QueryTypes.SELECT
             })
 
@@ -310,7 +311,7 @@ api.route("/comments/:session_id/:comment_id?")
             FROM comments c JOIN users u ON c.user_id = u.user_id
             JOIN sessions s ON s.session_id = c.session_id
             WHERE c.session_id = ${session_id}
-            GROUP BY student_name, comment;`, {
+            GROUP BY c.comment_id, student_name, comment, u.user_id;`, {
                 type: QueryTypes.SELECT
             })
 
@@ -338,7 +339,7 @@ api.route("/comments/:session_id/:comment_id?")
             FROM comments c JOIN users u ON c.user_id = u.user_id
             JOIN sessions s ON s.session_id = c.session_id
             WHERE c.session_id = ${session_id}
-            GROUP BY student_name, comment;`, {
+            GROUP BY c.comment_id, student_name, comment, u.user_id;`, {
                 type: QueryTypes.SELECT
             })
 
@@ -381,7 +382,8 @@ api.route('/sessions/:tutor_id?/:course_id?')
         FROM sessions s JOIN tutors t on s.tutor_id = t.tutor_id
         JOIN users u ON u.user_id = t.user_id
         JOIN courses c ON s.course_id = c.course_id
-        WHERE t.tutor_id = ${id} AND s.course_id = ${course}
+        JOIN session_details sd ON s.session_id = sd.session_id
+        WHERE t.tutor_id = ${id} AND s.course_id = ${course} AND sd.session_status = 'completed'
         GROUP BY session_id, tutor_name, student, total_hours
         ORDER BY course_name;`, {
             type: QueryTypes.SELECT
@@ -476,7 +478,8 @@ api.route("/calendar-sessions/:tutor_id?")
         JOIN session_details sd ON s.session_id = sd.session_id
         JOIN users student ON student.user_id = sd.createdBy
         WHERE t.tutor_id = ${tutor_id}
-        GROUP BY session_id, course_name, scheduled_by, session_time, session_status, createdBy;`, {
+        GROUP BY session_id, course_name, scheduled_by, session_time, session_duration, session_date, session_status, tutor, sd.createdBy 
+        ;`, {
             type: QueryTypes.SELECT
         })
 

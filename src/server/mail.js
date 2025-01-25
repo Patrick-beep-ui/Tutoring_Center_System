@@ -1,16 +1,19 @@
 import nodemailer from 'nodemailer';
 
 const transporter = nodemailer.createTransport({
-  service: 'Outlook365', 
+  host: "mail.keiseruniversity.edu.ni",
+  port: 587,
+  secure:false,
   auth: {
-    user: 'no-reply-TutoringCenter@outlook.com',
-    pass: 'Keiser2024', 
-  },
-});
+      user: "se.student@keiseruniversity.edu.ni",
+      pass: "35ChRz)$ieeg"
+  }, 
+
+})
 
 export const sendEmail = async (to, subject, text) => {
   const mailOptions = {
-    from: 'no-reply-TutoringCenter@outlook.com',
+    from: 'se.student@keiseruniversity.edu.ni',
     to,
     subject,
     text,
