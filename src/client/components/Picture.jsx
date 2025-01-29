@@ -3,6 +3,7 @@ import Cropper from 'react-easy-crop';
 import { Button, Slider, Typography } from '@mui/material';
 import axios from 'axios';
 import '.././App.css';
+import texts from "../texts/tutorProfile.json";
 
 const Profile = ({ tutorId, onImageUpload }) => {
     const [imageSrc, setImageSrc] = useState(null);
@@ -112,7 +113,7 @@ const Profile = ({ tutorId, onImageUpload }) => {
                         />
                     </div>
                     <div>
-                        <Typography>Zoom</Typography>
+                        <Typography>{texts.camerasLabel.typographyLabel}</Typography>
                         <Slider
                             value={zoom}
                             min={1}
@@ -142,7 +143,7 @@ const Profile = ({ tutorId, onImageUpload }) => {
                           backgroundColor: 'primary.dark', 
                       }
                   }}
-                    className="save-picture-btn">Save</Button>
+                    className="save-picture-btn">{texts.camerasLabel.saveButton}</Button>
                     <Button onClick={handleCancel} 
                     sx={{
                       backgroundColor: 'red',
@@ -153,7 +154,7 @@ const Profile = ({ tutorId, onImageUpload }) => {
                       marginLeft: '10px'
                   }}
                     className="cancel-picture-btn">
-                        Cancel
+                        {texts.camerasLabel.cancelButton}
                     </Button>
                 </div>
             )}

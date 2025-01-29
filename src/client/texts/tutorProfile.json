@@ -1,0 +1,29 @@
+{
+    "header": {
+      "profilePictureAlt": "Tutor Profile Picture",
+      "cameraLabel": "Edit Profile Picture"
+    },
+    "profileInfo": {
+      "idLabel": "ID:",
+      "majorLabel": "Major:",
+      "contactLabel": "Contact Number:",
+      "scheduleLabel": "Schedule:",
+      "viewCalendarButton": "View Calendar"
+    },
+    "scheduledSessions": {
+      "youHaveLabel": "You have",
+      "scheduledSessionsLabel": "scheduled sessions",
+      "infoIcon": {
+        "tooltip": "Session information icon"
+      }
+    },
+    "tutorCourses": {
+      "sessionsLabel": "Sessions"
+    },
+    "camerasLabel": {
+        "typographyLabel": "Zoom",
+        "saveButton": "Save",
+        "cancelButton": "Cancel"
+    }
+  }
+  

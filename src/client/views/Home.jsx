@@ -6,7 +6,7 @@ import { Toaster, toast } from 'sonner';
 import Graph from "../components/Graph";
 import Header from "../components/Header";
 import "../App.css"
-import texts from "../texts/layout.json";
+import texts from "../texts/sessions.json";
 
 function Home() {
     const [session, setSession] = useState([]);
@@ -45,10 +45,10 @@ function Home() {
                 <thead className="bg-light">
                     <tr>
                         {/*<th scope="col">Session ID</th>*/}
-                        <th scope="col">Tutor</th>
-                        <th scope="col">Student</th>
-                        <th scope="col">Course</th>
-                        <th scope="col">Total Hours</th>
+                        <th scope="col">{texts.table.TutorColumHeader}</th>
+                        <th scope="col">{texts.table.StudentColumHeader}</th>
+                        <th scope="col">{texts.table.CoursesColumHeader}</th>
+                        <th scope="col">{texts.table.HoursColumHeader}</th>
                         {/*<th></th>
                         <th></th>*/}
                     </tr>

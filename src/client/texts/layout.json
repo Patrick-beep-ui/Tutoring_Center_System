@@ -4,7 +4,43 @@
         "user-icon": "bx bx-user user-icon",
         "sidebar": [
             {
-                "navbarClassname": "flex-column nav-menu"
+                "navbarClassname": "flex-column nav-menu",
+                "Navbar.BrandClassName": "nav-logo",
+                "navLinksClassName": "flex-column nav-links",
+                "activeLinkClassName": "active",
+                "logoutButtonClassName": "nav-setting flex-column",
+                "links": [
+                    {
+                        "label": "Courses",
+                        "url": "/classes",
+                        "icon": "bx bx-food-menu"
+                    },
+                    {
+                        "label": "Tutors",
+                        "url": "/tutors",
+                        "icon": "bx bx-group"
+                    },
+                    {
+                        "label": "Sessions",
+                        "url": "/",
+                        "icon": "bx bx-chalkboard"
+                    },
+                    {
+                        "label": "Report",
+                        "url": "/report",
+                        "icon": "bx bx-bar-chart"
+                    }
+                ],
+                "settings": [
+                    {
+                        "label": "Settings",
+                        "icon": "bx bx-cog"
+                    },
+                    {
+                        "label": "Logout",
+                        "icon": "bx bx-door-open"
+                    }
+                ]
             }
         ],
         "logo": "/logo.png",

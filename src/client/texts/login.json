@@ -1,0 +1,28 @@
+{
+    "loginForm": {
+        "welcomeLabel": "Welcome to The Writing Studio and Tutoring Center",
+        "kuEmailLabel": "KU Email",
+        "passwordLabel": "Your password",
+        "forgotPasswordLink": "Forgot Password?",
+        "loginButton": "Login",
+        "loginInButton": "Logging in...",
+        "communityLabel": "New to our Community",
+        "createAccountButton": "Create an Account"
+    },
+    "signupForm": {
+        "signupLabel": "Create an account",
+        "accountCheckLabel": "Already have an account?",
+        "loginLink": "Log in",
+        "firstNameLabel": "First Name",
+        "lastNameLabel": "Last Name",
+        "kuIDLabel": "KU ID",
+        "kuEmailLabel": "KU Email",
+        "passwordLabel": "Password",
+        "confirmPasswordLabel": "Confirm Password",
+        "signupButton": "Sign-Up",
+        "signupInButton": "Signing up...",
+        "errors": {
+            "firstNameError": "First Name is required"
+        }
+    }
+}
