@@ -3,6 +3,8 @@ import { Navbar, Nav } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from "axios";
 import { useNavigate, useLocation } from "react-router-dom";
+import texts from "../texts/layout.json";
+
 
 function SideBar() {
   const navigate = useNavigate();
@@ -21,32 +23,29 @@ function SideBar() {
 
   return (
     <div className='sidebar'>
-      <Navbar variant="dark" className="flex-column nav-menu" style={{ minHeight: '100vh' }}>
-        <Navbar.Brand href="#home" className='nav-logo'>
+      <Navbar variant="dark" className={texts.header.sidebar[0]["navbarClassname"]} style={{ minHeight: '100vh' }}>
+        <Navbar.Brand href="#home" className={texts.header.sidebar[0]["Navbar.BrandClassName"]}>
           <img src="/img/Picture1.svg" alt="CAE-logo" />
         </Navbar.Brand>
-        <Nav className="flex-column nav-links">
-          <Nav.Link href="/classes" className={currentPath === '/classes' ? 'active' : ''}>
-            <i className='bx bx-food-menu'></i> <p>Courses</p>
-          </Nav.Link>
-          <Nav.Link href="/tutors" className={currentPath === '/tutors' ? 'active' : ''}>
-            <i className='bx bx-group'></i> <p>Tutors</p>
-          </Nav.Link>
-          <Nav.Link href="/" className={currentPath === '/' ? 'active' : ''}>
-            <i className='bx bx-chalkboard'></i> <p>Sessions</p>
-          </Nav.Link>
-          <Nav.Link href="/report" className={currentPath === '/report' ? 'active' : ''}>
-            <i className='bx bx-bar-chart'></i> <p>Report</p>
-          </Nav.Link>
+        <Nav className={texts.header.sidebar[0]["navLinksClassName"]}>
+          {texts.header.sidebar[0]["links"].map((link, index) => (
+            <Nav.Link
+              key={index}
+              href={link.url}
+              className={currentPath === link.url ? texts.header.sidebar[0]["activeLinkClassName"] : ''}
+            >
+              <i className={link.icon}></i> <p>{link.label}</p>
+            </Nav.Link>
+          ))}
         </Nav>
-        <Nav className='nav-setting flex-column'>
-          <Nav.Link>
-            <i className='bx bx-cog'></i>
-          </Nav.Link>
-          <Nav.Link onClick={logout}>
-            <i className='bx bx-door-open'></i> <p>Logout</p>
-          </Nav.Link>
+        <Nav className={texts.header.sidebar[0]["logoutButtonClassName"]}>
+          {texts.header.sidebar[0]["settings"].map((setting, index) => (
+            <Nav.Link key={index} onClick={setting.label === "Logout" ? logout : undefined}>
+              <i className={setting.icon}></i> <p>{setting.label}</p>
+            </Nav.Link>
+          ))}
         </Nav>
+
       </Navbar>
     </div>
   );

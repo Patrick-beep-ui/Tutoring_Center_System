@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import CAE from "../assets/CAE.jpg";
+import texts from "../texts/login.json"
 
 export default function Login() {
     const [isLoginForm, setIsLoginForm] = useState(true); // State to track whether login form is active
@@ -59,24 +60,24 @@ export default function Login() {
                     <>
                     <img src={CAE} alt="Tutoring Center Logo" className="cae-logo"/>
                         <div className="login-user" id="login-user">
-                            <p>Welcome to The Writing Studio and Tutoring Center</p>
+                            <p>{texts.loginForm.welcomeLabel}</p>
                             <div className="form-group">
-                                <label for="email" className="login-label">KU Email</label>
+                                <label for="email" className="login-label">{texts.loginForm.kuEmailLabel}</label>
                                 <input type="email" {...register("email", {required: true})} id="email" />
                             </div>
                             <div className="form-group">
-                                <label for="user-password" className="login-label">Your password</label>
+                                <label for="user-password" className="login-label">{texts.loginForm.passwordLabel}</label>
                                 <input type="password" {...register("password_hash", {required: true})} id="user-password" />
                             </div>
-                            <span className="btn-form" id="forgotpass-btn"><a href="">Forgot Password?</a></span>
+                            <span className="btn-form" id="forgotpass-btn"><a href="">{texts.loginForm.forgotPasswordLink}</a></span>
                             <div className="form-group">
                                 <button type="submit" className="btn-sign btn-buy" id="login-btn" disabled={loading}>
-                                    {loading ? 'Logging in...' : 'Login'}
+                                    {loading ? `${texts.loginForm.loginInButton}` : `${texts.loginForm.loginButton}`}
                                 </button>
                             </div>
                         </div>
-                        <p className="community-label">New to our Community</p>
-                        <Link to={'/signup'} className="btn-form" id="sign-up-btn" >Create an Account</Link>
+                        <p className="community-label">{texts.loginForm.communityLabel}</p>
+                        <Link to={'/signup'} className="btn-form" id="sign-up-btn" >{texts.loginForm.createAccountButton}</Link>
                     </>
                 ) : (
                     <>

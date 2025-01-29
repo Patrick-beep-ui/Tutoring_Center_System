@@ -1,0 +1,8 @@
+{
+    "table": {
+        "TutorColumHeader": "Tutor",
+        "StudentColumHeader": "Student",
+        "CoursesColumHeader": "Course",
+        "HoursColumHeader": "Total Hours"
+    }
+}
