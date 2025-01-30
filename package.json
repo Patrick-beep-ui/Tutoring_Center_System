@@ -25,6 +25,7 @@
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "cross-env": "^7.0.3",
+    "dotenv": "^16.4.7",
     "express": "^4.19.2",
     "express-session": "^1.18.0",
     "ics": "^3.7.6",
