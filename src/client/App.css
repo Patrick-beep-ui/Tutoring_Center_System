@@ -1649,3 +1649,14 @@ canvas {
   }
  }
  
+ /* Default web styles */
+.sessions-container.web {
+  background-color: lightblue;
+  /* Other web-specific styles */
+}
+
+/* Electron-specific styles */
+.sessions-container.electron {
+  background-color: lightgreen;
+  /* Other Electron-specific styles */
+}

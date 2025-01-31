@@ -34,6 +34,7 @@ import Test from "./views/Test";
 
 //Components
 import Auth from "./components/Auth";
+import { LayoutProvider } from './context/Layout';
 
 //import App from "./App";
 
@@ -135,9 +136,11 @@ const router = createBrowserRouter([
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  <RouterProvider router={router}>
-    <React.StrictMode>
-      <Login />
-    </React.StrictMode>
-  </RouterProvider>
+  <React.StrictMode>
+    <LayoutProvider>
+      <RouterProvider router={router}> 
+        <Login />
+      </RouterProvider>
+    </LayoutProvider>
+  </React.StrictMode>
 );
