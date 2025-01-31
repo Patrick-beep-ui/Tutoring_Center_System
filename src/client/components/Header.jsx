@@ -10,6 +10,7 @@ const Header = () => {
     const [id, setId] = useState(0);
     const currentPath = location.pathname;
 
+
    console.log(user)
 
     const isActive = currentPath === `/profile/${user.user_id}`;
