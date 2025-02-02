@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Calendar, momentLocalizer } from 'react-big-calendar';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import moment from 'moment';
-import { useOutletContext, useParams } from 'react-router-dom';
+import { useOutletContext, useParams, Link } from 'react-router-dom';
 import Popup from 'reactjs-popup';
 import 'reactjs-popup/dist/index.css';
 import ScheduleSession from './ScheduleSession';
@@ -182,6 +182,7 @@ const MyCalendar = () => {
     
 
     return (
+        <>
         <Calendar
             localizer={localizer}
             events={sessions}
@@ -194,6 +195,8 @@ const MyCalendar = () => {
                 dateCellWrapper: props => <Cell {...props} sessions={sessions} />
             }}
         />
+        <Link to={`/profile/${tutor_id}`}><button className="btn btn-primary calendar-return-btn">Go Back</button></Link>
+        </>
     );
 }
 
