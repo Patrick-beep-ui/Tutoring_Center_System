@@ -1,6 +1,7 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
 import Header from './components/Header';
+import { LayoutProvider } from './context/Layout';
 import './App.css';
 
 const App = () => {

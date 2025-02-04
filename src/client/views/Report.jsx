@@ -4,12 +4,12 @@ import axios from "axios";
 import {v4 as uuid} from "uuid";
 import Header from "../components/Header";
 import Graph from "../components/Chart";
+import texts from "../texts/report.json";
+import ReportCard from "../components/ReportCard";
 
 function Report() {
     const [report, setReport] = useState([
     ]);
-    const { session } = useOutletContext();
-    console.log(session)
 
     useEffect(() => {
         const getReport = async () => {
@@ -32,46 +32,9 @@ function Report() {
 
         <section className="report-container section">
             <section className="counters">
-                <div className="tutors-counter counter-container">
-                    <div className="report-description">
-                        <p>Active Tutors</p>
-                        <p>The total number of tutors enrolled in the system</p>
-                    </div>
-                    <div className="report-data">
-                        <p>{report.tutors}</p>
-                        <a href="">See al tutors</a>
-                    </div>
-                </div>
-                <div className="students-counter counter-container">
-                    <div className="report-description">
-                        <p>Total Students</p>
-                        <p>The total number of students enrolled in the tutoring center</p>
-                    </div>
-                    <div className="report-data">
-                        <p>{report.students}</p>
-                        <a href="">See all students</a>
-                    </div>
-                </div>
-                <div className="sessions-counter counter-container">
-                    <div className="report-description">
-                        <p>Completed Sessions</p>
-                        <p>The total number of sessions delivered</p>
-                    </div>
-                    <div className="report-data">
-                        <p>{report.sessions}</p>
-                        <a href="">See all sessions</a>
-                    </div>
-                </div>
-                <div className="tutor-courses-counter counter-container">
-                    <div className="report-description">
-                        <p>Tutor Courses</p>
-                        <p>The number of courses that has one or more tutors</p>
-                    </div>
-                    <div className="report-data">
-                        <p>{report.tutor_courses}</p>
-                        <a href="">See all Tutor Courses</a>
-                    </div>
-                </div>
+                {Object.entries(report).map(([key, value]) => (
+            <ReportCard key={key} value={key} count={value} />
+          ))}
             </section>
             <section className="graphs">
                 <div className="sessions-graph">

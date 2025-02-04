@@ -303,7 +303,7 @@ label {
   padding-top: 10px;
 }
 
-.tutor-calendar button, .popup-calendar-msg button {
+.tutor-calendar button, .popup-calendar-msg button, .calendar-return-btn {
   background-color: var(--blue);
   border-color: var(--blue);
 }
@@ -1545,6 +1545,15 @@ canvas {
 
 /* Calendar */
 
+.calendar-return-btn {
+  margin-top: 20px;
+}
+
+.calendar-return-btn:hover {
+  background-color: #252f6b;
+  border-color: #252f6b;
+}
+
 .rbc-row-segment .rbc-event {
   background-color: var(--blue);
 }
@@ -1649,3 +1658,14 @@ canvas {
   }
  }
  
+ /* Default web styles */
+.sessions-container.web {
+  background-color: lightblue;
+  /* Other web-specific styles */
+}
+
+/* Electron-specific styles */
+.sessions-container.electron {
+  background-color: lightgreen;
+  /* Other Electron-specific styles */
+}

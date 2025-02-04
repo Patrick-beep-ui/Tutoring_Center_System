@@ -725,6 +725,16 @@ api.route("/report")
     try {
         const tutors = await Tutor.count();
         const sessions = await TutorSession.count();
+        const completed_sessions = await SessionDetail.count({
+            where: {
+              session_status: 'completed',
+            },
+          });
+          const pending_sessions = await SessionDetail.count({
+            where: {
+              session_status: 'pending',
+            },
+          });
         const tutor_courses = await TutorCourse.count({
             distinct: true,
             col: 'course_id'
@@ -737,9 +747,10 @@ api.route("/report")
         res.status(200).json({
             report: {
                 tutors: tutors,
-                sessions: sessions,
                 tutor_courses: tutor_courses,
-                students: students
+                students: students,
+                completed_sessions: completed_sessions,
+                pending_sessions: pending_sessions
               }
         })
     }

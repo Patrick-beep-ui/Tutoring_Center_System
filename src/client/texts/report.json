@@ -1,0 +1,34 @@
+{
+    "cards": {
+        "tutors": {
+            "title": "Active Tutors",
+            "description": "The total number of tutors enrolled in the system",
+            "link": "See al tutors"
+        },
+        "students": {
+            "title": "Active Students",
+            "description": "The total number of students enrolled in the system",
+            "link": "See all students"
+        },
+        "completed_sessions": {
+            "title": "Completed Sessions",
+            "description": "The total number of sessions delivered",
+            "link": "See all sessions"
+        },
+        "pending_sessions": {
+            "title": "Pending Sessions",
+            "description": "The total number of unaccepted sessions",
+            "link": "See all sessions"
+        },
+        "tutor_courses": {
+            "title": "Tutor Courses",
+            "description": "The number of courses that has one or more tutors",
+            "link": "See all courses"
+        },
+        "default" : {
+            "title": "Default",
+            "description": "Default description",
+            "link": "Default link"
+        }
+    }
+}
