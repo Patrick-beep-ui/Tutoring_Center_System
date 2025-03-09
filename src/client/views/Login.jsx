@@ -39,6 +39,7 @@ export default function Login() {
 
     const handleLogin = async (formData) => {
         setLoading(true);
+        console.log("datos enviados: " + formData)
         try {
             await axios.post("/login", formData);
             console.log("Login Successful");

@@ -1,6 +1,5 @@
-import {DataTypes} from "sequelize"
-import connection from "../connection.js"
-import TutorSession from "./TutorSession.js"
+import { DataTypes } from "sequelize";
+import connection from "../connection.js";
 
 const SessionDetail = connection.define('SessionDetail', {
     session_id: {
@@ -25,20 +24,10 @@ const SessionDetail = connection.define('SessionDetail', {
     updatedAt: {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW,
-        onUpdate: DataTypes.NOW,
     }
 }, {
     tableName: 'session_details',
-    timestamps: false, 
-    createdAt: 'createdAt', 
-    updatedAt: 'updatedAt',
-})
+    timestamps: false
+});
 
-SessionDetail.belongsTo(TutorSession, {
-    foreignKey: {
-        field: 'session_id',
-        allowNull: true
-    }
-})
-
-export default SessionDetail
+export default SessionDetail;
