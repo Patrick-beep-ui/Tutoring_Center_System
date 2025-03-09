@@ -1,5 +1,5 @@
 import express from 'express';
-import {QueryTypes} from "sequelize";
+import {QueryTypes, Op, fn, col, literal} from "sequelize";
 import connection from "./connection.js";
 import isAuth from './modules/auth.js';
 import isAdmin from './modules/admin.js';
@@ -18,6 +18,8 @@ import User from "./models/User.js";
 import SessionDetail from './models/SessionDetail.js';
 import Comment from './models/Comment.js';
 import SessionRating from './models/SessionRating.js';
+
+import "./models/associations.js";
 
 const api = express.Router({mergeParams: true});
 
@@ -406,16 +408,29 @@ api.route('/sessions/:tutor_id?/:course_id?')
         }
         
         else {
-            const sessions = await connection.query(` SELECT s.session_id as 'session_id', CONCAT(u.first_name, ' ', u.last_name) as 'tutor_name', s.student_id as 'student',  c.course_name as 'course_name', s.session_totalhours as 'total_hours', t.tutor_id as 'tutor_id', s.session_date as 'session_date'
-            FROM sessions s JOIN tutors t on s.tutor_id = t.tutor_id
-            JOIN users u ON u.user_id = t.user_id
-            JOIN courses c ON s.course_id = c.course_id
-            GROUP BY session_id, tutor_name, student, total_hours
-            ORDER BY tutor_name, course_name;`, {
+            const sessions = await connection.query(`
+                SELECT 
+                    s.session_id as 'session_id', 
+                    CONCAT(u.first_name, ' ', u.last_name) as 'tutor_name', 
+                    s.student_id as 'student',  
+                    c.course_name as 'course_name', 
+                    s.session_totalhours as 'total_hours', 
+                    t.tutor_id as 'tutor_id', 
+                    s.session_date as 'session_date',
+                    WEEK(s.session_date, 1) - WEEK(semester.start_date, 1) + 1 as 'week_number'  -- Calculate the week number
+                FROM sessions s 
+                JOIN tutors t on s.tutor_id = t.tutor_id
+                JOIN users u ON u.user_id = t.user_id
+                JOIN courses c ON s.course_id = c.course_id
+                JOIN semester semester ON semester.semester_id = s.semester_id  -- Join with semester table
+                WHERE semester.semester_id = 2  -- Assuming you're testing for semester_id = 2
+                ORDER BY week_number, session_date;
+            `, {
                 type: QueryTypes.SELECT
-            })
-
-        res.status(200).json({ sessions });
+            });
+            
+            res.status(200).json({ sessions });
+            
         }
     }
     catch(e) {
@@ -758,6 +773,47 @@ api.route("/report")
         console.error(e);
     }
 });
+
+api.route('/major-sessions')
+.get(async (req, res) => {
+    try {
+        const sessions = await Major.findAll({
+            attributes: [
+                'major_name',
+                [literal(`COUNT(CASE WHEN session_status = 'completed' THEN 1 END)`), 'completed_sessions']
+            ],
+            include: [
+                {
+                    model: Tutor,
+                    attributes: [],
+                    include: [
+                        {
+                            model: TutorSession, 
+                            attributes: [],
+                            include: [
+                                {
+                                    model: SessionDetail,
+                                    attributes: [],
+                                    required: false
+                                }
+                            ],
+                            required: false
+                        }
+                    ],
+                    required: false
+                }
+            ],
+            group: ['Major.major_id'],
+        });
+
+        res.status(200).json({
+            sessions: sessions
+        })
+    }
+    catch(e) {
+        console.error(e);
+    }
+})
 
 api.post('/uploadProfilePic', upload.single('profilePic'), (req, res) => {
     console.log('File received:', req.file);

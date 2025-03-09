@@ -1,4 +1,4 @@
-import {DataTypes} from "sequelize"
+import { DataTypes } from "sequelize";
 import connection from "../connection.js";
 import Tutor from "./Tutor.js";
 import Course from "./Course.js";
@@ -36,24 +36,7 @@ const TutorSession = connection.define('TutorSession', {
 }, {
     tableName: 'sessions',
     timestamps: false
-})
+});
 
-TutorSession.belongsTo(Tutor, {
-    foreignKey: {
-        field: 'tutor_id'
-    }
-})
-
-TutorSession.belongsTo(Course, {
-    foreignKey: {
-        field: 'course_id'
-    }
-})
-
-TutorSession.belongsTo(Semester, {
-    foreignKey: {
-        field: 'semester_id'
-    }
-})
-
-export default TutorSession
+// Associations will be defined in a separate file
+export default TutorSession;

@@ -1,5 +1,5 @@
-import {DataTypes} from "sequelize"
-import connection from "../connection.js"
+import { DataTypes } from "sequelize";
+import connection from "../connection.js";
 
 const Major = connection.define('Major', {
     major_id: {
@@ -12,9 +12,8 @@ const Major = connection.define('Major', {
         type: DataTypes.STRING,
         allowNull: false
     }
-
 }, {
     timestamps: false
-})
+});
 
-export default Major
+export default Major;
