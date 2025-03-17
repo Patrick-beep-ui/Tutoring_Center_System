@@ -8,7 +8,7 @@ function AddClass() {
 
     const processData = async (formData) => {
         try {
-            const request = await fetch("/api/classes", {
+            const request = await fetch("/api/courses", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

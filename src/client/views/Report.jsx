@@ -30,7 +30,7 @@ function Report() {
     useEffect(() => {
         const getSessions = async () => {
              try {
-                 const response = await axios.get('/api/major-sessions');
+                 const response = await axios.get('/api/report/major-sessions');
                  const { data } = response;
                  setSessions(data.sessions);
                  console.log(data.sessions)

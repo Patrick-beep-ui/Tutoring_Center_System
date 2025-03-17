@@ -25,7 +25,7 @@ const MyCalendar = () => {
     useEffect(() => {
         async function fetchEvents() {
             try {
-                const response = await fetch(`/api/calendar-sessions/${tutor_id}`);
+                const response = await fetch(`/api/calendar-session/${tutor_id}`);
                 const data = await response.json();
                 console.log(data.sessions)
 
