@@ -3,7 +3,7 @@ import SessionDetail from "./SessionDetail.js";
 import Tutor from "./Tutor.js";
 import Major from "./Major.js";
 
-// Define associations **after** models are initialized
+// Define associations after models are initialized
 TutorSession.hasMany(SessionDetail, { foreignKey: "session_id" });
 SessionDetail.belongsTo(TutorSession, { foreignKey: "session_id" });
 

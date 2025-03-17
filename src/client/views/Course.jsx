@@ -15,7 +15,7 @@ function ClassName() {
     useEffect(() => {
         const getClasses = async () => {
             try {
-                const response = await axios.get("/api/classes")
+                const response = await axios.get("/api/courses");
                 const {data} = response;
                 console.log(data.courses)
                 setCourse(data.courses)

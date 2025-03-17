@@ -35,7 +35,7 @@ const ScheduleSession = (props) => {
 
     const processData = async (formData) => {
         try {
-            const request = await fetch(`/api/calendar-sessions/${tutor_id}`, {
+            const request = await fetch(`/api/calendar-session/${tutor_id}`, {
                 method: 'POST',
                 headers: {
                     "Content-Type": "application/json",

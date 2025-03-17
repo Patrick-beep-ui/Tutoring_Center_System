@@ -42,7 +42,7 @@ function AddTutor() {
         const fetchData = async () => {
             try {
                 const [classesResponse, majorsResponse] = await Promise.all([
-                    axios.get("/api/classes"),
+                    axios.get("/api/courses"),
                     axios.get("/api/majors")
                 ]);
     

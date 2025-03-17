@@ -21,7 +21,7 @@ function TutorProfile() {
                 const [TutorResponse, coursesResponse, sessionResponse] = await Promise.all([
                     axios.get(`/api/tutors/${tutor_id}`),
                     axios.get(`/api/courses/${tutor_id}`),
-                    axios.get(`/api/session-status/${tutor_id}`)
+                    axios.get(`/api/sessions/session_status/${tutor_id}`)
                 ]);
 
                 const tutorData = TutorResponse.data.tutor_info;

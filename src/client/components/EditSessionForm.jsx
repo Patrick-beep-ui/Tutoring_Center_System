@@ -6,7 +6,7 @@ const EditSessionForm = ({ session, session_id }) => {
 
     const processData = async (formData) => {
         try {
-            const request = await fetch(`/api/edit-session/${session_id}`, {
+            const request = await fetch(`/api/sessions/session/${session_id}`, {
                 method: 'PUT',
                 headers: {
                     "Content-Type": "application/json",
