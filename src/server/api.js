@@ -372,7 +372,7 @@ api.route("/comments/:session_id/:comment_id?")
 
 //tutor_sessions
 api.route('/sessions/:tutor_id?/:course_id?')
-.get([isAuth], async (req, res) => {
+.get( async (req, res) => {
     try {
         const id = req.params.tutor_id
         const course = req.params.course_id
