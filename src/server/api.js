@@ -45,6 +45,8 @@ api.route('/auth')
 });
 //Future .post for storing sessions in a MongoDB database
 
+//Prueba branch
+
 
 api.post('/send-email', async (req, res) => {
     const { to, subject, text } = req.body;
