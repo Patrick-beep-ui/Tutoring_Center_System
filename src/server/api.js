@@ -1,25 +1,38 @@
 import express from 'express';
-import {QueryTypes} from "sequelize";
-import connection from "./connection.js";
-import isAuth from './modules/auth.js';
-import isAdmin from './modules/admin.js';
-import upload from './modules/uploadMiddleware.js';
+import isAuth from './middlewares/auth.js';
+import isAdmin from './middlewares/admin.js';
+import upload from './middlewares/uploadMiddleware.js';
 import { sendEmail } from './mail.js';
 
-import Course from "./models/Course.js";
-import Contact from "./models/Contact.js";
+// Association Models
 import Major from "./models/Major.js";
-import Semester from "./models/Semester.js";
-import Student from "./models/Student.js";
 import Tutor from "./models/Tutor.js";
-import TutorCourse from "./models/TutorCourse.js";
 import TutorSession from "./models/TutorSession.js"
+
 import User from "./models/User.js";
-import SessionDetail from './models/SessionDetail.js';
-import Comment from './models/Comment.js';
-import SessionRating from './models/SessionRating.js';
+
+import "./models/associations.js"; // Check routes and controllers in case something goes wrong with some of the Models
+
+import CalendarSessionsRouter from './routes/calendarSessionsRoutes.js';
+import ReportRouter from './routes/reportsRoutes.js';
+import TutorsRouter from './routes/tutorsRoutes.js';
+import TermsRouter from './routes/termRoutes.js';
+import MajorRouter from './routes/majorRoutes.js';
+import CoursesRouter from './routes/coursesRoutes.js';
+import CommentsRouter from './routes/commentsRoutes.js';
+import SessionsRouter from './routes/sessionRoutes.js';
 
 const api = express.Router({mergeParams: true});
+
+api.use("/calendar-session", CalendarSessionsRouter);
+api.use("/report", ReportRouter)
+api.use("/tutors", TutorsRouter);
+api.use("/terms", TermsRouter);
+api.use("/majors", MajorRouter);
+api.use("/courses", CoursesRouter);
+api.use("/comments", CommentsRouter);
+api.use("/sessions", SessionsRouter);
+
 
 // Endpoint to check authentication
 api.route('/auth')
@@ -30,6 +43,8 @@ api.route('/auth')
         user
     });
 });
+//Future .post for storing sessions in a MongoDB database
+
 
 api.post('/send-email', async (req, res) => {
     const { to, subject, text } = req.body;
@@ -42,6 +57,7 @@ api.post('/send-email', async (req, res) => {
     }
   });
 
+<<<<<<< HEAD
 //tutors
 api.route("/tutors")
 .get(async (req, res) => {
@@ -759,6 +775,8 @@ api.route("/report")
     }
 });
 
+=======
+>>>>>>> 7036e1162cadb40a3f39906832736fbc847c1c97
 api.post('/uploadProfilePic', upload.single('profilePic'), (req, res) => {
     console.log('File received:', req.file);
     res.status(200).json({

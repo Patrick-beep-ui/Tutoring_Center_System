@@ -4,12 +4,13 @@ import axios from "axios";
 import {v4 as uuid} from "uuid";
 import Header from "../components/Header";
 import Graph from "../components/Chart";
-import texts from "../texts/report.json";
 import ReportCard from "../components/ReportCard";
+import PieChart from "../components/PieChart";
 
 function Report() {
     const [report, setReport] = useState([
     ]);
+    const [sessions, setSessions] = useState([]);
 
     useEffect(() => {
         const getReport = async () => {
@@ -26,6 +27,22 @@ function Report() {
         getReport();
     }, []);
 
+    useEffect(() => {
+        const getSessions = async () => {
+             try {
+                 const response = await axios.get('/api/report/major-sessions');
+                 const { data } = response;
+                 setSessions(data.sessions);
+                 console.log(data.sessions)
+             }
+             catch(e) {
+                 console.error(e);
+             }
+         }
+ 
+         getSessions();
+     }, []);
+
     return(
         <>
         <Header/>
@@ -39,6 +56,9 @@ function Report() {
             <section className="graphs">
                 <div className="sessions-graph">
                     <Graph/>
+                </div>
+                <div className="sessions-graph pie-chart"> 
+                    <PieChart data={sessions}/>
                 </div>
                 <div>
                 </div>

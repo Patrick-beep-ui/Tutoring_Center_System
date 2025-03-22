@@ -14,7 +14,7 @@ function ScheduledSessions() {
     useEffect(() => {
         const getSessions = async () => {
             try {
-                const response = await axios.get(`/api/session-status/${tutor_id}/${true}`)
+                const response = await axios.get(`/api/sessions/session_status/${tutor_id}/${true}`)
                 const {data} = response;
                 console.log(data.scheduled_sessions)
                 setSession(data.scheduled_sessions)

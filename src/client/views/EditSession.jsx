@@ -13,7 +13,7 @@ function EditSession() {
     useEffect(() => {
         const getSession = async () => {
             try {
-                const response = await axios.get(`/api/edit-session/${session_id}`);
+                const response = await axios.get(`/api/sessions/session/${session_id}`);
                 const { data } = response;
                 console.log(data.session);
                 setSession(data.session);

@@ -23,7 +23,7 @@ function SessionDetails() {
   useEffect(() => {
     const fetchSessionData = async () => {
       try {
-        const sessionResponse = await axios.get(`/api/session/details/${session_id}`);
+        const sessionResponse = await axios.get(`/api/sessions/session_details/${session_id}`);
         const sessionData = sessionResponse.data.session;
   
         console.log("Session: ", sessionData);

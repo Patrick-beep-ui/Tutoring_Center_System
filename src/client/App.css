@@ -717,6 +717,20 @@ a:visited {
   overflow-y: auto;
 }
 
+.week-navigation button {
+  background-color: var(--blue);
+  margin: 0px 10px 0px 10px;
+  padding: 5px;
+  color: #fff;
+}
+
+.week-navigation button[disabled] {
+  background-color: var(--gray);
+  margin: 0px 10px 0px 10px;
+  padding: 5px;
+  color: #fff;
+}
+
 .table-container table {
   width: 100%;
   border-spacing: 0;
@@ -1354,7 +1368,7 @@ canvas {
 }
 
 .sidebar:hover {
-  width: 200px;
+  /*width: 200px; */ /*Increase the width of the bar when hovering*/
 }
 
 .sidebar-nav {
@@ -1404,11 +1418,14 @@ canvas {
 }
 
 /* Report and Courses */
-
 .report-container, .courses-container {
   display: flex;
   flex-direction: column;
   justify-content: space-around;
+}
+
+.report-container {
+  overflow: scroll;
 }
 
 .courses-container {
@@ -1505,6 +1522,16 @@ canvas {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   margin-top: 12px;
   width: 98%;
+}
+
+.pie-chart {
+
+}
+
+.pie-chart canvas {
+  padding: 20px;
+  width: 500px !important;
+  height: 50% !important;
 }
 
 .add-class {
@@ -1668,4 +1695,21 @@ canvas {
 .sessions-container.electron {
   background-color: lightgreen;
   /* Other Electron-specific styles */
+}
+
+
+/*Add Tutor*/
+.add {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.add form {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: 20px;
+  margin: 20px;
+  max-width: 60%;
 }
