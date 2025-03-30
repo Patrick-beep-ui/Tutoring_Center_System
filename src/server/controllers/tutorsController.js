@@ -7,12 +7,17 @@ import {QueryTypes} from "sequelize";
 
 export const getTutors = async (req, res) => {
     try {
-        const tutors = await connection.query(` SELECT CONCAT(u.first_name, ' ', u.last_name) as 'tutor_name', u.email as 'tutor_email', u.ku_id as 'tutor_id', m.major_name as 'tutor_major', t.official_schedule as 'tutor_schedule', t.tutor_id as 'id'
-        FROM users u JOIN tutors t ON u.user_id = t.user_id
+        const tutors = await connection.query(` 
+        SELECT CONCAT(u.first_name, ' ', u.last_name) as 'tutor_name', u.email as 'tutor_email', u.ku_id as 'tutor_id', m.major_name as 'tutor_major', GROUP_CONCAT(DISTINCT c.course_code ORDER BY c.course_code SEPARATOR ', ') AS tutor_courses, t.tutor_id as 'id'
+        FROM users u 
+        JOIN tutors t ON u.user_id = t.user_id
         JOIN majors m ON t.major_id = m.major_id
-        GROUP BY tutor_name, tutor_email, tutor_id, tutor_major, tutor_schedule, id
+        JOIN tutor_courses tc ON t.tutor_id = tc.tutor_id
+        JOIN courses c ON c.course_id = tc.course_id
+        GROUP BY tutor_name, tutor_email, tutor_id, tutor_major, id
         ORDER BY tutor_id;`, {
-            type: QueryTypes.SELECT
+            type: QueryTypes.SELECT,
+            replacements: [],
         })
         res.status(201);
         res.json({

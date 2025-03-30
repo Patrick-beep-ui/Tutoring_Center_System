@@ -21,6 +21,7 @@ import MajorRouter from './routes/majorRoutes.js';
 import CoursesRouter from './routes/coursesRoutes.js';
 import CommentsRouter from './routes/commentsRoutes.js';
 import SessionsRouter from './routes/sessionRoutes.js';
+import UserRouter from './routes/userRoutes.js';
 
 const api = express.Router({mergeParams: true});
 
@@ -32,6 +33,7 @@ api.use("/majors", MajorRouter);
 api.use("/courses", CoursesRouter);
 api.use("/comments", CommentsRouter);
 api.use("/sessions", SessionsRouter);
+api.use("/users", UserRouter);
 
 
 // Endpoint to check authentication

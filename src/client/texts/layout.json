@@ -13,32 +13,38 @@
                     {
                         "label": "Courses",
                         "url": "/classes",
-                        "icon": "bx bx-food-menu"
+                        "icon": "bx bxs-food-menu"
                     },
                     {
                         "label": "Tutors",
                         "url": "/tutors",
-                        "icon": "bx bx-group"
+                        "icon": "bx bxs-group"
                     },
                     {
                         "label": "Sessions",
                         "url": "/",
-                        "icon": "bx bx-chalkboard"
+                        "icon": "bx bxs-chalkboard"
                     },
                     {
                         "label": "Report",
                         "url": "/report",
-                        "icon": "bx bx-bar-chart"
+                        "icon": "bx bxs-bar-chart-alt-2"
+                    },
+                    {
+                        "label": "Users",
+                        "url": "/users",
+                        "icon": "bx bxs-user"
                     }
                 ],
                 "settings": [
                     {
                         "label": "Settings",
-                        "icon": "bx bx-cog"
+                        "url": "/settings", 
+                        "icon": "bx bxs-cog"
                     },
                     {
                         "label": "Logout",
-                        "icon": "bx bx-door-open"
+                        "icon": "bx bxs-door-open"
                     }
                 ]
             }
