@@ -1,0 +1,29 @@
+{
+    "profile-information-form": {
+        "title": {
+            "header": "Profile Information",
+            "subheader": "Update your profile information and profile picture"
+        },
+        "profile-picture": {
+            "alt": "Profile Picture",
+            "upload-button": "Upload new Picture",
+            "upload-note": "JPG, PNG. Max Size of 2MB"
+        },
+        "fields": {
+            "first-name": "First Name",
+            "last-name": "Last Name",
+            "ku-email": "KU Email",
+            "phone-number": "Phone Number"
+        },
+        "password-section": {
+            "header": "Change Password",
+            "current-password": "Current Password",
+            "new-password": "New Password",
+            "confirm-new-password": "Confirm New Password"
+        },
+        "buttons": {
+            "cancel": "Cancel",
+            "save": "Save Changes"
+        }
+    }
+}

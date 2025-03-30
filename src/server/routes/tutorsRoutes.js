@@ -1,5 +1,6 @@
 import express from "express";
 import { getTutors, getTutorById, addTutor } from "../controllers/tutorsController.js";
+import userCheck from "../middlewares/userCheck.js";
 
 const TutorsRouter = express.Router();
 
@@ -8,6 +9,6 @@ TutorsRouter.route("/")
 .post(addTutor);
 
 TutorsRouter.route("/:tutor_id")
-.get(getTutorById);
+.get(/*userCheck,*/ getTutorById);
 
 export default TutorsRouter;

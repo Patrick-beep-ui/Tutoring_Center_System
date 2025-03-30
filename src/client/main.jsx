@@ -22,6 +22,10 @@ import Report from "./views/Report";
 import ScheduledSessions from "./views/ScheduledSessions";
 import EditSession from "./views/EditSession";
 import SessionDetails from "./views/SessionDetails";
+import Settings  from "./views/Settings";
+
+// Admin Views
+import Users from "./views-admin/User";
 
 import Login from "./views/Login";
 import Signup from "./views/Signup";
@@ -48,6 +52,10 @@ const router = createBrowserRouter([
         element: <Home />
       },
       {
+        path: "/users",
+        element: <Users />
+      },
+      {
         path: "/tutors",
         element: <Tutors />
       },
@@ -66,6 +74,10 @@ const router = createBrowserRouter([
       {
         path: "/profile/:tutor_id",
         element: <TutorProfile />
+      },
+      {
+        path: "/settings/:user_id",
+        element: <Settings />,
       },
       {
         path: "/majors",

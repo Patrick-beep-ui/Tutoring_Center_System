@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, memo } from "react";
 import { Link, useOutletContext, Outlet } from "react-router-dom";
 import SideBar from "./Sidebar";
 import { useLocation } from "react-router-dom";
@@ -26,9 +26,9 @@ const Header = () => {
                 <Link to={`/profile/${user.user_id}`} className="user-link">{user ? user.first_name+ ' ' +user.last_name : "User"}</Link>
             </div>
       </div>
-      <SideBar/>
+      <SideBar user={user}/>
         </>
     );
 }
 
-export default Header;
+export default memo(Header);

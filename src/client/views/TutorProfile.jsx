@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
@@ -10,6 +10,7 @@ function TutorProfile() {
     const [tutor, setTutor] = useState([]);
     const [courses, setCourse] = useState([]);
     const [session, setSession] = useState(0);
+    const [error, setError] = useState("");
     const [profilePicUrl, setProfilePicUrl] = useState('');
     const { tutor_id } = useParams();
 
@@ -36,7 +37,13 @@ function TutorProfile() {
                 setCourse(coursesData);
                 setSession(sessionData);
                 setProfilePicUrl(`/public/profile/tutor${tutor_id}.jpg`);
+                setError("");
             } catch (error) {
+
+                if (error.response) {
+                    setError(error.response.data);
+                }
+
                 console.error("Error fetching data:", error);
             }
         };
@@ -64,6 +71,19 @@ function TutorProfile() {
     const handleImageUpload = () => {
         setProfilePicUrl(`/public/profile/tutor${tutor_id}.jpg?${new Date().getTime()}`);
     };
+
+    if (error) {
+        return (
+            <>
+                <Header />
+                <section className="profile-container section">
+                    <div className="error-message">
+                        <p>{error}</p>
+                    </div>
+                </section>
+            </>
+        );
+    }   
 
     return (
         <>
