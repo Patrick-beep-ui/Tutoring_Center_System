@@ -1,0 +1,29 @@
+{
+    "profile-information-form": {
+        "title": {
+            "header": "Información del Perfil",
+            "subheader": "Actualiza tu información de perfil y foto"
+        },
+        "profile-picture": {
+            "alt": "Foto de Perfil",
+            "upload-button": "Subir nueva foto",
+            "upload-note": "JPG, PNG. Tamaño máximo de 2MB"
+        },
+        "fields": {
+            "first-name": "Nombre",
+            "last-name": "Apellido",
+            "ku-email": "Correo KU",
+            "phone-number": "Número de Teléfono"
+        },
+        "password-section": {
+            "header": "Cambiar Contraseña",
+            "current-password": "Contraseña Actual",
+            "new-password": "Nueva Contraseña",
+            "confirm-new-password": "Confirmar Nueva Contraseña"
+        },
+        "buttons": {
+            "cancel": "Cancelar",
+            "save": "Guardar Cambios"
+        }
+    }
+}

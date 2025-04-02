@@ -10,44 +10,46 @@
                 "activeLinkClassName": "active",
                 "logoutButtonClassName": "flex-column nav-setting ",
                 "links": [
-                    { "label": "Activity",
+                    {
+                        "label": "Activity",
                         "url": "/activity",
                         "icon": "bx bxs-megaphone"
                     },
-                    { "label": "Home",
+                    {
+                        "label": "Courses",
+                        "url": "/classes",
+                        "icon": "bx bxs-food-menu"
+                    },
+                    {
+                        "label": "Home",
                         "url": "/",
                         "icon": "bx bxs-home"
                     },
-                    {"label": "Users",
+                    {
+                        "label": "Tutors",
                         "url": "/tutors",
                         "icon": "bx bxs-group"
+                    },
+                    {
+                        "label": "Sessions",
+                        "url": "/sessions",
+                        "icon": "bx bxs-chalkboard"
                     },
                     {
                         "label": "Reports",
                         "url": "/report",
                         "icon": "bx bxs-bar-chart-alt-2"
-                    },
-                    {
-                        "label": "Sessions",
-                        "url": "/",
-                        "icon": "bx bxs-book-open"
-                    },
-                    {
-                        "label": "Courses",
-                        "url": "/classes",
-                        "icon": "< bx bxs-calendar"
                     }
-
-
                 ],
                 "settings": [
                     {
                         "label": "Settings",
-                        "icon": "bx bx-cog"
+                        "url": "/settings",
+                        "icon": "bx bxs-cog"
                     },
                     {
                         "label": "Logout",
-                        "icon": "bx bx-door-open"
+                        "icon": "bx bxs-door-open"
                     }
                 ]
             }
