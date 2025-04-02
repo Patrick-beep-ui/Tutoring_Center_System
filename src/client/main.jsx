@@ -1,11 +1,10 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { createBrowserRouter, RouterProvider, Outlet, useOutletContext } from "react-router-dom";
+import { createBrowserRouter, RouterProvider} from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css'; 
 import 'bootstrap/dist/js/bootstrap.bundle.min';
 
 //Views
-import App from "./App";
 import MainDashboard from "./views/MainDashboard";
 import Home from "./views/Home";
 import Tutors from "./views/Tutors";
@@ -36,9 +35,15 @@ import Header from "./components/Header";
 import MyCalendar from "./components/Calendar";
 import Test from "./views/Test";
 
+
+//Implementation
+import Activity from "./views/Activity";
+import Activity_Students from "./views/Activity_Students";
 //Components
 import Auth from "./components/Auth";
 import { LayoutProvider } from './context/Layout';
+import Activity_Tutors from "./views/Activity_Tutors.jsx";
+import Activity_Alerts from "./views/Activity_Alerts.jsx";
 
 //import App from "./App";
 
@@ -92,6 +97,22 @@ const router = createBrowserRouter([
         element: <AddSemester />
       },
       {
+        path: "/activity",
+        element: <Activity />
+      },
+      {
+        path: "/activity-students",
+        element: <Activity_Students />
+      },
+      {
+        path: "/activity-tutors",
+        element: <Activity_Tutors />
+      },
+      {
+        path: "/activity-alerts",
+        element: <Activity_Alerts />
+      },
+      {
         path: "session/details/:session_id?",
         element: <SessionDetails />
       },
@@ -108,7 +129,7 @@ const router = createBrowserRouter([
         element: <ScheduledSessions />
       },
       {
-        path: "/session/edit/:session_id/:tutor_id?", //Tutor Id added to manage security later on
+        path: "/session/edit/:session_id/:tutor_id?", //Tutor id added to manage security later on
         element: <EditSession />
       },
       {

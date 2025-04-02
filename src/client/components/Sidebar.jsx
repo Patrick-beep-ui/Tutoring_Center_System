@@ -29,11 +29,13 @@ function SideBar({user}) {
 
   return (
     <div className='sidebar'>
-      <Navbar variant="dark" className={texts.header.sidebar[0]["navbarClassname"]} style={{ minHeight: '100vh' }}>
-        <Navbar.Brand href="#home" className={texts.header.sidebar[0]["Navbar.BrandClassName"]}>
+      <Navbar variant="dark" className={texts.header.sidebar[0]["navbarClassname"]} >
+
+        <Navbar.Brand href="#home" className={texts.header.sidebar[0]["Navbar.BrandClassName"]} x>
           <img src="/img/Picture1.svg" alt="CAE-logo" />
         </Navbar.Brand>
-        <Nav className={texts.header.sidebar[0]["navLinksClassName"]}>
+
+        <Nav className={texts.header.sidebar[0]["navLinksClassName"]} >
           {texts.header.sidebar[0]["links"].map((link, index) => (
             <Nav.Link
               key={index}
@@ -44,6 +46,7 @@ function SideBar({user}) {
             </Nav.Link>
           ))}
         </Nav>
+
         <Nav className={texts.header.sidebar[0]["logoutButtonClassName"]}>
           {texts.header.sidebar[0]["settings"].map((setting, index) => (
             setting.label === "Logout" ? (

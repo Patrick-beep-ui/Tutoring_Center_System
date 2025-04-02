@@ -8,12 +8,22 @@
                 "Navbar.BrandClassName": "nav-logo",
                 "navLinksClassName": "flex-column nav-links",
                 "activeLinkClassName": "active",
-                "logoutButtonClassName": "nav-setting flex-column",
+                "logoutButtonClassName": "flex-column nav-setting ",
                 "links": [
+                    {
+                        "label": "Activity",
+                        "url": "/activity",
+                        "icon": "bx bxs-megaphone"
+                    },
                     {
                         "label": "Courses",
                         "url": "/classes",
                         "icon": "bx bxs-food-menu"
+                    },
+                    {
+                        "label": "Home",
+                        "url": "/",
+                        "icon": "bx bxs-home"
                     },
                     {
                         "label": "Tutors",
@@ -22,24 +32,19 @@
                     },
                     {
                         "label": "Sessions",
-                        "url": "/",
+                        "url": "/sessions",
                         "icon": "bx bxs-chalkboard"
                     },
                     {
-                        "label": "Report",
+                        "label": "Reports",
                         "url": "/report",
                         "icon": "bx bxs-bar-chart-alt-2"
-                    },
-                    {
-                        "label": "Users",
-                        "url": "/users",
-                        "icon": "bx bxs-user"
                     }
                 ],
                 "settings": [
                     {
                         "label": "Settings",
-                        "url": "/settings", 
+                        "url": "/settings",
                         "icon": "bx bxs-cog"
                     },
                     {
