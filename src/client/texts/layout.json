@@ -8,28 +8,37 @@
                 "Navbar.BrandClassName": "nav-logo",
                 "navLinksClassName": "flex-column nav-links",
                 "activeLinkClassName": "active",
-                "logoutButtonClassName": "nav-setting flex-column",
+                "logoutButtonClassName": "flex-column nav-setting ",
                 "links": [
-                    {
-                        "label": "Courses",
-                        "url": "/classes",
-                        "icon": "bx bx-food-menu"
+                    { "label": "Activity",
+                        "url": "/activity",
+                        "icon": "bx bxs-megaphone"
+                    },
+                    { "label": "Home",
+                        "url": "/",
+                        "icon": "bx bxs-home"
+                    },
+                    {"label": "Users",
+                        "url": "/tutors",
+                        "icon": "bx bxs-group"
                     },
                     {
-                        "label": "Tutors",
-                        "url": "/tutors",
-                        "icon": "bx bx-group"
+                        "label": "Reports",
+                        "url": "/report",
+                        "icon": "bx bxs-bar-chart-alt-2"
                     },
                     {
                         "label": "Sessions",
                         "url": "/",
-                        "icon": "bx bx-chalkboard"
+                        "icon": "bx bxs-book-open"
                     },
                     {
-                        "label": "Report",
-                        "url": "/report",
-                        "icon": "bx bx-bar-chart"
+                        "label": "Courses",
+                        "url": "/classes",
+                        "icon": "< bx bxs-calendar"
                     }
+
+
                 ],
                 "settings": [
                     {

@@ -24,7 +24,7 @@ function Home() {
             }
         };
         getSessions();
-    }, []);
+    }, []);         
 
     const redirect = (sessionId) => {
         navigate(`/session/details/${sessionId}`);
