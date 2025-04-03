@@ -1,5 +1,6 @@
 import {DataTypes} from "sequelize"
 import connection from "../connection.js"
+import Major from "./Major.js"
 
 const User = connection.define('User', {
     user_id: {
@@ -22,19 +23,25 @@ const User = connection.define('User', {
         allowNull: true
     }, 
     role: {
-        type: DataTypes.ENUM('tutor', 'student', 'faculty')
+        type: DataTypes.ENUM('tutor', 'student', 'admin')
     }, 
     password_hash: {
         type: DataTypes.STRING,
         allowNull: true
-    }, 
-    is_admin: {
-        type: DataTypes.ENUM('yes', 'no')
-    }, 
+    },
     ku_id: {
         type: DataTypes.STRING,
         allowNull: false,
         unique: true
+    },
+    major_id: {
+        type: DataTypes.INTEGER,
+        references: {
+            model: Major,
+            key: "major_id"
+        },
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE"
     }
 }, {
     tableName: 'users',

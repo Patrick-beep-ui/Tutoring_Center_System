@@ -11,7 +11,13 @@ const Comment = connection.define('Comment', {
     },
     session_id: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: false,
+        references: {
+            model: TutorSession,
+            key: "session_id"
+        },
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE"
     },
     user_id: {
         type: DataTypes.INTEGER,

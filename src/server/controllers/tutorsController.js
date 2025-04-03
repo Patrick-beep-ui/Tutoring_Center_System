@@ -12,8 +12,9 @@ export const getTutors = async (req, res) => {
         FROM users u 
         JOIN tutors t ON u.user_id = t.user_id
         JOIN majors m ON t.major_id = m.major_id
-        JOIN tutor_courses tc ON t.tutor_id = tc.tutor_id
+        JOIN user_courses tc ON t.user_id = tc.user_id
         JOIN courses c ON c.course_id = tc.course_id
+        WHERE tc.status = 'Given'
         GROUP BY tutor_name, tutor_email, tutor_id, tutor_major, id
         ORDER BY tutor_id;`, {
             type: QueryTypes.SELECT,
@@ -40,8 +41,8 @@ export const addTutor = async (req, res) => {
             last_name: req.body.last_name,
             email: req.body.email,
             role: 'tutor',
-            is_admin: req.body.is_admin,
-            ku_id: req.body.id
+            ku_id: req.body.id,
+            major_id: req.body.major
         });
 
         await user.save();
@@ -53,8 +54,6 @@ export const addTutor = async (req, res) => {
             tutor_id: userId,
             user_id: userId,
             official_schedule: req.body.schedule,
-            major_id: req.body.major
-
         });
 
         await tutor.save();
@@ -62,7 +61,7 @@ export const addTutor = async (req, res) => {
 
                 
         const phone = new Contact({
-            tutor_id: tutorId,
+            user_id: userId,
             phone_number: req.body.phone_number
         })
 
@@ -71,7 +70,8 @@ export const addTutor = async (req, res) => {
         for(const classID of classIDs) {
             const tutorCourse = new TutorCourse({
                 course_id: classID,
-                tutor_id: tutor.tutor_id
+                user_id: tutor.tutor_id,
+                status: 'Given'
             });
     
             await tutorCourse.save();
@@ -96,7 +96,7 @@ export const getTutorById = async (req, res) => {
         const tutor_info = await connection.query(`SELECT CONCAT(u.first_name, ' ', u.last_name) as 'tutor_name', u.email as 'tutor_email', u.ku_id as 'tutor_id', m.major_name as 'tutor_major', t.official_schedule as 'tutor_schedule', c.phone_number as 'contact'
         FROM users u JOIN tutors t ON u.user_id = t.user_id
         JOIN majors m ON t.major_id = m.major_id
-        JOIN contacts c ON t.tutor_id = c.tutor_id
+        JOIN contacts c ON t.user_id = c.user_id
         WHERE t.tutor_id = ${id}
         GROUP BY tutor_name, tutor_email, tutor_id, tutor_major, tutor_schedule, contact
         ORDER BY tutor_id;`, {

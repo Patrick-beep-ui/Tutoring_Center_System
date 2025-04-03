@@ -48,7 +48,7 @@ export const getSessionsByTutor = async (req, res) => {
     try {
         const id = req.params.tutor_id
 
-        const sessions = await connection.query(` SELECT s.session_id as 'session_id', CONCAT(u.first_name, ' ', u.last_name) as 'tutor_name', s.student_id as 'student',  c.course_name as 'course_name', s.session_totalhours as 'total_hours', s.session_date as 'session_date'
+        const sessions = await connection.query(`SELECT s.session_id as 'session_id', CONCAT(u.first_name, ' ', u.last_name) as 'tutor_name', s.student_id as 'student',  c.course_name as 'course_name', s.session_totalhours as 'total_hours', s.session_date as 'session_date'
             FROM sessions s JOIN tutors t on s.tutor_id = t.tutor_id
             JOIN users u ON u.user_id = t.user_id
             JOIN courses c ON s.course_id = c.course_id
