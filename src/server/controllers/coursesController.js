@@ -6,10 +6,10 @@ export const getCourses = async (req, res) => {
     try {   
         const courses = await connection.query(`SELECT 
         c.*, 
-        COUNT(DISTINCT tc.tutor_id) AS tutors_counter
+        COUNT(DISTINCT tc.user_id) AS tutors_counter
     FROM 
         courses c 
-        LEFT JOIN tutor_courses tc ON c.course_id = tc.course_id
+        LEFT JOIN user_courses tc ON c.course_id = tc.course_id
     GROUP BY 
         c.course_id;`, {
             type: QueryTypes.SELECT
@@ -49,12 +49,12 @@ export const getTutorCourses = async (req, res) => {
         const id  = req.params.tutor_id;
 
         if(id) {
-            const tutor_classes = await connection.query(`SELECT c.course_name as 'course_name', c.course_code as 'course_code', tc.tutor_id as 'tutor_id', c.course_id as 'course_id', COUNT(CASE WHEN sd.session_status = 'completed' THEN s.course_id END) AS 'sessions'
-                FROM courses c JOIN tutor_courses tc ON c.course_id = tc.course_id
-                JOIN tutors t ON t.tutor_id = tc.tutor_id
+            const tutor_classes = await connection.query(`SELECT c.course_name as 'course_name', c.course_code as 'course_code', tc.user_id as 'tutor_id', c.course_id as 'course_id', COUNT(CASE WHEN sd.session_status = 'completed' THEN s.course_id END) AS 'sessions'
+                FROM courses c JOIN user_courses tc ON c.course_id = tc.course_id
+                JOIN tutors t ON t.tutor_id = tc.user_id
                 LEFT JOIN sessions s ON s.course_id = c.course_id
                 LEFT JOIN session_details sd ON s.session_id = sd.session_id
-                WHERE tc.tutor_id = ${id}
+                WHERE tc.user_id = ${id}
                 GROUP BY course_name, course_code, tutor_id, course_id;`, {
                     type: QueryTypes.SELECT
                 });

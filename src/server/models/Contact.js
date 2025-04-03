@@ -1,6 +1,6 @@
 import {DataTypes} from "sequelize"
 import connection from "../connection.js"
-import Tutor from "./Tutor.js"
+import User from "./User.js"
 
 const Contact = connection.define('Contact', {
     phone_id: {
@@ -13,17 +13,23 @@ const Contact = connection.define('Contact', {
         type: DataTypes.STRING,
         allowNull: true
     }, 
-    tutor_id: {
-        type: DataTypes.INTEGER
+    user_id: {
+        type: DataTypes.INTEGER,
+        references: {
+            model: User, 
+            key: "user_id"
+        },
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE"
     }
 }, {
     tableName: 'contacts',
     timestamps: false
 })
 
-Contact.belongsTo(Tutor, {
+Contact.belongsTo(User, {
     foreignKey: {
-        field: 'tutor_id'
+        field: 'user_id'
     }
 })
 

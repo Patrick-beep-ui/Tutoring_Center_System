@@ -7,20 +7,29 @@ import { QueryTypes } from "sequelize";
 export const getSessions = async (req, res) => {
     try {
         const sessions = await connection.query(`
-            SELECT 
-                s.session_id as 'session_id', 
-                CONCAT(u.first_name, ' ', u.last_name) as 'tutor_name', 
-                s.student_id as 'student',  
-                c.course_name as 'course_name', 
-                s.session_totalhours as 'total_hours', 
-                t.tutor_id as 'tutor_id', 
-                s.session_date as 'session_date',
-                WEEK(s.session_date, 1) - WEEK(semester.start_date, 1) + 1 as 'week_number'  -- Calculate the week number
-            FROM sessions s 
-            JOIN tutors t on s.tutor_id = t.tutor_id
-            JOIN users u ON u.user_id = t.user_id
-            JOIN courses c ON s.course_id = c.course_id
-            JOIN semester semester ON semester.semester_id = s.semester_id  -- Join with semester table
+            SELECT
+                s.session_id AS 'session_id',
+                    CONCAT(tutor.first_name, ' ', tutor.last_name) AS 'tutor_name',
+                    s.student_id AS 'student_id',
+                    CONCAT(student.first_name, ' ', student.last_name) AS 'student_name',
+                    c.course_name AS 'course_name',
+                    s.session_totalhours AS 'total_hours',
+                    t.tutor_id AS 'tutor_id',
+                    CONCAT(
+                        TIME_FORMAT(sd.session_time, '%h:%i %p'),
+                            ' - ',
+                            TIME_FORMAT(ADDTIME(sd.session_time, SEC_TO_TIME(s.session_totalhours * 3600)), '%h:%i %p')
+                        ) AS 'session_duration',
+                    s.session_date AS 'session_date',
+                    sd.session_status AS 'session_status',
+                    WEEK(s.session_date, 1) - WEEK(semester.start_date, 1) + 1 AS 'week_number'  -- Calculate the week number
+            FROM sessions s
+                     JOIN session_details sd ON s.session_id = sd.session_id
+                     JOIN tutors t ON s.tutor_id = t.tutor_id
+                     JOIN users tutor ON tutor.user_id = t.user_id  -- Get tutor's name
+                     JOIN users student ON student.ku_id = s.student_id  -- Get student's name
+                     JOIN courses c ON s.course_id = c.course_id
+                     JOIN semester semester ON semester.semester_id = s.semester_id  -- Join with semester table
             WHERE semester.semester_id = 2  -- Assuming you're testing for semester_id = 2
             ORDER BY week_number, session_date;
         `, {
@@ -39,7 +48,7 @@ export const getSessionsByTutor = async (req, res) => {
     try {
         const id = req.params.tutor_id
 
-        const sessions = await connection.query(` SELECT s.session_id as 'session_id', CONCAT(u.first_name, ' ', u.last_name) as 'tutor_name', s.student_id as 'student',  c.course_name as 'course_name', s.session_totalhours as 'total_hours', s.session_date as 'session_date'
+        const sessions = await connection.query(`SELECT s.session_id as 'session_id', CONCAT(u.first_name, ' ', u.last_name) as 'tutor_name', s.student_id as 'student',  c.course_name as 'course_name', s.session_totalhours as 'total_hours', s.session_date as 'session_date'
             FROM sessions s JOIN tutors t on s.tutor_id = t.tutor_id
             JOIN users u ON u.user_id = t.user_id
             JOIN courses c ON s.course_id = c.course_id
