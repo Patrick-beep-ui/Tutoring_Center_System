@@ -2,6 +2,7 @@ import User from "../models/User.js";
 import Contact from "../models/Contact.js";
 import TutorCourse from "../models/TutorCourse.js";
 import Tutor from "../models/Tutor.js";
+import Schedule from "../models/Schedule.js";
 import connection from "../connection.js";
 import {QueryTypes} from "sequelize";
 
@@ -11,7 +12,7 @@ export const getTutors = async (req, res) => {
         SELECT CONCAT(u.first_name, ' ', u.last_name) as 'tutor_name', u.email as 'tutor_email', u.ku_id as 'tutor_id', m.major_name as 'tutor_major', GROUP_CONCAT(DISTINCT c.course_code ORDER BY c.course_code SEPARATOR ', ') AS tutor_courses, t.tutor_id as 'id'
         FROM users u 
         JOIN tutors t ON u.user_id = t.user_id
-        JOIN majors m ON t.major_id = m.major_id
+        JOIN majors m ON u.major_id = m.major_id
         JOIN user_courses tc ON t.user_id = tc.user_id
         JOIN courses c ON c.course_id = tc.course_id
         WHERE tc.status = 'Given'
@@ -35,7 +36,8 @@ export const addTutor = async (req, res) => {
         console.log(req.body);
 
         const classIDs = req.body['class-option'];
-
+        const schedules = req.body.schedule;
+        
         const user = new User({
             first_name: req.body.first_name,
             last_name: req.body.last_name,
@@ -53,11 +55,9 @@ export const addTutor = async (req, res) => {
         const tutor = new Tutor({
             tutor_id: userId,
             user_id: userId,
-            official_schedule: req.body.schedule,
         });
 
-        await tutor.save();
-        const tutorId = tutor.tutor_id; 
+        await tutor.save(); 
 
                 
         const phone = new Contact({
@@ -67,15 +67,31 @@ export const addTutor = async (req, res) => {
 
         await phone.save();
 
-        for(const classID of classIDs) {
-            const tutorCourse = new TutorCourse({
-                course_id: classID,
-                user_id: tutor.tutor_id,
-                status: 'Given'
-            });
-    
-            await tutorCourse.save();
+        if (Array.isArray(schedules)) {
+            for (const schedule of schedules) {
+                for (const day of schedule.days) {
+                    const newSchedule = new Schedule({
+                        user_id: tutor.tutor_id,
+                        day,
+                        start_time: schedule.start_time,
+                        end_time: schedule.end_time
+                    });
+                    await newSchedule.save();
+                }
+            }
         }
+        
+        if (Array.isArray(classIDs)) {
+            for(const classID of classIDs) {
+                const tutorCourse = new TutorCourse({
+                    course_id: classID,
+                    user_id: tutor.tutor_id,
+                    status: 'Given'
+                });
+                await tutorCourse.save();
+            }
+        }
+
 
         const tutors = await Tutor.findAll();
 
@@ -95,7 +111,7 @@ export const getTutorById = async (req, res) => {
         const id  = req.params.tutor_id;
         const tutor_info = await connection.query(`SELECT CONCAT(u.first_name, ' ', u.last_name) as 'tutor_name', u.email as 'tutor_email', u.ku_id as 'tutor_id', m.major_name as 'tutor_major', t.official_schedule as 'tutor_schedule', c.phone_number as 'contact'
         FROM users u JOIN tutors t ON u.user_id = t.user_id
-        JOIN majors m ON t.major_id = m.major_id
+        JOIN majors m ON u.major_id = m.major_id
         JOIN contacts c ON t.user_id = c.user_id
         WHERE t.tutor_id = ${id}
         GROUP BY tutor_name, tutor_email, tutor_id, tutor_major, tutor_schedule, contact

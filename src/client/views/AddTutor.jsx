@@ -1,11 +1,15 @@
-import { useState, useEffect } from "react";
-import { useForm } from "react-hook-form"
+import { useState, useEffect, useCallback } from "react";
+import { useForm, useFieldArray  } from "react-hook-form"
 import { Link, useNavigate } from "react-router-dom";
 import { Toaster, toast } from 'sonner';
 import axios from "axios";
 
 function AddTutor() {
-    const {register, handleSubmit, formState: { errors }} = useForm({model: "onChange"});
+    const { register, handleSubmit, control, formState: { errors } } = useForm({ mode: "onChange" });
+    const { fields, append, remove } = useFieldArray({
+        control,
+        name: "schedule"
+    });
     const [className, setClass] = useState([]);
     const [major, setMajor] = useState([]);
     const navigate = useNavigate()
@@ -75,6 +79,18 @@ function AddTutor() {
         }
     }
 
+    function handleElementChange(event) {
+        const isChecked = event.target.checked;
+        const input = event.target;
+    
+        if (isChecked) {
+            input.classList.add('highlighted');
+            
+        } else {
+            input.classList.remove('highlighted');
+        }
+    }
+
     return(
         <>
          <Toaster />
@@ -109,11 +125,56 @@ function AddTutor() {
                 <input type="text" {...register("phone_number", {required: true})} />
                 {errors.code && <span>This field is required</span>}
             </section>
+
+            {/* Schedule Fields */}
             <section>
-                <label>Schedule:</label>
-                <textarea cols="30" rows="10" {...register("schedule", {required: true})}></textarea>
-                {errors.code && <span>This field is required</span>}
-            </section>
+  <label>Schedule:</label>
+  {fields.map((field, index) => (
+    <div key={field.id} className="mb-2 p-2 border rounded">
+        <div className="days-grid">
+        {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"].map(day => {
+            const checkboxId = `schedule-${index}-${day}`;
+            return (
+            <div key={day} className="day-checkbox">
+                <input
+                type="checkbox"
+                id={checkboxId}
+                value={day}
+                {...register(`schedule.${index}.days`)}
+                className="hidden-checkbox"
+                />
+                <label htmlFor={checkboxId}>{day}</label>
+            </div>
+            );
+        })}
+        </div>
+
+
+      <div>
+        <label>Start Time:</label>
+        <input
+          type="time"
+          {...register(`schedule.${index}.start_time`, { required: true })}
+        />
+      </div>
+
+      <div>
+        <label>End Time:</label>
+        <input
+          type="time"
+          {...register(`schedule.${index}.end_time`, { required: true })}
+        />
+      </div>
+
+      <button type="button" onClick={() => remove(index)}>Remove</button>
+    </div>
+  ))}
+  <button type="button" onClick={() => append({ days: [], start_time: "", end_time: "" })}>
+    Add Schedule Block
+  </button>
+</section>
+
+
             <section>
                 <label>Major:</label>
                 <select {...register("major")}>
@@ -132,8 +193,6 @@ function AddTutor() {
                 </div>
             ))}
         </section>
-
-            <input type="hidden" {...register("is_admin")} value={'no'}/>
 
             <section>
                 <button type="submit">Submit</button>
