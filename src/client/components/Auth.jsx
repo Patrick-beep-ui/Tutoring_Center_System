@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, memo } from "react";
 import { Outlet, useNavigate, useOutletContext } from "react-router-dom";
 import axios from "axios";
 
@@ -45,4 +45,4 @@ const Auth = () => {
       );
 };
 
-export default Auth;
+export default memo(Auth);

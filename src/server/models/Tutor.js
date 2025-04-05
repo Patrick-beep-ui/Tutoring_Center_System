@@ -13,21 +13,11 @@ const Tutor = connection.define('Tutor', {
     }, 
     user_id: {
         type: DataTypes.INTEGER
-    },
-    official_schedule: {
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-    major_id: {
-        type: DataTypes.INTEGER
     }
 }, {
     tableName: 'tutors',
     timestamps: false
 });
-
-Tutor.belongsTo(Major, { foreignKey: 'major_id' });
-Major.hasMany(Tutor, { foreignKey: 'major_id' });
 
 Tutor.belongsTo(User, { foreignKey: 'user_id' });
 Tutor.hasMany(TutorSession, { foreignKey: 'tutor_id' });

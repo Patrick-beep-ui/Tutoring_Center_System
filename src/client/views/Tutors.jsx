@@ -62,9 +62,7 @@ function Tutors() {
                         </td>
                         <td>
                             <div className="ms-3 tutor-schedule-cell">
-                                {student.tutor_schedule.split('\n').map((line, index) => (
-                                <p key={index} id="tutor-schedule" className="mb-1" >{line}</p>
-                                ))}
+                                <p>None</p>
                             </div>
                         </td>
                     </tr>  

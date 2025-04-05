@@ -1989,6 +1989,30 @@ canvas {
   max-width: 60%;
 }
 
+.days-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.day-checkbox input[type="checkbox"] {
+  display: none;
+}
+
+.day-checkbox label {
+  padding: 6px 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background-color: #f9f9f9;
+}
+
+.day-checkbox input[type="checkbox"]:checked + label {
+  background-color: #007BFF;
+  color: white;
+  border-color: #007BFF;
+}
 
 
 
