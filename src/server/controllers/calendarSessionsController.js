@@ -4,7 +4,8 @@ import SessionDetail from "../models/SessionDetail.js";
 import TutorSession from "../models/TutorSession.js";
 import Tutor from "../models/Tutor.js";
 import User from "../models/User.js";
-import { sendEmail } from "../mail.js";
+import Course from "../models/Course.js";
+import { sendEmail, sendSessionRequestEmail } from "../mail.js";
 
 export const getSessionsByTutor = async (req, res) => {
     try {
@@ -47,7 +48,8 @@ export const createSession = async (req, res) => {
             course_id: req.body.course,
             semester_id: req.body.semester_id,
             session_date: req.body.session_date,
-            session_totalhours: req.body.session_hours
+            session_totalhours: req.body.session_hours,
+            topics: req.body.session_topics,
         })
 
         await session.save()
@@ -67,16 +69,23 @@ export const createSession = async (req, res) => {
         const tutor_user = await User.findByPk(tutor.user_id);
         const student = await User.findByPk(req.body.created_by)
 
+        const { course_name } = await Course.findByPk(req.body.course, {
+            attributes: ['course_name']
+        });
+
+        /*
         const emailText = `
             Hey ${tutor_user.first_name} ${tutor_user.last_name},
 
             You've received a session request from ${student.first_name} ${student.last_name}.
 
             Session Details:
-            - Course: ${req.body.course}
+            - Course: ${course_name}
             - Date: ${req.body.session_date}
             - Time: ${req.body.session_time}
             - Hours: ${req.body.session_hours}
+
+            - Topics: ${req.body.session_topics}
 
             Please click on the links below to accept or decline the session:
 
@@ -85,6 +94,19 @@ export const createSession = async (req, res) => {
         `;
 
         await sendEmail(tutor_user.email, 'New Session Request', emailText);
+        */
+
+        await sendSessionRequestEmail(tutor_user.email, {
+            tutorName: `${tutor_user.first_name} ${tutor_user.last_name}`,
+            studentName: `${student.first_name} ${student.last_name}`,
+            courseName: course_name,
+            date: req.body.session_date,
+            time: req.body.session_time,
+            hours: req.body.session_hours, 
+            topics: req.body.session_topics,
+            acceptUrl: `http://localhost:3000/api/calendar-session/accept/${session.session_id}`,
+            declineUrl: `http://localhost:3000/api/calendar-session/decline/${session.session_id}`
+        });
 
         res.status(201).json({
             msg: 'Session request sent to the tutor. Waiting for acceptance.',

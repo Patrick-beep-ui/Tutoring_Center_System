@@ -1056,7 +1056,7 @@ canvas {
 
 
 /*Comment*/
-.card {
+.comment .card {
   width: 450px;
   height: fit-content;
   background-color: white;
@@ -1535,11 +1535,13 @@ canvas {
 
 }
 
-
-
 .nav-menu {
   display: flex;
   justify-content: space-between;
+}
+
+.sidebar .nav-menu {
+  background-color: var(--blue);
 }
 
 .nav-logo {
@@ -1672,11 +1674,6 @@ canvas {
     flex: 90%;
     }
 
-
-
-
-
-
 /* Report and Courses */
 
 .report-container, .courses-container {
@@ -1696,7 +1693,7 @@ canvas {
 
 .counters, .courses {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, auto));
+  grid-template-columns: repeat(auto-fit, minmax(230px, auto));
   gap: 2rem;
   padding-top: 20px;
 }
@@ -1723,6 +1720,14 @@ canvas {
   transition: transform 0.3s, box-shadow 0.3s;
   user-select: none;
   scroll-snap-align: start;
+}
+
+.courses-container .courses .course-container {
+  height: 200px;
+}
+
+.courses-container .courses .course-container p {
+  margin-bottom: 2px;
 }
 
 .course-container:hover {
@@ -1854,6 +1859,11 @@ canvas {
   padding: 5px;
 }
 
+.popup-cell-msg {
+  max-height: 700px;
+  overflow-y: scroll;
+}
+
 .popup-calendar-msg button {
   margin: 10px 0px 10px 0px;
   display: block;
@@ -1866,6 +1876,10 @@ canvas {
   padding-left: 5px;  
   margin-bottom: 0rem;
   height: 18px;
+}
+
+.schedule-session-form {
+  width: 100%;
 }
 
 @media (max-width: 768px) {
@@ -2526,4 +2540,11 @@ strong {
 .profile-form-container .profile-form-btns .cancel-btn:hover {
   background-color: var(--dark-gray);
   transition: 0.3s;
+}
+
+
+/* Admin Reports */
+
+.admin-reports-section {
+
 }
