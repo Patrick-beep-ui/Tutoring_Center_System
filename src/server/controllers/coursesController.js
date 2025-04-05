@@ -1,19 +1,31 @@
 import Course from "../models/Course.js";
+import Major from "../models/Major.js";
+import TutorCourse from "../models/TutorCourse.js";
 import connection from "../connection.js";
-import {QueryTypes} from "sequelize";
+import {QueryTypes, Sequelize} from "sequelize";
 
 export const getCourses = async (req, res) => {
     try {   
-        const courses = await connection.query(`SELECT 
-        c.*, 
-        COUNT(DISTINCT tc.user_id) AS tutors_counter
-    FROM 
-        courses c 
-        LEFT JOIN user_courses tc ON c.course_id = tc.course_id
-    GROUP BY 
-        c.course_id;`, {
-            type: QueryTypes.SELECT
-        })
+        const courses = await Course.findAll({
+            attributes: {
+              include: [
+                [Sequelize.fn('COUNT', Sequelize.fn('DISTINCT', Sequelize.col('user_id'))), 'tutors_counter']
+              ]
+            },
+            include: [
+              {
+                model: TutorCourse,
+                attributes: [],
+                required: false
+              },
+              {
+                model: Major,
+                attributes: ['major_name'],
+                required: false
+              }
+            ],
+            group: ['course_id', 'major_id'] 
+          });
 
         res.status(200).json({
             courses

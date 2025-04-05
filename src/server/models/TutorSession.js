@@ -32,6 +32,10 @@ const TutorSession = connection.define('TutorSession', {
     feedback: {
         type: DataTypes.STRING,
         allowNull: true
+    },
+    topics: {
+        type: DataTypes.STRING,
+        allowNull: true
     }
 }, {
     tableName: 'sessions',

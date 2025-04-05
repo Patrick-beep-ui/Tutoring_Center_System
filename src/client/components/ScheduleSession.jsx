@@ -85,6 +85,10 @@ const ScheduleSession = (props) => {
                 <input type="number" {...register("session_hours", {required: true})}/>
                 {errors.code && <span>This field is required</span>}
             </section>
+            <section>
+                <label>Topics to be discussed:</label>
+                <textarea cols="30" rows="5" {...register("session_topics")}></textarea>
+            </section>
 
             <section>
                 <button type="submit">Submit</button>

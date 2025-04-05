@@ -25,6 +25,7 @@ import Settings  from "./views/Settings";
 
 // Admin Views
 import Users from "./views-admin/User";
+import TutorsReport from "./views-admin/ReportsView.jsx";
 
 import Login from "./views/Login";
 import Signup from "./views/Signup";
@@ -142,6 +143,10 @@ const router = createBrowserRouter([
       }, {
         path: "/calendar/:tutor_id",
         element: <MyCalendar />
+      },
+      {
+        path: "/tutors/reports",
+        element: <TutorsReport/>
       }
     ]
   },

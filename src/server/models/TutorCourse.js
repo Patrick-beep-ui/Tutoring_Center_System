@@ -1,6 +1,5 @@
 import {DataTypes} from "sequelize"
 import connection from "../connection.js";
-import Course from "./Course.js";
 import User from "./User.js";
 
 const TutorCourse = connection.define('TutorCourse', {
@@ -14,7 +13,7 @@ const TutorCourse = connection.define('TutorCourse', {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: Course,
+            model: 'Course',
             key: "course_id"
         },
         onUpdate: "CASCADE",
@@ -38,19 +37,5 @@ const TutorCourse = connection.define('TutorCourse', {
     tableName: 'user_courses',
     timestamps: false
 })
-
-TutorCourse.belongsTo(User, {
-    foreignKey: {
-        field: 'user_id',
-        allowNull: true
-    }
-});
-
-TutorCourse.belongsTo(Course, {
-    foreignKey: {
-        field: 'course_id',
-        allowNull: true
-    }
-});
 
 export default TutorCourse;

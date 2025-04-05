@@ -1,0 +1,26 @@
+<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+    <div style="text-align: center; padding: 20px;">
+        <img src="cid:logo" alt="Logo" style="width: 150px; height: auto;">
+    </div>
+
+  <h2 style="color: #2c3e50;">Hello {{tutorName}},</h2>
+
+  <p>You've received a new session request from <strong>{{studentName}}</strong>.</p>
+
+  <h3>Session Details:</h3>
+  <ul>
+    <li><strong>Course:</strong> {{courseName}}</li>
+    <li><strong>Date:</strong> {{date}}</li>
+    <li><strong>Time:</strong> {{time}}</li>
+    <li><strong>Hours:</strong> {{hours}}</li>
+    <li><strong>Topics:</strong> {{topics}}</li>
+  </ul>
+
+  <p>Please respond to the session:</p>
+
+  <a href="{{acceptUrl}}" style="display:inline-block;padding:10px 20px;background-color:#27ae60;color:white;text-decoration:none;border-radius:5px;">Accept</a>
+
+  <a href="{{declineUrl}}" style="display:inline-block;padding:10px 20px;background-color:#c0392b;color:white;text-decoration:none;border-radius:5px;margin-left:10px;">Decline</a>
+
+  <p>Thank you!</p>
+</div>
