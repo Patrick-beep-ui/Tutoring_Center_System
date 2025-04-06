@@ -7,66 +7,68 @@ import Profile from "../components/Picture";
 import texts from "../texts/tutorProfile.json"
 
 function TutorProfile() {
-    const [tutor, setTutor] = useState([]);
+    const [user, setUser] = useState([]);
+    //const [user, setUser] = useState([]);
     const [courses, setCourse] = useState([]);
     const [session, setSession] = useState(0);
     const [error, setError] = useState("");
     const [profilePicUrl, setProfilePicUrl] = useState('');
+
     const { tutor_id } = useParams();
+    const {role} = useParams();
 
-    console.log("Tutor Id from website", tutor_id);
+    const fetchTutorData = useCallback(async () => {
+        try {
+            const [TutorResponse, coursesResponse, sessionResponse] = await Promise.all([
+                axios.get(`/api/tutors/${tutor_id}`),
+                axios.get(`/api/courses/${tutor_id}`),
+                axios.get(`/api/sessions/session_status/${tutor_id}`)
+            ]);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const [TutorResponse, coursesResponse, sessionResponse] = await Promise.all([
-                    axios.get(`/api/tutors/${tutor_id}`),
-                    axios.get(`/api/courses/${tutor_id}`),
-                    axios.get(`/api/sessions/session_status/${tutor_id}`)
-                ]);
+            const tutorData = TutorResponse.data.tutor_info;
+            const coursesData = coursesResponse.data.tutor_classes;
+            const sessionData = sessionResponse.data.scheduled_sessions
 
-                const tutorData = TutorResponse.data.tutor_info;
-                const coursesData = coursesResponse.data.tutor_classes;
-                const sessionData = sessionResponse.data.scheduled_sessions
+            console.log("Tutor:", tutorData);
+            console.log("Courses:", coursesData);
+            console.log("Session:", sessionData);
 
-                console.log("Tutor:", tutorData);
-                console.log("Courses:", coursesData);
-                console.log("Session:", sessionData);
+            setUser(tutorData);
+            setCourse(coursesData);
+            setSession(sessionData);
+            setProfilePicUrl(`/public/profile/tutor${tutor_id}.jpg`);
+            setError("");
+        } catch (error) {
 
-                setTutor(tutorData);
-                setCourse(coursesData);
-                setSession(sessionData);
-                setProfilePicUrl(`/public/profile/tutor${tutor_id}.jpg`);
-                setError("");
-            } catch (error) {
-
-                if (error.response) {
-                    setError(error.response.data);
-                }
-
-                console.error("Error fetching data:", error);
+            if (error.response) {
+                setError(error.response.data);
             }
-        };
 
-        fetchData();
+            console.error("Error fetching data:", error);
+        }
     }, [tutor_id]);
 
-    const renderSessions = (session) => {
-
-        const section = document.querySelector('.tutor-calendar');
-        if (session >= 1) {
-            const p = document.createElement('p');
-            const a = document.createElement('a');
-            a.textContent = `${session} scheduled sessions`;
-            a.href = '#'; 
-    
-            p.classList.add('scheduled-sessions-counter');
-            p.textContent = 'You have ';
-            p.appendChild(a);
-    
-            section.appendChild(p);
+    const fecthStudentData = useCallback(async () => {
+        try {
+            const response = await axios.get(`/api/users/${tutor_id}`);
+            const {user} = response.data;
+            console.log(user);
+            setUser([user]);
         }
-    };
+        catch(e) {
+            console.error(e);
+        }
+    }, [])
+
+    useEffect(() => {
+
+        if(role === 'tutor') {
+            fetchTutorData();
+        }
+        if(role === 'student') {
+            fecthStudentData();
+        }
+    }, [role]);
 
     const handleImageUpload = () => {
         setProfilePicUrl(`/public/profile/tutor${tutor_id}.jpg?${new Date().getTime()}`);
@@ -98,22 +100,34 @@ function TutorProfile() {
                         </label>
                     </div>
                     <div className="user-info-container">
-                    {tutor.map(t =>
-                        <div className="tutor-info" key={t.tutor_id}>
+                    {user.map(t =>
+                        <div className="tutor-info" key={t.user_id}>
                             <div className="tutor-info-data">
-                                <p>{t.tutor_name}</p>
-                                <p>{t.tutor_email}</p>
+                            <p>
+                                {role === 'tutor'
+                                    ? t.tutor_name
+                                    : `${t.first_name ?? ''} ${t.last_name ?? ''}`}
+                            </p>
+
+
+                            <p>{t.tutor_email || t.email}</p>
                             </div>
                             <div className="tutor-info-description">
-                                <p> <strong>{texts.profileInfo.idLabel}</strong> {t.tutor_id}</p>
-                                <p><strong>{texts.profileInfo.majorLabel} </strong>{t.tutor_major}</p>
-                                <p><strong>{texts.profileInfo.contactLabel} </strong>{t.contact}</p>
+                                <p> <strong>{texts.profileInfo.idLabel}</strong> {t.tutor_id || t.ku_id}</p>
+                                <p><strong>{texts.profileInfo.majorLabel} </strong>{t.tutor_major || t.Major.major_name}</p>
+                                { role == 'tutor' ? (
+                                    <p><strong>{texts.profileInfo.contactLabel} </strong>{t.contact}</p>
+                                ) : (
+                                    <p><strong>Rol: </strong>Student</p>
+                                )
+                                }
                             </div>
-                            {tutor.map(t => 
+                        
+                            {user.map(t => 
                     <div className="tutor-sched" key={t.tutor_id}>
                         <p id=""> <strong>{texts.profileInfo.scheduleLabel} </strong></p>
                         <div className="schedules">
-                            {t.tutor_schedule.split('\n').map((line, index) => (
+                            {t.tutor_schedule?.split('\n').map((line, index) => (
                             <p key={index}>{line}</p>
                             ))}
                         </div>
@@ -138,16 +152,7 @@ function TutorProfile() {
                         </div>
                     )}
                     </div>
-                    {/*tutor.map(t => 
-                    <div className="tutor-schedule" key={t.tutor_id}>
-                        <p id="schedule-heading">Tutor Schedule: </p>
-                        <div className="schedules">
-                            {t.tutor_schedule.split('\n').map((line, index) => (
-                            <p key={index}>{line}</p>
-                            ))}
-                        </div>
-                    </div>
-                            )*/}
+
 
                 </section>
 

@@ -67,24 +67,24 @@ function Settings() {
                         </div>
                         <div className="profile-form-group">
                             <label htmlFor="first_name">{text.fields["first-name"]}</label>
-                            <input type="text" id="first_name" name="first_name" value={user.first_name || ""} required />
+                            <input type="text" id="first_name" name="first_name" value={user.first_name || ""} disabled />
                         </div>
 
                         <div className="profile-form-group">
                             <label htmlFor="last_name">{text.fields["last-name"]}</label>
-                            <input type="text" id="last_name" name="last_name" value={user.last_name || ""} required />
+                            <input type="text" id="last_name" name="last_name" value={user.last_name || ""} disabled />
                         </div>
                     </section>
 
                     <section className="profile-form-container">
                         <div className="profile-form-group">
                             <label htmlFor="ku_email">{text.fields["ku-email"]}</label>
-                            <input type="email" id="ku_email" name="ku_email" value={user.email || ""} required />
+                            <input type="email" id="ku_email" name="ku_email" value={user.email || ""} disabled/>
                         </div>
 
                         <div className="profile-form-group">
                             <label htmlFor="phone">{text.fields["phone-number"]}</label>
-                            <input type="tel" id="phone" name="phone" required />
+                            <input type="tel" id="phone" name="phone" required  value={user.Contacts?.[0].phone_number}/>
                         </div>
 
                         <div className="profile-form-group">

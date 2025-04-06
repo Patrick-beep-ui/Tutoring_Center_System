@@ -36,6 +36,26 @@ export const getCourses = async (req, res) => {
     }
 }
 
+export const getCoursesByMajor = async (req, res) => {
+    try {
+        const major_id = req.params.major_id;
+
+        if(major_id) {
+            const courses = await Course.findAll({
+                where: {
+                    major_id
+                }
+            });
+
+            res.status(200).json({
+                courses
+            });
+        }
+    } catch(e) {
+        console.error(e);
+    }
+}
+
 export const addCourse = async (req, res) => {
     try {
         const course = new Course({
