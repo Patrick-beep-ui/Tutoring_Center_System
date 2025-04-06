@@ -78,7 +78,7 @@ const router = createBrowserRouter([
         element: <AddClass />
       },
       {
-        path: "/profile/:tutor_id",
+        path: "/profile/:role?/:tutor_id",
         element: <TutorProfile />
       },
       {

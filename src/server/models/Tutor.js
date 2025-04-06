@@ -2,7 +2,6 @@ import { DataTypes } from "sequelize";
 import connection from "../connection.js";
 import User from "./User.js";
 import TutorSession from "./TutorSession.js";
-import Major from "./Major.js"; // ✅ Move this import AFTER defining Tutor
 
 const Tutor = connection.define('Tutor', {
     tutor_id: {

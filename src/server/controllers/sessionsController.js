@@ -30,7 +30,7 @@ export const getSessions = async (req, res) => {
                      JOIN users student ON student.ku_id = s.student_id  -- Get student's name
                      JOIN courses c ON s.course_id = c.course_id
                      JOIN semester semester ON semester.semester_id = s.semester_id  -- Join with semester table
-            WHERE semester.semester_id = 2  -- Assuming you're testing for semester_id = 2
+            WHERE semester.semester_id = 1 
             ORDER BY week_number, session_date;
         `, {
             type: QueryTypes.SELECT

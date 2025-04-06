@@ -5,6 +5,7 @@ import api from "./api.js";
 import passport from 'passport';
 import { Strategy as LocalStrategy} from 'passport-local';
 import User from "./models/User.js";
+import TutorCourse from "./models/TutorCourse.js";
 import bcrypt from 'bcryptjs';
 import cors from 'cors';
 
@@ -103,9 +104,19 @@ app.post(
 
 app.post('/signup', async (req, res) => {
   try {
-    const { first_name, last_name, email, password_hash, ku_id } = req.body;
+    const { first_name, last_name, email, password_hash, ku_id, major, courses } = req.body;
+    const role = 'student';
     const hashedPassword = bcrypt.hashSync(password_hash, 10);
-    const newUser = await User.create({ first_name, last_name, email, password_hash: hashedPassword, ku_id });
+    const newUser = await User.create({ first_name, last_name, email, role, password_hash: hashedPassword, ku_id, major_id: major });
+    if (Array.isArray(courses)) {
+      for (const course of courses) {
+        await TutorCourse.create({
+          user_id: newUser.user_id,
+          course_id: course,
+          status: 'Received'
+        });
+      }
+    }
     console.log(newUser)
     res.send('User created successfully');
   } catch (err) {

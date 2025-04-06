@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useForm } from "react-hook-form"
 import { Link, useNavigate, useParams, useOutletContext } from "react-router-dom";
 import { Toaster, toast } from 'sonner';
@@ -33,8 +33,9 @@ const ScheduleSession = (props) => {
 
     //Comentario para hacer pull request
 
-    const processData = async (formData) => {
+    const processData = useCallback(async (formData) => {
         try {
+            //alert(JSON.stringify(formData));
             const request = await fetch(`/api/calendar-session/${tutor_id}`, {
                 method: 'POST',
                 headers: {
@@ -42,19 +43,19 @@ const ScheduleSession = (props) => {
                 },
                 body: JSON.stringify(formData)
             });
-
-            const {sessions} = await request.json();
+    
+            const { sessions } = await request.json();
             console.log(sessions);
-
-              if(onSubmit) {
+    
+            if (onSubmit) {
                 onSubmit();
-              }
-              
-        }
-        catch(e) {
+            }
+    
+        } catch (e) {
             console.error(e);
         }
-    }
+    }, [tutor_id, onSubmit]); 
+    
 
     return(
         <form onSubmit={handleSubmit(processData)} className="form-container schedule-session-form">

@@ -95,6 +95,10 @@ export const createSession = async (req, res) => {
 
         await sendEmail(tutor_user.email, 'New Session Request', emailText);
         */
+        
+        console.log("Session request email sent to tutor:", tutor_user.email);
+        console.log("Session has been created");
+        console.log("Waiting for sending email...")
 
         await sendSessionRequestEmail(tutor_user.email, {
             tutorName: `${tutor_user.first_name} ${tutor_user.last_name}`,
@@ -108,12 +112,16 @@ export const createSession = async (req, res) => {
             declineUrl: `http://localhost:3000/api/calendar-session/decline/${session.session_id}`
         });
 
+        console.log("Email sent to tutor:", tutor_user.email);
+        
+
         res.status(201).json({
             msg: 'Session request sent to the tutor. Waiting for acceptance.',
         });
     }
     catch(e) {
-
+        console.error(e);
+        
     }
 };
 
