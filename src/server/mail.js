@@ -83,3 +83,39 @@ export async function sendSessionRequestEmail(to, data) {
     throw e;
   }
 }
+
+export async function sendFeedbackEmail(to, data) {
+  try {
+    const templatePath = path.resolve(__dirname, './emails/feedback.hbs');
+
+    const source = await fs.readFile(templatePath, 'utf8');
+    const template = handlebars.compile(source);
+    const html = template(data);
+  
+    const subject = 'Provide Feedback to your Session!';
+    const text = `Hello ${data.studentName}, Thank you for attending the session. Please provide feedback.`;
+  
+    const mailOptions = {
+      from: 'se.student@keiseruniversity.edu.ni',
+      to,
+      subject,
+      text,
+      html,
+      attachments: [
+        {
+          filename: 'CAE.jpg',
+          path: './public/img/CAE.jpg',
+          cid: 'logo'  
+        }
+      ]
+    };
+  
+    const info = await transporter.sendMail(mailOptions);
+    console.log('Email sent: ' + info.response);
+    return info;
+  }
+  catch(e) {
+    console.error('Error sending email:', e.message, e.stack);
+    throw e;
+  }
+}

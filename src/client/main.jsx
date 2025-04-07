@@ -22,6 +22,8 @@ import ScheduledSessions from "./views/ScheduledSessions";
 import EditSession from "./views/EditSession";
 import SessionDetails from "./views/SessionDetails";
 import Settings  from "./views/Settings";
+import Feedback from "./views/Feedback.jsx";
+import ThanksFeedback from "../server/models/ThanksFeedback.jsx";
 
 // Admin Views
 import Users from "./views-admin/User";
@@ -118,7 +120,7 @@ const router = createBrowserRouter([
         element: <SessionDetails />
       },
       {
-        path: "/sessions/:tutor_id/:course_id",
+        path: "/sessions/:role/:tutor_id/:course_id",
         element: <Session />
       },
       {
@@ -169,6 +171,14 @@ const router = createBrowserRouter([
   }, {
     path: "/test",
     element: <Test/>
+  },
+  {
+    path: "/feedback/:sessionId/:userId",
+    element: <Feedback />
+  },
+  {
+    path: "/feedback/submission",
+    element: <ThanksFeedback />
   }
 ], { basename: "/" });
 

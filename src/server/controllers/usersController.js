@@ -1,6 +1,16 @@
 import User from "../models/User.js";
 import Contact from "../models/Contact.js";
 import Major from "../models/Major.js";
+import connection from "../connection.js";
+import {QueryTypes} from "sequelize";
+
+//Function to sanitize input variables when using raw queries
+const sanitizeUserInput = (input) => {
+    input = input.trim();
+    input = input.replace(/['"]/g, "");
+  
+    return input;
+  };
 
 export const getUsers = async (req, res) => {
     try {
@@ -64,3 +74,39 @@ export const getUserById = async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 }
+
+export const getUserCourses = async (req, res) => {
+    try {
+        const user_id = sanitizeUserInput(req.params.user_id);
+        const ku_id = sanitizeUserInput(req.params.ku_id);
+
+      const userCourses = await connection.query(
+            `SELECT 
+                c.course_id,
+                c.course_code,
+                c.course_name,
+                COUNT(sd.session_id) AS qtyOfSessions
+            FROM 
+                user_courses uc
+            JOIN 
+                courses c ON uc.course_id = c.course_id
+            LEFT JOIN 
+                sessions s ON s.course_id = c.course_id AND s.student_id = :ku_id
+            LEFT JOIN 
+                session_details sd ON s.session_id = sd.session_id AND sd.session_status = 'completed'
+            WHERE 
+                uc.user_id = :user_id AND uc.status = 'Received'
+            GROUP BY 
+                c.course_id, c.course_code, c.course_name;`,
+                {
+                    replacements: { user_id: user_id, ku_id: ku_id },
+                    type: QueryTypes.SELECT 
+                }
+      )
+      res.status(200).json({ userCourses });
+      
+    } catch (e) {
+      console.error(e);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  };

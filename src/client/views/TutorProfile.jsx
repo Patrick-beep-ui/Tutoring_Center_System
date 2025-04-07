@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import Header from "../components/Header";
 import Profile from "../components/Picture";
 import texts from "../texts/tutorProfile.json"
+import Popup from 'reactjs-popup';
 
 function TutorProfile() {
     const [user, setUser] = useState([]);
@@ -54,6 +55,11 @@ function TutorProfile() {
             const {user} = response.data;
             console.log(user);
             setUser([user]);
+
+            const coursesResponse = await axios.get(`/api/users/${tutor_id}/${user.ku_id}`);
+            const {data} = coursesResponse;
+            console.log(data.userCourses);
+            setCourse(data.userCourses);
         }
         catch(e) {
             console.error(e);
@@ -125,29 +131,34 @@ function TutorProfile() {
                         
                             {user.map(t => 
                     <div className="tutor-sched" key={t.tutor_id}>
-                        <p id=""> <strong>{texts.profileInfo.scheduleLabel} </strong></p>
+                        <p id=""> <strong>{ role == 'tutor' ? (texts.profileInfo.scheduleLabel) : null} </strong></p>
                         <div className="schedules">
                             {t.tutor_schedule?.split('\n').map((line, index) => (
                             <p key={index}>{line}</p>
                             ))}
                         </div>
+
                         <div className="tutor-calendar">
-                        <Link to={`/calendar/${tutor_id}`}><button className="btn btn-primary">{texts.profileInfo.viewCalendarButton}</button></Link>
-                    {session >= 1 ? (
+                            { role == 'tutor' ? 
+                                <Link to={`/calendar/${tutor_id}`}><button className="btn btn-primary">{texts.profileInfo.viewCalendarButton}</button></Link>
+                            : null}
+                            {session >= 1 ? (
+                                
+                            <div class="info">
+                                <div class="info__icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" viewBox="0 0 24 24" height="24" fill="none"><path fill="#393a37" d="m12 1.5c-5.79844 0-10.5 4.70156-10.5 10.5 0 5.7984 4.70156 10.5 10.5 10.5 5.7984 0 10.5-4.7016 10.5-10.5 0-5.79844-4.7016-10.5-10.5-10.5zm.75 15.5625c0 .1031-.0844.1875-.1875.1875h-1.125c-.1031 0-.1875-.0844-.1875-.1875v-6.375c0-.1031.0844-.1875.1875-.1875h1.125c.1031 0 .1875.0844.1875.1875zm-.75-8.0625c-.2944-.00601-.5747-.12718-.7808-.3375-.206-.21032-.3215-.49305-.3215-.7875s.1155-.57718.3215-.7875c.2061-.21032.4864-.33149.7808-.3375.2944.00601.5747.12718.7808.3375.206.21032.3215.49305.3215.7875s-.1155.57718-.3215.7875c-.2061.21032-.4864.33149-.7808.3375z"></path></svg>
+                                </div>
+                                <div class="info__title"> 
+                                    {texts.scheduledSessions.youHaveLabel} <a href={`/scheduled-sessions/${tutor_id}`}>{session} {texts.scheduledSessions.scheduledSessionsLabel}</a> 
+                                </div> 
                         
-                    <div class="info">
-                        <div class="info__icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" viewBox="0 0 24 24" height="24" fill="none"><path fill="#393a37" d="m12 1.5c-5.79844 0-10.5 4.70156-10.5 10.5 0 5.7984 4.70156 10.5 10.5 10.5 5.7984 0 10.5-4.7016 10.5-10.5 0-5.79844-4.7016-10.5-10.5-10.5zm.75 15.5625c0 .1031-.0844.1875-.1875.1875h-1.125c-.1031 0-.1875-.0844-.1875-.1875v-6.375c0-.1031.0844-.1875.1875-.1875h1.125c.1031 0 .1875.0844.1875.1875zm-.75-8.0625c-.2944-.00601-.5747-.12718-.7808-.3375-.206-.21032-.3215-.49305-.3215-.7875s.1155-.57718.3215-.7875c.2061-.21032.4864-.33149.7808-.3375.2944.00601.5747.12718.7808.3375.206.21032.3215.49305.3215.7875s-.1155.57718-.3215.7875c-.2061.21032-.4864.33149-.7808.3375z"></path></svg>
-                        </div>
-                        <div class="info__title"> {texts.scheduledSessions.youHaveLabel} <a href={`/scheduled-sessions/${tutor_id}`}>{session} {texts.scheduledSessions.scheduledSessionsLabel}</a> </div>
-                        
-                    </div>
+                            </div> 
                     
-                    ) : (
-                        null
-                    )}
-                        </div>
-                    </div>
+                            ) : (
+                                null
+                            )}
+                        </div> 
+                    </div> // end of tutor-sched
                     )}
                         </div>
                     )}
@@ -161,14 +172,14 @@ function TutorProfile() {
                     {courses.map(c =>
                     <div className="tutor-course ">
 
-                        <Link to={`/sessions/${tutor_id}/${c.course_id}`} key={c.course_id}>
+                        <Link to={`/sessions/${role}/${tutor_id}/${c.course_id}`} key={c.course_id}>
                             <div className="class-box course-container" id={c.course_id}>
                                 <div className="tutor-course-description">
                                     <h3>{c.course_name}</h3>
                                     <p>{c.course_code}</p>
                                 </div>
                                 <div className="tutor-course-data course-tutors">
-                                    <p>{c.sessions}</p>
+                                    <p>{c.sessions || c.qtyOfSessions}</p>
                                     <p>{texts.tutorCourses.sessionsLabel}</p>
                                 </div>
                             </div>
