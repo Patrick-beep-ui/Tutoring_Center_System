@@ -47,11 +47,4 @@ const SessionFeedback = connection.define("SessionFeedback", {
     timestamps: false
 });
 
-// Definir relaciones
-SessionFeedback.belongsTo(TutorSession, { foreignKey: "session_id" });
-SessionFeedback.belongsTo(User, { foreignKey: "user_id" });
-
-TutorSession.hasMany(SessionFeedback, { foreignKey: "session_id" });
-User.hasMany(SessionFeedback, { foreignKey: "user_id" });
-
 export default SessionFeedback;

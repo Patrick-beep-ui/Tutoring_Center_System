@@ -195,7 +195,7 @@ const MyCalendar = () => {
                 dateCellWrapper: props => <Cell {...props} sessions={sessions} />
             }}
         />
-        <Link to={`/profile/${tutor_id}`}><button className="btn btn-primary calendar-return-btn">Go Back</button></Link>
+        <Link to={`/profile/tutor/${tutor_id}`}><button className="btn btn-primary calendar-return-btn">Go Back</button></Link>
         </>
     );
 }
