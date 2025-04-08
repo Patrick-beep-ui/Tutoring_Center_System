@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Card } from "react-bootstrap"
+import { Card,Button } from "react-bootstrap"
 import { Tabs, Tab } from "react-bootstrap"
 import {
   Bar,
@@ -14,6 +14,8 @@ import {
   XAxis,
   YAxis,
 } from "recharts"
+
+import { exportToCSV } from "../../services/exportChart";
 
 const DepartmentReport = () => {
     const [chartType, setChartType] = useState("bar")
@@ -171,6 +173,9 @@ const DepartmentReport = () => {
                   </BarChart>
                 </ResponsiveContainer>
               </div>
+              <Button onClick={() => exportToCSV(usageData, "Department_Usage", chartType)} variant="primary" className="mt-3">
+                Export to CSV
+              </Button>
             </Card.Body>
           </Card>
         </Tab>
@@ -202,6 +207,9 @@ const DepartmentReport = () => {
                   </PieChart>
                 </ResponsiveContainer>
               </div>
+              <Button onClick={() => exportToCSV(tutorsData, "Tutors_by_department", chartType)} variant="primary" className="mt-3">
+                Export to CSV
+              </Button>
             </Card.Body>
           </Card>
         </Tab>
@@ -233,6 +241,9 @@ const DepartmentReport = () => {
                   </PieChart>
                 </ResponsiveContainer>
               </div>
+              <Button onClick={() => exportToCSV(sessionsData, "Sessions_by_department", chartType)} variant="primary" className="mt-3">
+                Export to CSV
+              </Button>
             </Card.Body>
           </Card>
         </Tab>
@@ -254,6 +265,9 @@ const DepartmentReport = () => {
                   </BarChart>
                 </ResponsiveContainer>
               </div>
+              <Button onClick={() => exportToCSV(satisfactionData, "Satisfaction_by_department", chartType)} variant="primary" className="mt-3">
+                Export to CSV
+              </Button>
             </Card.Body>
           </Card>
         </Tab>

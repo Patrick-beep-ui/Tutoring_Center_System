@@ -4,10 +4,14 @@ import expressSession from "express-session";
 import api from "./api.js";
 import passport from 'passport';
 import { Strategy as LocalStrategy} from 'passport-local';
+import {Strategy as JwtStrategy, ExtractJwt} from 'passport-jwt';
 import User from "./models/User.js";
 import TutorCourse from "./models/TutorCourse.js";
 import bcrypt from 'bcryptjs';
 import cors from 'cors';
+import dotenv from 'dotenv';
+
+import { generateToken } from "./utils/jwt.js";
 
 const app = express();
 
@@ -25,14 +29,46 @@ app.use(expressSession({
 
 app.use(express.urlencoded({extended: false}));
 app.use(express.json());
-app.use(passport.authenticate('session'));
-app.use(cors());
+app.use(passport.authenticate('session')); 
+app.use(cors({
+  allowedHeaders: ["Authorization", "Content-Type"]
+}));
 
 app.use('/api', api);
 
+
+dotenv.config();
+
+const JWT_SECRET = process.env.SECRET_KEY; 
+
+const opts = {}
+opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
+opts.secretOrKey =  JWT_SECRET;
+
+passport.use(new JwtStrategy(opts, async (jwt_payload, done) => {
+  try {
+    const user = await User.findOne({
+      where: { email: jwt_payload.email },
+      attributes: ['user_id', 'email', 'password_hash']
+    });
+
+    if (!user) {
+      console.log('User not found');
+      return done(null, false, { message: 'Incorrect username' });
+    }
+    return done(null, user);
+  }
+  catch(e) {
+    console.error(e);
+    return done(e);
+  }
+}));
+
+
 // Passport Configuration
 passport.use(
-  new LocalStrategy({ usernameField: 'email', passwordField: 'password_hash' }, async (email, password, done) => {
+  new LocalStrategy(
+    { usernameField: 'email', passwordField: 'password_hash' }, async (email, password, done) => {
     try {
       const user = await User.findOne({
         where: { email },
@@ -90,17 +126,17 @@ passport.deserializeUser(async (id, done) => {
 // Routes
 app.post(
   "/login",
-  passport.authenticate("local", { session: true }), 
+  passport.authenticate("local", { session: true }),  // Disable passport session management
   (req, res) => {
     req.session.name = req.body.email;
     req.session.save();
-    if (req.user) {
-      res.status(200).json({ message: "User authenticated", user: req.user });
-    } else {
-      res.status(401).json({ message: "Authentication failed" });
-    }
+    const token = generateToken(req.user);
+    console.log('User authenticated:', req.user.dataValues.email);
+    console.log('Token generated');
+    res.status(200).json({ message: "User authenticated", user: req.user, token });
   }
 );
+
 
 app.post('/signup', async (req, res) => {
   try {

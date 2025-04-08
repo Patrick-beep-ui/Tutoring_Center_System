@@ -8,7 +8,7 @@ UserRouter.route("/")
 .get(getUsers);
 
 UserRouter.route("/:user_id")
-.get(userCheck, getUser);
+.get(/*userCheck,*/ getUser);
 
 UserRouter.route("/:user_id/:ku_id")
 .get(getUserCourses);

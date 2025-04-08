@@ -5,8 +5,10 @@ const storage = multer.diskStorage({
         cb(null, 'public/profile'); // Destination folder
     },
     filename: function (req, file, cb) {
+        const {role} = req.params;
+        console.log("Role:", role);
         const tutorId = req.user.user_id;
-        cb(null, `tutor${tutorId}.jpg`); // File name in the destination folder
+        cb(null, `${role}${tutorId}.jpg`); // File name in the destination folder
     }
 });
 

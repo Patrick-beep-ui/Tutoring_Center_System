@@ -19,13 +19,17 @@ function SideBar({user}) {
 
   const logout = useCallback(async () => {
     try {
-      await axios.post("/logout");
-      console.log("logged out");
-      navigate('/login');
+        await axios.post("/logout"); 
     } catch (e) {
-      console.error(e);
+        console.error("Logout error:", e);
+    } finally {
+        localStorage.removeItem("jwtToken");
+        delete axios.defaults.headers.common["Authorization"];
+        console.log("Logged out");
+        navigate('/login');
     }
-  }, []);
+}, []);
+
 
   return (
     <div className='sidebar'>

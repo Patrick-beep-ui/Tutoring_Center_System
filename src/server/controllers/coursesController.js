@@ -3,6 +3,7 @@ import Major from "../models/Major.js";
 import TutorCourse from "../models/TutorCourse.js";
 import connection from "../connection.js";
 import {QueryTypes, Sequelize} from "sequelize";
+import {sanitizeUserInput} from "../utils/sanitize.js";
 
 export const getCourses = async (req, res) => {
     try {   
@@ -78,16 +79,33 @@ export const addCourse = async (req, res) => {
 
 export const getTutorCourses = async (req, res) => {
     try {
-        const id  = req.params.tutor_id;
+        const id  = sanitizeUserInput(req.params.tutor_id);
 
         if(id) {
-            const tutor_classes = await connection.query(`SELECT c.course_name as 'course_name', c.course_code as 'course_code', tc.user_id as 'tutor_id', c.course_id as 'course_id', COUNT(CASE WHEN sd.session_status = 'completed' THEN s.course_id END) AS 'sessions'
-                FROM courses c JOIN user_courses tc ON c.course_id = tc.course_id
-                JOIN tutors t ON t.tutor_id = tc.user_id
-                LEFT JOIN sessions s ON s.course_id = c.course_id
-                LEFT JOIN session_details sd ON s.session_id = sd.session_id
-                WHERE tc.user_id = ${id}
-                GROUP BY course_name, course_code, tutor_id, course_id;`, {
+            const tutor_classes = await connection.query(`
+                SELECT 
+                u.first_name AS tutor_first_name,
+                u.last_name AS tutor_last_name,
+                c.course_name,
+                c.course_id as course_id,
+                COUNT(s.session_id) AS completed_sessions
+                FROM 
+                    users u
+                JOIN 
+                    tutors t ON u.user_id = t.user_id
+                JOIN 
+                    user_courses uc ON t.user_id = uc.user_id
+                LEFT JOIN 
+                    courses c ON uc.course_id = c.course_id
+                LEFT JOIN 
+                    sessions s ON t.tutor_id = s.tutor_id AND s.course_id = c.course_id
+                WHERE 
+                    u.user_id = :user_id
+                GROUP BY 
+                    u.user_id, c.course_id
+                ORDER BY 
+                    tutor_first_name, tutor_last_name, c.course_name, course_id;`, {
+                    replacements: { user_id: id },
                     type: QueryTypes.SELECT
                 });
         

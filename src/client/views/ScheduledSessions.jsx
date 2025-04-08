@@ -9,7 +9,7 @@ import Header from "../components/Header";
 
 function ScheduledSessions() {
     const [session, setSession] = useState([]);
-    const {tutor_id} = useParams();
+    const {tutor_id, role} = useParams();
 
     useEffect(() => {
         const getSessions = async () => {
@@ -30,7 +30,7 @@ function ScheduledSessions() {
         <>
         <Header/>
         <section className="sessions-container section">
-            <Link to={`/profile/${tutor_id}`} >Go Back</Link>
+            <Link to={`/profile/${role}/${tutor_id}`} >Go Back</Link>
             <SessionTable session={session} isEditable={true} />
         </section>
 

@@ -138,7 +138,7 @@ const router = createBrowserRouter([
         element: <AddSession />
       }, 
       {
-        path: "/scheduled-sessions/:tutor_id",
+        path: "/scheduled-sessions/:role/:tutor_id",
         element: <ScheduledSessions />
       },
       {
