@@ -30,9 +30,9 @@ function ClassName() {
             if (window.innerWidth <= 600) {
                 setItemsPerPage(3);
             } else if (window.innerWidth <= 1200) {
-                setItemsPerPage(9);
+                setItemsPerPage(10);
             } else {
-                setItemsPerPage(15);
+                setItemsPerPage(10);
             }
         }
 
@@ -70,6 +70,8 @@ function ClassName() {
                         <div className="course-description">
                             <p>{c.course_code}</p>
                             <p>{c.course_name}</p>
+                            <p>{c.credits} Credits</p>
+                            <p>{c.Major.major_name}</p>
                         </div>
                         <div className="course-tutors">
                             <p>{c.tutors_counter} Tutors</p>

@@ -22,9 +22,12 @@ import ScheduledSessions from "./views/ScheduledSessions";
 import EditSession from "./views/EditSession";
 import SessionDetails from "./views/SessionDetails";
 import Settings  from "./views/Settings";
+import Feedback from "./views/Feedback.jsx";
+import ThanksFeedback from "../server/models/ThanksFeedback.jsx";
 
 // Admin Views
 import Users from "./views-admin/User";
+import TutorsReport from "./views-admin/ReportsView.jsx";
 
 import Login from "./views/Login";
 import Signup from "./views/Signup";
@@ -83,7 +86,7 @@ const router = createBrowserRouter([
         element: <AddClass />
       },
       {
-        path: "/profile/:tutor_id",
+        path: "/profile/:role?/:tutor_id",
         element: <TutorProfile />
       },
       {
@@ -127,7 +130,7 @@ const router = createBrowserRouter([
         element: <SessionDetails />
       },
       {
-        path: "/sessions/:tutor_id/:course_id",
+        path: "/sessions/:role/:tutor_id/:course_id",
         element: <Session />
       },
       {
@@ -152,6 +155,10 @@ const router = createBrowserRouter([
       }, {
         path: "/calendar/:tutor_id",
         element: <MyCalendar />
+      },
+      {
+        path: "/tutors/reports",
+        element: <TutorsReport/>
       }
     ]
   },
@@ -174,6 +181,14 @@ const router = createBrowserRouter([
   }, {
     path: "/test",
     element: <Test/>
+  },
+  {
+    path: "/feedback/:sessionId/:userId",
+    element: <Feedback />
+  },
+  {
+    path: "/feedback/submission",
+    element: <ThanksFeedback />
   }
 ], { basename: "/" });
 

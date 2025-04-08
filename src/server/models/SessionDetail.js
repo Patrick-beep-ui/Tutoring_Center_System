@@ -11,7 +11,7 @@ const SessionDetail = connection.define('SessionDetail', {
         type: DataTypes.TIME,
     }, 
     session_status: {
-        type: DataTypes.ENUM('scheduled', 'completed', 'pending')
+        type: DataTypes.ENUM('scheduled', 'completed', 'pending', 'canceled')
     },
     createdAt: {
         type: DataTypes.DATE,

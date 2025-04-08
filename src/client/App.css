@@ -699,7 +699,7 @@ a:visited {
   color: var(--gray);
 }
 
-.login-user button, #sign-up-btn, #signup-btn {
+.login-user button, #sign-up-btn, #signup-btn, #signup-next-btn, #signup-back-btn {
   width: 100%;
   padding: 0.6em;
   background-color: var(--yellow);
@@ -840,15 +840,25 @@ a:visited {
   padding-right: 50px;
 }
 
-.signup-form input, #signup-btn {
+.signup-form input, #signup-btn, .signup-form select {
   width: 80%;
 }
 
-#signup-btn {
+.signup-form select {
+  padding: 0.5em;
+  border: 1px solid var(--gray);
+  border-radius: 10px;
+}
+
+#signup-btn, #signup-next-btn, #signup-back-btn {
   margin-top: 10px;
   width: 50%;
   border: none;
   color: var(--white);
+}
+
+#signup-back-btn {
+  background-color: var(--blue);
 }
 
 .signup-cae-logo {
@@ -860,6 +870,40 @@ a:visited {
   font-size: 0.8rem;
   text-align: left;
   padding-left: 20px;
+}
+
+#select-courses-signup {
+  height: 200px;
+  padding: 10px;
+}
+
+.courses-form-group {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  width: 100%;
+  border: 1px solid var(--gray);
+  border-radius: 10px;
+  height: 300px;
+  overflow-y: scroll;
+}
+
+.course-element {
+  background-color: var(--blue);
+  margin: 10px;
+  border-radius: 10px;
+  color: var(--white);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  text-align: left;
+  padding-left: 10px;
+}
+
+.course-element label {
+  padding-left: 10px;
 }
 
 /* Aqui Termina el Signup*/
@@ -1056,7 +1100,7 @@ canvas {
 
 
 /*Comment*/
-.card {
+.comment .card {
   width: 450px;
   height: fit-content;
   background-color: white;
@@ -1535,11 +1579,13 @@ canvas {
 
 }
 
-
-
 .nav-menu {
   display: flex;
   justify-content: space-between;
+}
+
+.sidebar .nav-menu {
+  background-color: var(--blue);
 }
 
 .nav-logo {
@@ -1672,11 +1718,6 @@ canvas {
     flex: 90%;
     }
 
-
-
-
-
-
 /* Report and Courses */
 
 .report-container, .courses-container {
@@ -1696,7 +1737,7 @@ canvas {
 
 .counters, .courses {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, auto));
+  grid-template-columns: repeat(auto-fit, minmax(230px, auto));
   gap: 2rem;
   padding-top: 20px;
 }
@@ -1723,6 +1764,14 @@ canvas {
   transition: transform 0.3s, box-shadow 0.3s;
   user-select: none;
   scroll-snap-align: start;
+}
+
+.courses-container .courses .course-container {
+  height: 200px;
+}
+
+.courses-container .courses .course-container p {
+  margin-bottom: 2px;
 }
 
 .course-container:hover {
@@ -1854,6 +1903,11 @@ canvas {
   padding: 5px;
 }
 
+.popup-cell-msg {
+  max-height: 700px;
+  overflow-y: scroll;
+}
+
 .popup-calendar-msg button {
   margin: 10px 0px 10px 0px;
   display: block;
@@ -1866,6 +1920,10 @@ canvas {
   padding-left: 5px;  
   margin-bottom: 0rem;
   height: 18px;
+}
+
+.schedule-session-form {
+  width: 100%;
 }
 
 @media (max-width: 768px) {
@@ -1975,6 +2033,30 @@ canvas {
   max-width: 60%;
 }
 
+.days-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.day-checkbox input[type="checkbox"] {
+  display: none;
+}
+
+.day-checkbox label {
+  padding: 6px 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background-color: #f9f9f9;
+}
+
+.day-checkbox input[type="checkbox"]:checked + label {
+  background-color: #007BFF;
+  color: white;
+  border-color: #007BFF;
+}
 
 
 
@@ -2552,8 +2634,6 @@ strong {
   transition: 0.3s;
 }
 
-
-
 /*  AdminHome components  */
 
 .stat-box {
@@ -2735,5 +2815,132 @@ der { background-color: lightblue; }
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   margin: 19px;
 }
+/* Admin Reports */
+
+.admin-reports-section {
+
+}
 
 
+/* Feedback */
+
+/* General Styles for Feedback Page */
+.feedback-container {
+  background-color: var(--white);
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  margin-top: 5rem;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+
+.feedback-page-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--blue);
+  margin-bottom: 1rem;
+}
+
+/* Styling for Feedback Form */
+.feedback-form {
+  background-color: var(--white);
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  margin-top: 2rem;
+  text-align: left;
+}
+
+.feedback-form h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--blue);
+  margin-bottom: 1rem;
+}
+
+.feedback-form label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: var(--black);
+}
+
+.feedback-form input,
+.feedback-form textarea {
+  width: 100%;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  border: 1px solid var(--gray);
+  border-radius: 4px;
+  font-size: 1rem;
+  color: var(--black);
+}
+
+.feedback-form input:focus,
+.feedback-form textarea:focus {
+  border-color: var(--blue);
+  outline: none;
+}
+
+.feedback-form button {
+  background-color: var(--blue);
+  color: var(--white);
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.feedback-form button:hover {
+  background-color: var(--yellow);
+}
+
+.feedback-form p {
+  color: var(--red);
+  font-size: 0.875rem;
+  margin-top: -0.75rem;
+}
+
+/* Thanks Feedback Page */
+.thanks-feedback-container {
+  padding: 2rem;
+  background-color: var(--white);
+  border-radius: 8px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 5rem;
+  text-align: center;
+}
+
+.thanks-feedback-container h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--blue);
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .feedback-container,
+  .feedback-form,
+  .thanks-feedback-container {
+    width: 90%;
+    padding: 1.5rem;
+  }
+
+  .feedback-page-title,
+  .thanks-feedback-container h1 {
+    font-size: 1.5rem;
+  }
+
+  .feedback-form h2 {
+    font-size: 1.25rem;
+  }
+}

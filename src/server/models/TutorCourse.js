@@ -1,7 +1,6 @@
 import {DataTypes} from "sequelize"
 import connection from "../connection.js";
-import Tutor from "./Tutor.js";
-import Course from "./Course.js";
+import User from "./User.js";
 
 const TutorCourse = connection.define('TutorCourse', {
     tutor_course_id: {
@@ -12,30 +11,31 @@ const TutorCourse = connection.define('TutorCourse', {
     },
     course_id: {
         type: DataTypes.INTEGER,
-        allowNull: true
+        allowNull: false,
+        references: {
+            model: 'Course',
+            key: "course_id"
+        },
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE"
     },
-    tutor_id: {
-        type: DataTypes.STRING,
+    user_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+            model: User, 
+            key: "user_id"
+        },
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE"
+    },
+    status: {
+        type: DataTypes.ENUM("Given", "Received"),
         allowNull: true
     }
-    
 }, {
-    tableName: 'tutor_courses',
+    tableName: 'user_courses',
     timestamps: false
 })
-
-TutorCourse.belongsTo(Tutor, {
-    foreignKey: {
-        field: 'tutor_id',
-        allowNull: true
-    }
-});
-
-TutorCourse.belongsTo(Course, {
-    foreignKey: {
-        field: 'course_id',
-        allowNull: true
-    }
-});
 
 export default TutorCourse;

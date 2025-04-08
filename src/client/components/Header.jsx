@@ -23,7 +23,7 @@ const Header = () => {
             </div>
             <div className={`user-welcome ${isActive ? 'user-active' : ''}`}>
                 <i className={texts.header["user-icon"]}></i>
-                <Link to={`/profile/${user.user_id}`} className="user-link">{user ? user.first_name+ ' ' +user.last_name : "User"}</Link>
+                <Link to={`/profile/${user.role}/${user.user_id}`} className="user-link">{user ? user.first_name+ ' ' +user.last_name : "User"}</Link>
             </div>
       </div>
       <SideBar user={user}/>

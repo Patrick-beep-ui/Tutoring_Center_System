@@ -45,7 +45,7 @@ function Tutors() {
                     <tr key={uuid()}> 
                         <td>
                             <div className="d-flex align-items-center">
-                            <Link to={`/profile/${student.id}`}>
+                            <Link to={`/profile/tutor/${student.id}`}>
                                 <img src={`/profile/tutor${student.id}.jpg`} alt={``} 
                                 style={{width: '45px', height: '45px'}}
                                 class="rounded-circle"/>
@@ -62,7 +62,7 @@ function Tutors() {
                         </td>
                         <td>
                             <div className="ms-3 tutor-schedule-cell">
-                                None
+                                <p>None</p>
                             </div>
                         </td>
                     </tr>  

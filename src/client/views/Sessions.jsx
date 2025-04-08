@@ -15,6 +15,8 @@ function Session() {
     const [session, setSession] = useState([]);
     const {tutor_id} = useParams();
     const {course_id} = useParams();
+    const {role} = useParams();
+
     //const [layout, setLayout] = useState("undefined");
     const { layout } = useLayout();
     
@@ -52,7 +54,7 @@ function Session() {
         <>
         <Header/>
         <section className={`sessions-container section ${layout}`}>
-            <Link to={`/profile/${tutor_id}`} >Go Back</Link>
+            <Link to={`/profile/${role}/${tutor_id}`} >Go Back</Link>
             <SessionTable session={session} />
 
             {layout === "electron" ? (

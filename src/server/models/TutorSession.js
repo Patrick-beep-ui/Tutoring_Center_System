@@ -1,8 +1,5 @@
 import { DataTypes } from "sequelize";
 import connection from "../connection.js";
-import Tutor from "./Tutor.js";
-import Course from "./Course.js";
-import Semester from "./Semester.js";
 
 const TutorSession = connection.define('TutorSession', {
     session_id: {
@@ -30,6 +27,10 @@ const TutorSession = connection.define('TutorSession', {
         type: DataTypes.DECIMAL,
     }, 
     feedback: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    topics: {
         type: DataTypes.STRING,
         allowNull: true
     }

@@ -1,8 +1,24 @@
 import TutorSession from "../models/TutorSession.js";
 import User from "../models/User.js";
+import Course from "../models/Course.js";
 import SessionDetail from "../models/SessionDetail.js";
 import connection from "../connection.js";
+import { sendFeedbackEmail } from "../mail.js";
 import { QueryTypes } from "sequelize";
+
+import os from 'os';
+
+function getLocalIPAddress() {
+    const interfaces = os.networkInterfaces();
+    for (const iface of Object.values(interfaces)) {
+        for (const details of iface) {
+            if (details.family === 'IPv4' && !details.internal) {
+                return details.address;
+            }
+        }
+    }
+    return 'localhost'; // fallback
+}
 
 export const getSessions = async (req, res) => {
     try {
@@ -30,7 +46,7 @@ export const getSessions = async (req, res) => {
                      JOIN users student ON student.ku_id = s.student_id  -- Get student's name
                      JOIN courses c ON s.course_id = c.course_id
                      JOIN semester semester ON semester.semester_id = s.semester_id  -- Join with semester table
-            WHERE semester.semester_id = 2  -- Assuming you're testing for semester_id = 2
+            WHERE semester.semester_id = 1 
             ORDER BY week_number, session_date;
         `, {
             type: QueryTypes.SELECT
@@ -48,7 +64,7 @@ export const getSessionsByTutor = async (req, res) => {
     try {
         const id = req.params.tutor_id
 
-        const sessions = await connection.query(` SELECT s.session_id as 'session_id', CONCAT(u.first_name, ' ', u.last_name) as 'tutor_name', s.student_id as 'student',  c.course_name as 'course_name', s.session_totalhours as 'total_hours', s.session_date as 'session_date'
+        const sessions = await connection.query(`SELECT s.session_id as 'session_id', CONCAT(u.first_name, ' ', u.last_name) as 'tutor_name', s.student_id as 'student',  c.course_name as 'course_name', s.session_totalhours as 'total_hours', s.session_date as 'session_date'
             FROM sessions s JOIN tutors t on s.tutor_id = t.tutor_id
             JOIN users u ON u.user_id = t.user_id
             JOIN courses c ON s.course_id = c.course_id
@@ -274,6 +290,45 @@ export const editSession = async (req, res) => {
             session_status: 'completed',
             updatedAt: new Date()
         })
+
+        const student = await User.findOne({
+            where: {
+                ku_id: session.student_id
+            }
+        })
+
+        if(student) {
+            const tutor = await User.findOne({
+                where: {
+                    user_id: session.tutor_id
+                }
+            })
+
+            const course = await Course.findOne({
+                where: {
+                    course_id: session.course_id
+                }
+            })
+
+            //const protocol = req.protocol;
+            //const host = req.get('host');
+            //const feedbackUrl = `${protocol}://${host}/feedback/${session.session_id}/${student.user_id}`;
+
+            const localIP = getLocalIPAddress();
+            const feedbackUrl = `http://${localIP}:3000/feedback/${session.session_id}/${student.user_id}`;
+
+            await sendFeedbackEmail(student.email, {
+                tutorName: `${tutor.first_name} ${tutor.last_name}`,
+                studentName: `${student.first_name} ${student.last_name}`,
+                courseName: course.course_name,
+                topics: session.topics,
+                date: new Date(session.session_date).toLocaleDateString('en-US', { timeZone: 'UTC' }),
+                time: session_time,
+                duration: session_hours,
+                //feedbackUrl: `http://localhost:3000/feedback/${session.session_id}/${student.user_id}`,
+                feedbackUrl: feedbackUrl,
+            })
+        }
 
         res.json({
             message: 'Session updated successfully'
