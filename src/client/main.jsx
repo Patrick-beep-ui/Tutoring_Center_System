@@ -34,6 +34,7 @@ import SideBar from "./components/Sidebar";
 import Header from "./components/Header";
 import MyCalendar from "./components/Calendar";
 import Test from "./views/Test";
+import AdminHome from "./views-admin/AdminHome.jsx";
 
 
 //Implementation
@@ -44,6 +45,7 @@ import Auth from "./components/Auth";
 import { LayoutProvider } from './context/Layout';
 import Activity_Tutors from "./views/Activity_Tutors.jsx";
 import Activity_Alerts from "./views/Activity_Alerts.jsx";
+import Activity_Sessions from "./views/Activity_Sessions.jsx";
 
 //import App from "./App";
 
@@ -55,6 +57,10 @@ const router = createBrowserRouter([
       {
         path: "/",
         element: <Home />
+      },
+      {
+        path: "/home",
+        element: <AdminHome />
       },
       {
         path: "/users",
@@ -99,6 +105,10 @@ const router = createBrowserRouter([
       {
         path: "/activity",
         element: <Activity />
+      },
+      {
+        path: "/activity-sessions",
+        element: <Activity_Sessions />
       },
       {
         path: "/activity-students",

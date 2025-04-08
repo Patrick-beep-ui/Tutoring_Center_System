@@ -22,7 +22,7 @@
                     },
                     {
                         "label": "Home",
-                        "url": "/",
+                        "url": "/home",
                         "icon": "bx bxs-home"
                     },
                     {
@@ -32,8 +32,8 @@
                     },
                     {
                         "label": "Sessions",
-                        "url": "/sessions",
-                        "icon": "bx bxs-chalkboard"
+                        "url": "/",
+                        "icon": "bx bxs-book-open"
                     },
                     {
                         "label": "Reports",

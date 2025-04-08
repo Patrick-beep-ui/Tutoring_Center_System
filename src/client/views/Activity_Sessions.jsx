@@ -1,12 +1,9 @@
 import { useState, useEffect } from "react";
-import Header from "../components/Header";
 import SessionCard from "../components/SessionCard.jsx";
-import { NavLink, Link } from "react-router-dom";
 
 import "../App.css";
-import Mini_Nav from "../components/Mini_Nav.jsx";
 
-const Activity = () => {
+const Activity_Sessions = () => {
     const [sessions, setSessions] = useState([]);
 
     useEffect(() => {
@@ -18,17 +15,13 @@ const Activity = () => {
 
     return (
         <>
-            <Header />
-            <section className="activity-container">
-                <Mini_Nav/>
                 <div className="sessions-grid">
                     {sessions.map((session) => (
                         <SessionCard key={session.session_id} session={session} />
                     ))}
                 </div>
-            </section>
         </>
     );
 };
 
-export default Activity;
+export default Activity_Sessions;

@@ -1989,7 +1989,6 @@ canvas {
 }
 
 .activity-container h1 {
-  text-align: center;
   color: #333;
 }
 
@@ -2095,8 +2094,26 @@ nav ul li a {
 
   /*text-transform: uppercase;*/
 }
+nav ul li {
+  padding: 0px 20px;
+  text-decoration: none;
+  font-size: 14px;
+  cursor: pointer;
+
+  /*text-transform: uppercase;*/
+}
+
+nav ul li:hover {
+  background: #ffffffab;
+}
 
 nav ul li:hover a {
+  border-radius: 3px;
+  padding: 4px 20px 4px 20px;
+  background-color: snow;
+  color: black;
+}
+nav ul li :hover li {
   border-radius: 3px;
   padding: 4px 20px 4px 20px;
   background-color: snow;
@@ -2300,12 +2317,16 @@ strong {
   max-width: 600px;
 }
 
+
+
 .tutor-grid{
   display: grid;
   grid-template-columns: repeat(2, 1fr); /* Two equal columns */
   gap: 20px; /* Space between items */
 
 }
+
+
 @media (max-width: 768px) {
   .tutor-grid {
     grid-template-columns: 1fr; /* One column on small screens */
@@ -2412,6 +2433,9 @@ strong {
 .details-btn:hover {
   background: darkred;
 }
+
+
+
 
 /* Styling for warning icon */
 .alert-icon {
@@ -2527,3 +2551,189 @@ strong {
   background-color: var(--dark-gray);
   transition: 0.3s;
 }
+
+
+
+/*  AdminHome components  */
+
+.stat-box {
+  background: white;
+  margin: 0px 30px 0px 30px;
+  padding: 5px 50px 0px 10px;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  min-width: 200px;
+}
+.stat-box h3{
+  padding-left: 0;
+  text-align: left;
+  font-size: 1.2rem;
+  font-weight: normal;
+}
+
+.stat-box h2 {
+  font-size: 1.5rem;
+  text-align: left;
+
+}
+
+.stat-box p {
+  font-size: 0.9rem;
+  margin-top: 5px;
+  text-align: left;
+
+}
+
+
+
+
+.activity-card-header{
+  width: 100%;
+  padding: 0px 100px 0px 100px;
+  display: flex;
+  justify-content: space-between; /* Push items to the edges */
+}
+
+
+
+.activities {
+  padding: 20px;
+  border-radius: 16px;
+  background: #f9f9f9;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.h3-title {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+  font-weight: 600;
+  text-align: left;
+}
+
+.activity-card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 20px 24px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.04);
+  margin-bottom: 16px;
+  transition: all 0.3s ease-in-out;
+  text-align: left;
+}
+
+.activity-details {
+  position: relative;
+}
+
+.activity-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.activity-time {
+  font-size: 0.9rem;
+  color: #6b7280;
+  margin-bottom: 10px;
+}
+
+.activity-description {
+  font-size: 0.95rem;
+  color: #4b5563;
+  margin-top: 6px;
+  line-height: 1.5;
+}
+
+/* Tag Styling */
+.tag {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #fff;
+  text-transform: uppercase;
+}
+
+.system {
+  background-color: #d1d5db; /* gray-300 */
+  color: #1f2937;
+}
+
+.reminder {
+  background-color: #c7d2fe; /* indigo-200 */
+  color: #4338ca;
+}
+
+.alert {
+  background-color: #fcd34d; /* yellow-300 */
+  color: #92400e;
+}
+der { background-color: lightblue; }
+.alert { background-color: orange; }
+
+
+
+
+
+
+
+
+
+.top-tutors {
+  background: white;
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  margin: 19px;
+}
+
+.top-tutors ol {
+  list-style-type: none;
+  padding: 0;
+}
+
+.top-tutors li {
+  background: #f9f9f9;
+  padding: 10px 20px;
+  margin: 15px 30PX;
+  border: 1px solid var(--gray);
+  border-radius: 15px;
+  text-align: left;
+}
+
+
+
+.dashboard {
+  padding-top: 100px;
+  margin-left: 160px;
+  margin-right: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 15px;
+}
+
+.content-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 20px;
+}
+
+.activities {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  margin: 19px;
+}
+
+
