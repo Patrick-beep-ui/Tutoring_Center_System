@@ -71,7 +71,6 @@ function Home() {
     return (
         <>
             <Header />
-
             <section className="sessions-container section">
                 <div className="week-navigation">
                     <button onClick={goToPreviousWeek} disabled={currentWeek === 1} className="weeks-btn" >&#9665;</button>
@@ -117,7 +116,7 @@ function Home() {
                         <Link to={'/majors'}>See All Majors</Link>
                     </div>
                 </section>
-            </section>
+            </section>aaaaaaaaaaaaaaaaa
         </>
     );
 }

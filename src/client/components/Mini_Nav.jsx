@@ -1,9 +1,12 @@
 import { NavLink, Link } from "react-router-dom";
+import {useState} from "react";
+
 import "../App.css";
 
 
 
-const Mini_Nav = () => {
+const Mini_Nav = ({setSelectedSection }) => {
+    const [selectedItem, setSelectedItem] = useState(null);
 
     return (
 
@@ -12,12 +15,11 @@ const Mini_Nav = () => {
             <div className="navbar-container">
                 <nav>
                     <ul>
-                        <li><NavLink to='/activity'>Sessions</NavLink> </li>
-                        <li><NavLink to='/activity-students'>Students</NavLink></li>
-                        <li><NavLink to='/activity-tutors'>Tutors</NavLink></li>
-                        <li><NavLink to='/activity-alerts'>Alerts</NavLink></li>
+                        <li onClick={() => setSelectedSection('sessions')}>Sessions</li>
+                        <li onClick={() => setSelectedSection('tutors')}>Tutors</li>
+                        <li onClick={() => setSelectedSection('alerts')}>Students</li>
+                        <li onClick={() => setSelectedSection('alerts')}>Alerts</li>
                     </ul>
-
                 </nav>
 
                 <div className="date-box">
