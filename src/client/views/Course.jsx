@@ -1,10 +1,10 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import axios from "axios";
-import { useParams } from "react-router-dom";
-import {v4 as uuid} from "uuid";
 import { Link } from "react-router-dom";
+import { v4 as uuid } from "uuid";
 import Header from "../components/Header";
 import '.././App.css';
+import { exportToCSV } from "../services/exportCSV";
 
 function ClassName() {
     const [course, setCourse] = useState([]);
@@ -16,14 +16,13 @@ function ClassName() {
         const getClasses = async () => {
             try {
                 const response = await axios.get("/api/courses");
-                const {data} = response;
-                console.log(data.courses)
-                setCourse(data.courses)
+                const { data } = response;
+                console.log(data.courses);
+                setCourse(data.courses);
+            } catch (e) {
+                console.error(e);
             }
-            catch(e) {
-                console.error(e)
-            }
-        }
+        };
         getClasses();
 
         const handleResize = () => {
@@ -34,62 +33,74 @@ function ClassName() {
             } else {
                 setItemsPerPage(10);
             }
-        }
+        };
 
         handleResize();
         window.addEventListener("resize", handleResize);
 
         return () => {
             window.removeEventListener("resize", handleResize);
-        }
-    }, [])
+        };
+    }, []);
 
-      const nextPage = () => {
+    const nextPage = () => {
         if (currentPage < Math.ceil(course.length / itemsPerPage) - 1) {
             setCurrentPage(currentPage + 1);
         }
-    }
+    };
 
     const prevPage = () => {
         if (currentPage > 0) {
             setCurrentPage(currentPage - 1);
         }
-    }
+    };
 
     const currentCourses = course.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage);
 
-    return(
+    // Function to export data to CSV 
+    const handleExportCSV = useCallback(() => {
+        const headers = ['course_code', 'course_name', 'credits', 'Major', 'tutors_counter'];
+        const rows = course.map(c => [
+            c.course_code,
+            c.course_name,
+            c.credits,
+            c.Major.major_name,
+            c.tutors_counter
+        ]);
+        exportToCSV(rows, headers, 'courses.csv');   
+    }, [course]);
+
+    return (
         <>
-        <Header/>
+            <Header />
 
-        <section className="courses-container section">
-        <button className="arrow left" onClick={prevPage} disabled={currentPage === 0}>←</button>
-            <section className="courses" ref={scrollRef}>
-                {currentCourses.map(c => 
-                    <div className="course-container">
-                        <div className="course-description">
-                            <p>{c.course_code}</p>
-                            <p>{c.course_name}</p>
-                            <p>{c.credits} Credits</p>
-                            <p>{c.Major.major_name}</p>
+            <section className="courses-container section">
+                <button className="arrow left" onClick={prevPage} disabled={currentPage === 0}>←</button>
+                <section className="courses" ref={scrollRef}>
+                    {currentCourses.map(c =>
+                        <div className="course-container" key={uuid()}>
+                            <div className="course-description">
+                                <p>{c.course_code}</p>
+                                <p>{c.course_name}</p>
+                                <p>{c.credits} Credits</p>
+                                <p>{c.Major.major_name}</p>
+                            </div>
+                            <div className="course-tutors">
+                                <p>{c.tutors_counter} Tutors</p>
+                                <a href="">See Tutors</a>
+                            </div>
                         </div>
-                        <div className="course-tutors">
-                            <p>{c.tutors_counter} Tutors</p>
-                            <a href="">See Tutors</a>
-                        </div>
-                    </div>
                     )}
-
+                </section>
             </section>
 
-    </section>
-    
-    <Link to={"/classes/add"} className="add-class" style={{ color: 'var(--white)'}}>Add Course</Link>
-    <button className="arrow right" onClick={nextPage} disabled={currentPage >= Math.ceil(course.length / itemsPerPage) - 1}>→</button>
-    
-        </>
-    )
+            <Link to={"/classes/add"} className="add-class" style={{ color: 'var(--white)' }}>Add Course</Link>
+            <button className="arrow right" onClick={nextPage} disabled={currentPage >= Math.ceil(course.length / itemsPerPage) - 1}>→</button>
 
+            {/* Button to trigger CSV export */}
+            <button className="export-csv" onClick={handleExportCSV}>Export as CSV</button>
+        </>
+    );
 }
 
-export default ClassName
+export default ClassName;

@@ -38,15 +38,27 @@ export default function Login() {
     };
 
     const handleLogin = async (formData) => {
+        setError(""); 
         setLoading(true);
-        console.log("datos enviados: " + formData)
+        console.log("datos enviados: " + JSON.stringify(formData))
         try {
-            await axios.post("/login", formData);
-            console.log("Login Successful");
+            const response = await axios.post("/login", formData);
+            const {token} = response.data;
+
+            if (token) {
+                localStorage.setItem("jwtToken", token);
+                // Configurar el header para futuras peticiones
+                axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+    
+                console.log("Login Successful");
+                navigate('/');
+            } else {
+                throw new Error("No token received");
+            }
             navigate('/');
         } catch (error) {
             console.error(error.response?.data || error.message);
-              
+            setError("Login failed. Please check your credentials.");
         } finally {
             setLoading(false);
         }

@@ -5,7 +5,7 @@ import axios from 'axios';
 import '.././App.css';
 import texts from "../texts/tutorProfile.json";
 
-const Profile = ({ tutorId, onImageUpload }) => {
+const Profile = ({ tutorId, onImageUpload, role }) => {
     const [imageSrc, setImageSrc] = useState(null);
     const [crop, setCrop] = useState({ x: 0, y: 0 });
     const [zoom, setZoom] = useState(1);
@@ -66,10 +66,15 @@ const Profile = ({ tutorId, onImageUpload }) => {
         const croppedImage = await getCroppedImage();
 
         const formData = new FormData();
-        formData.append('profilePic', croppedImage, `tutor${tutorId}.jpg`);
+        if(role === "tutor") {
+            formData.append('profilePic', croppedImage, `tutor${tutorId}.jpg`);
+        }
+        if(role === "student") {
+            formData.append('profilePic', croppedImage, `student${tutorId}.jpg`);
+        }
 
         try {
-            const response = await axios.post('/api/uploadProfilePic', formData, {
+            const response = await axios.post(`/api/uploadProfilePic/${role}`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }

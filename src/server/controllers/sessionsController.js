@@ -38,7 +38,9 @@ export const getSessions = async (req, res) => {
                         ) AS 'session_duration',
                     s.session_date AS 'session_date',
                     sd.session_status AS 'session_status',
-                    WEEK(s.session_date, 1) - WEEK(semester.start_date, 1) + 1 AS 'week_number'  -- Calculate the week number
+                    WEEK(s.session_date, 1) - WEEK(semester.start_date, 1) + 1 AS 'week_number',
+                    s.topics AS 'session_topics',
+                    s.feedback AS 'session_feedback'
             FROM sessions s
                      JOIN session_details sd ON s.session_id = sd.session_id
                      JOIN tutors t ON s.tutor_id = t.tutor_id

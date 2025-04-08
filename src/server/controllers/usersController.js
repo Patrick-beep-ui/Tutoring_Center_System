@@ -3,14 +3,10 @@ import Contact from "../models/Contact.js";
 import Major from "../models/Major.js";
 import connection from "../connection.js";
 import {QueryTypes} from "sequelize";
+import {sanitizeUserInput} from "../utils/sanitize.js";
 
 //Function to sanitize input variables when using raw queries
-const sanitizeUserInput = (input) => {
-    input = input.trim();
-    input = input.replace(/['"]/g, "");
-  
-    return input;
-  };
+
 
 export const getUsers = async (req, res) => {
     try {

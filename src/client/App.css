@@ -59,6 +59,7 @@ body {
   height: 100%;
   padding: 70px 20px 20px;
   padding-left: 160px;
+  overflow-y: scroll;
 }
 
 h1 {
@@ -70,6 +71,10 @@ h1 {
 
 
 /* Users Directories View*/
+
+.users-section {
+  overflow: scroll;
+}
 
 .users-container {
   display: flex;
@@ -103,6 +108,13 @@ summary::-webkit-details-marker {
   display: none; /* Hide default arrow */
 }
 
+summary {
+  display: flex;
+  align-items: center; /* Vertically center the content */
+  cursor: pointer;
+  position: relative;
+}
+
 .summary-title {
   font-size: 1.4em; /* Same as h2 */
   font-weight: 500;
@@ -114,11 +126,12 @@ summary::-webkit-details-marker {
 summary::after {
   content: ""; /* Empty content required for pseudo-elements */
   display: inline-block;
-  width: 25px; 
-  height: 25px; 
+  width: 25px;
+  height: 25px;
   background-image: url('/src/client/assets/down-squared.png');
   background-size: contain;
   background-repeat: no-repeat;
+  margin-left: 10px;  /* Space between button and arrow */
   transition: transform 0.3s ease;
 }
 
@@ -882,8 +895,7 @@ a:visited {
   flex-direction: column;
   justify-content: flex-start;
   align-items: flex-start;
-  width: 100%;
-  border: 1px solid var(--gray);
+  width: 50%;
   border-radius: 10px;
   height: 300px;
   overflow-y: scroll;
@@ -902,8 +914,18 @@ a:visited {
   padding-left: 10px;
 }
 
-.course-element label {
+.course-element input {
+  display: none; /* hides checkbox */
+}
+
+.course-element input:checked + .course-text {
+  background-color: var(--yellow);
+  border-radius: 10px;
   padding-left: 10px;
+}
+
+.course-element:has(input:checked) {
+  background-color: var(--yellow);
 }
 
 /* Aqui Termina el Signup*/
@@ -2741,3 +2763,32 @@ strong {
   }
 }
 
+.export-csv-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.export-csv {
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+  background-color: inherit;
+  align-self: center;
+  text-align: center;
+  margin-bottom: 20px;
+  background-color: var(--blue);
+  padding: 10px 20px;
+  border-radius: 10px;
+  color: var(--white);
+}
+
+.export-csv:hover {
+  color: var(--yellow)
+}
+
+.sessions-csv {
+  margin-top: 20px;
+}

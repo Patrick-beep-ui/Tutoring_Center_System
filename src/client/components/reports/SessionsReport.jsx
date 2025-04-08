@@ -15,6 +15,9 @@ import {
   YAxis,
 } from "recharts"
 
+import { exportToCSV } from "../../services/exportChart";
+import { exportChartAsImage } from "../../services/exportChartAsImage";
+
 export default function SessionsReport() {
   const [chartType, setChartType] = useState("bar")
 
@@ -130,6 +133,12 @@ export default function SessionsReport() {
                   </BarChart>
                 </ResponsiveContainer>
               </div>
+              <button
+                className="btn btn-outline-primary mb-3"
+                onClick={() => exportToCSV(weeklyData, "sessions_by_week", chartType)}
+              >
+                Export Weekly Data
+              </button>
             </Card.Body>
           </Card>
         </Tab>
@@ -151,6 +160,12 @@ export default function SessionsReport() {
                   </BarChart>
                 </ResponsiveContainer>
               </div>
+              <button
+                className="btn btn-outline-primary mb-3"
+                onClick={() => exportToCSV(hourlyData, "sessions_by_hour", chartType)}
+              >
+                Export Hourly Data
+              </button>
             </Card.Body>
           </Card>
         </Tab>
@@ -182,6 +197,12 @@ export default function SessionsReport() {
                   </PieChart>
                 </ResponsiveContainer>
               </div>
+              <button
+                className="btn btn-outline-primary mb-3"
+                onClick={() => exportToCSV(completionData, "completion_rate", chartType)}
+              >
+                Export Completion Rate Data
+              </button>
             </Card.Body>
           </Card>
         </Tab>
@@ -213,6 +234,12 @@ export default function SessionsReport() {
                   </PieChart>
                 </ResponsiveContainer>
               </div>
+              <button
+                className="btn btn-outline-primary mb-3"
+                onClick={() => exportToCSV(feedbackData, "feedback_scores", chartType)}
+              >
+                Export Feedback Data
+              </button>
             </Card.Body>
           </Card>
         </Tab>

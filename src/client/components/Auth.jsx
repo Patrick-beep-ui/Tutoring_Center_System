@@ -7,17 +7,33 @@ const Auth = () => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [user, setUser] = useState([]);
     const navigate = useNavigate();
+    
+
+    
 
     useEffect(() => {
         const checkAuth = async () => {
           try {
-            const response = await axios.get("/api/auth");
-            if (response.status === 200) {
+            const token = localStorage.getItem("jwtToken");
+            if (!token) {
+              console.log("No token found, redirecting to login page");
+            }
+
+            console.log("Token:", token);
+
+            const response = await axios.get("/api/auth", {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            });
+            console.log("Response:", response);
+            if (response.statusText=== "OK") {
+
               setIsAuthenticated(true);
               setUser(response.data.user)
             }
           } catch (error) {
-            console.error("User is not authenticated");
+            console.error(error);
           } finally {
             setIsLoading(false);
           }

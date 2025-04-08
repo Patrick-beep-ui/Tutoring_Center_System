@@ -8,7 +8,7 @@ function Users() {
         <Header />
         <section className="section users-section">
                 <TutorsListComponent />
-                {<StudentsListComponent />}
+                <StudentsListComponent />
         </section>
         </>
     )
