@@ -1,5 +1,4 @@
-import Mini_Nav from "../components/Mini_Nav.jsx";
-import Header from "../components/Header.jsx";
+
 import TutorBox from "../components/TutorBox.jsx";
 
 
@@ -8,10 +7,6 @@ const Activity_Tutors = () =>{
 return (
 
     <>
-
-        <Header />
-        <section className="activity-container">
-            <Mini_Nav/>
 
             <h1 className="page-title">Tutors Activity</h1>
 
@@ -111,14 +106,8 @@ return (
                     }}
                 />
 
-
             </div>
 
-
-
-
-
-        </section>
 
     </>
 

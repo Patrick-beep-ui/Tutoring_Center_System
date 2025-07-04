@@ -5,27 +5,40 @@ import { NavLink, Link } from "react-router-dom";
 
 import "../App.css";
 import Mini_Nav from "../components/Mini_Nav.jsx";
+import Activity_Alerts from "./Activity_Alerts.jsx";
+import Activity_Tutors from "./Activity_Tutors.jsx";
+import Activity_Sessions from "./Activity_Sessions.jsx";
 
 const Activity = () => {
-    const [sessions, setSessions] = useState([]);
 
-    useEffect(() => {
-        fetch("http://localhost:3000/api/sessions")
-            .then((response) => response.json())
-            .then((data) => setSessions(data.sessions))
-            .catch((error) => console.error("Error fetching sessions:", error));
-    }, []);
+    const [selectedSection, setSelectedSection] = useState('sessions');
+
+
+
+    const renderSection = () => {
+        switch (selectedSection) {
+            case 'sessions':
+                return <Activity_Sessions/>;
+            case 'tutors':
+                return <Activity_Tutors/>;
+            case 'students':
+                 return <Activity_Tutors/>;
+            case 'alerts':
+                return <Activity_Alerts/>;
+            default:
+                return <div>Select a section</div>;
+        }
+    };
+
+
 
     return (
         <>
             <Header />
             <section className="activity-container">
-                <Mini_Nav/>
-                <div className="sessions-grid">
-                    {sessions.map((session) => (
-                        <SessionCard key={session.session_id} session={session} />
-                    ))}
-                </div>
+                <Mini_Nav setSelectedSection={setSelectedSection}/>
+                {renderSection()}
+
             </section>
         </>
     );
