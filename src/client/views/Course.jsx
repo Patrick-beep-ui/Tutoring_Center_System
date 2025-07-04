@@ -94,8 +94,6 @@ function ClassName() {
                     )}
                 </section>
             </section>
-
-    </section>
     
     <Link to={"/classes/add"} className="add-class" style={{ color: 'var(--white)'}}>Add Course</Link>
     <button className="arrow right" onClick={nextPage} disabled={currentPage >= Math.ceil(course.length / itemsPerPage) - 1}>→</button>
