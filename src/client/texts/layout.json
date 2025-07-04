@@ -25,9 +25,9 @@
 
                         "url": "/",
                         "icon": "bx bxs-chalkboard"               
-                    }
+                    },
                     {
-                        "label": "Admin_Home"
+                        "label": "Admin_Home",
                         "url": "/home",
                         "icon": "bx bxs-home"
                     },
