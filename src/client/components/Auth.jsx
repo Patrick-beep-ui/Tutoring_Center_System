@@ -9,8 +9,6 @@ const Auth = () => {
     const navigate = useNavigate();
     
 
-    
-
     useEffect(() => {
         const checkAuth = async () => {
           try {
@@ -18,8 +16,6 @@ const Auth = () => {
             if (!token) {
               console.log("No token found, redirecting to login page");
             }
-
-            console.log("Token:", token);
 
             const response = await axios.get("/api/auth", {
               headers: {

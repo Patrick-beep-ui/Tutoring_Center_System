@@ -43,12 +43,14 @@ import AdminHome from "./views-admin/AdminHome.jsx";
 //Implementation
 import Activity from "./views/Activity";
 import Activity_Students from "./views/Activity_Students";
-//Components
-import Auth from "./components/Auth";
-import { LayoutProvider } from './context/Layout';
 import Activity_Tutors from "./views/Activity_Tutors.jsx";
 import Activity_Alerts from "./views/Activity_Alerts.jsx";
 import Activity_Sessions from "./views/Activity_Sessions.jsx";
+
+//Contexts
+import Auth from "./components/Auth";
+import { LayoutProvider } from './context/Layout';
+import { SemesterProvider } from './context/currentSemester'; 
 
 //import App from "./App";
 
@@ -159,6 +161,10 @@ const router = createBrowserRouter([
       {
         path: "/tutors/reports",
         element: <TutorsReport/>
+      },
+      {
+        path: '/auth/test/:id?',
+        element: <Test />
       }
     ]
   },
@@ -196,9 +202,11 @@ const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
     <LayoutProvider>
-      <RouterProvider router={router}> 
-        <Login />
-      </RouterProvider>
+      <SemesterProvider>
+        <RouterProvider router={router}> 
+          <Login />
+        </RouterProvider>
+      </SemesterProvider>
     </LayoutProvider>
   </React.StrictMode>
 );

@@ -5,6 +5,7 @@ import Tutor from "../models/Tutor.js";
 import Schedule from "../models/Schedule.js";
 import connection from "../connection.js";
 import {QueryTypes} from "sequelize";
+import { sanitizeUserInput } from "../utils/sanitize.js";
 
 export const getTutors = async (req, res) => {
     try {
@@ -21,6 +22,49 @@ export const getTutors = async (req, res) => {
             type: QueryTypes.SELECT,
             replacements: [],
         })
+        res.status(201);
+        res.json({
+            tutors
+        })
+    }
+    catch(e) {
+        console.error(e)
+    }
+}
+
+export const getTutorsByUser = async (req, res) => {
+    try {
+        const user_id = sanitizeUserInput(req.params.user_id)
+        const tutors = await connection.query(
+            `SELECT 
+                CONCAT(u.first_name, ' ', u.last_name) as 'tutor_name', 
+                u.email as 'tutor_email', 
+                u.ku_id as 'tutor_id', 
+                m.major_name as 'tutor_major', 
+                GROUP_CONCAT(DISTINCT c.course_code ORDER BY c.course_code SEPARATOR ', ') AS tutor_courses,
+                t.tutor_id as 'id'
+            FROM 
+                users u
+            JOIN 
+                tutors t ON u.user_id = t.user_id
+            JOIN 
+                majors m ON u.major_id = m.major_id
+            JOIN 
+                user_courses tc ON t.user_id = tc.user_id
+            JOIN 
+                courses c ON c.course_id = tc.course_id
+            WHERE 
+                tc.status = 'Given' 
+                AND c.course_id IN (SELECT course_id FROM user_courses WHERE user_id = :user_id)
+            GROUP BY 
+                tutor_name, tutor_email, tutor_id, tutor_major, id
+            ORDER BY 
+                tutor_id;`, {
+                    type: QueryTypes.SELECT,
+                    replacements: { user_id: user_id },
+                }
+        )
+
         res.status(201);
         res.json({
             tutors
@@ -108,15 +152,16 @@ export const addTutor = async (req, res) => {
 
 export const getTutorById = async (req, res) => {
     try {
-        const id  = req.params.tutor_id;
+        const id  = sanitizeUserInput(req.params.tutor_id);
         const tutor_info = await connection.query(`SELECT CONCAT(u.first_name, ' ', u.last_name) as 'tutor_name', u.email as 'tutor_email', u.ku_id as 'tutor_id', m.major_name as 'tutor_major', t.official_schedule as 'tutor_schedule', c.phone_number as 'contact'
         FROM users u JOIN tutors t ON u.user_id = t.user_id
         JOIN majors m ON u.major_id = m.major_id
         JOIN contacts c ON t.user_id = c.user_id
-        WHERE t.tutor_id = ${id}
+        WHERE t.tutor_id = :tutor_id
         GROUP BY tutor_name, tutor_email, tutor_id, tutor_major, tutor_schedule, contact
         ORDER BY tutor_id;`, {
-            type: QueryTypes.SELECT
+            type: QueryTypes.SELECT,
+            replacements: {tutor_id: id}
         });
 
         res.status(200).json({ tutor_info });
@@ -125,3 +170,4 @@ export const getTutorById = async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 }
+

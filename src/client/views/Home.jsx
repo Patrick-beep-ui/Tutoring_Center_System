@@ -1,17 +1,18 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { v4 as uuid } from "uuid";
 import { Link, useNavigate } from "react-router-dom";
 import { Toaster, toast } from 'sonner';
-import Graph from "../components/Graph";
 import Header from "../components/Header";
 import "../App.css";
 import texts from "../texts/sessions.json";
 import { exportToCSV } from "../services/exportCSV";
+import { SemesterContext } from "../context/currentSemester";
 
 function Home() {
     const [sessions, setSessions] = useState([]);
     const [currentWeek, setCurrentWeek] = useState(1);  // Start at week 1
+    const { currentSemester } = useContext(SemesterContext);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -20,6 +21,8 @@ function Home() {
                 const response = await axios.get(`/api/sessions`);
                 const { data } = response;
                 setSessions(data.sessions);
+
+                console.log("Current semester:", currentSemester);
             } catch (e) {
                 console.error(e);
             }
@@ -116,7 +119,13 @@ function Home() {
                         <Link to={'/majors'}>See All Majors</Link>
                     </div>
                 </section>
-            </section>aaaaaaaaaaaaaaaaa
+
+                <button  className="export-csv sessions-csv">
+                    <Link to={'/auth/test'}>See resources</Link>
+                </button>
+            </section>
+
+
         </>
     );
 }
