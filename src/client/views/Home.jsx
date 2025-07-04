@@ -74,7 +74,6 @@ function Home() {
     return (
         <>
             <Header />
-
             <section className="sessions-container section">
                 <div className="week-navigation">
                     <button onClick={goToPreviousWeek} disabled={currentWeek === 1} className="weeks-btn" >&#9665;</button>
@@ -120,11 +119,15 @@ function Home() {
                         <Link to={'/majors'}>See All Majors</Link>
                     </div>
                 </section>
+<<<<<<< HEAD
 
                 <button  className="export-csv sessions-csv">
                     <Link to={'/auth/test'}>See resources</Link>
                 </button>
             </section>
+=======
+            </section>aaaaaaaaaaaaaaaaa
+>>>>>>> 569a096a99b99aef9e9afa7867b9d9e95c7e7369
         </>
     );
 }

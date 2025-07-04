@@ -22,8 +22,24 @@
                     },
                     {
                         "label": "Home",
+<<<<<<< HEAD
                         "url": "/",
                         "icon": "bx bxs-chalkboard"
+=======
+                        "url": "/home",
+                        "icon": "bx bxs-home"
+                    },
+                    {
+                        "label": "Tutors",
+                        "url": "/tutors",
+                        "icon": "bx bxs-group"
+                    },
+                    
+                    {
+                        "label": "Sessions",
+                        "url": "/",
+                        "icon": "bx bxs-book-open"
+>>>>>>> 569a096a99b99aef9e9afa7867b9d9e95c7e7369
                     },
                 
                     {
