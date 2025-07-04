@@ -3,6 +3,7 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import { v4 as uuid } from "uuid";
 import Header from "../components/Header";
+import UserNavigators from "../components/UsersNavigators";
 import '.././App.css';
 import { exportToCSV } from "../services/exportCSV";
 
@@ -29,9 +30,9 @@ function ClassName() {
             if (window.innerWidth <= 600) {
                 setItemsPerPage(3);
             } else if (window.innerWidth <= 1200) {
-                setItemsPerPage(10);
+                setItemsPerPage(4);
             } else {
-                setItemsPerPage(10);
+                setItemsPerPage(8);
             }
         };
 
@@ -72,33 +73,33 @@ function ClassName() {
 
     return (
         <>
-            <Header />
+        <Header/>
 
-            <section className="courses-container section">
-                <button className="arrow left" onClick={prevPage} disabled={currentPage === 0}>←</button>
-                <section className="courses" ref={scrollRef}>
-                    {currentCourses.map(c =>
-                        <div className="course-container" key={uuid()}>
-                            <div className="course-description">
-                                <p>{c.course_code}</p>
-                                <p>{c.course_name}</p>
-                                <p>{c.credits} Credits</p>
-                                <p>{c.Major.major_name}</p>
-                            </div>
-                            <div className="course-tutors">
-                                <p>{c.tutors_counter} Tutors</p>
-                                <a href="">See Tutors</a>
-                            </div>
+        <section className="courses-container section">
+        <button className="arrow left" onClick={prevPage} disabled={currentPage === 0}>←</button>
+            <section className="courses" ref={scrollRef}>
+                {currentCourses.map(c => 
+                    <div className="course-container">
+                        <div className="course-description">
+                            <p>{c.course_code}</p>
+                            <p>{c.course_name}</p>
+                            <p>{c.credits} Credits</p>
+                            <p>{c.Major.major_name}</p>
                         </div>
+                        <div className="course-tutors">
+                            <p>{c.tutors_counter} Tutors</p>
+                            <a href="">See Tutors</a>
+                        </div>
+                    </div>
                     )}
                 </section>
             </section>
 
-            <Link to={"/classes/add"} className="add-class" style={{ color: 'var(--white)' }}>Add Course</Link>
-            <button className="arrow right" onClick={nextPage} disabled={currentPage >= Math.ceil(course.length / itemsPerPage) - 1}>→</button>
-
-            {/* Button to trigger CSV export */}
-            <button className="export-csv" onClick={handleExportCSV}>Export as CSV</button>
+    </section>
+    
+    <Link to={"/classes/add"} className="add-class" style={{ color: 'var(--white)'}}>Add Course</Link>
+    <button className="arrow right" onClick={nextPage} disabled={currentPage >= Math.ceil(course.length / itemsPerPage) - 1}>→</button>
+    
         </>
     );
 }

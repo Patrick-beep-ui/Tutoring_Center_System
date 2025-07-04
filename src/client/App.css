@@ -60,6 +60,7 @@ body {
   padding: 70px 20px 20px;
   padding-left: 160px;
   overflow-y: scroll;
+  overflow-y: scroll;
 }
 
 h1 {
@@ -1598,7 +1599,39 @@ canvas {
   overflow: hidden;
   z-index: 1000;
   transition: width 0.3s;
+}
 
+.sidebar.closed {
+  width: 0;
+}
+
+/* Menu toggle for small screens */
+.hamburger-btn {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: var(--white);
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 1010;
+}
+
+/* Show hamburger button on small screens */
+@media (max-width: 768px) {
+  .hamburger-btn {
+    display: block;
+  }
+
+  .sidebar {
+    width: 250px;
+    /* Adjust the width for small screens when menu is open */
+  }
+
+  .sidebar.closed {
+    width: 0;
+  }
 }
 
 .nav-menu {
@@ -1649,7 +1682,6 @@ canvas {
   display: flex;
   flex-direction: row;
   align-items: center;
-
 }
 
 .nav-links a p, .nav-setting a p {
@@ -1669,76 +1701,39 @@ canvas {
 .nav-links i, .nav-links p {
   transition: color 0.3s ease;
 }
-.nav-links  i{
+
+.nav-links  i {
   transition: color 0.3s ease;
   flex: 35%;
   display: grid;
   place-items: center;
 }
 
-.nav-links p{
+.nav-links p {
   padding-bottom: 0;
   margin: 0;
-  padding-top:7px;
+  padding-top: 7px;
   flex: 70%;
+}
 
-  }
+.nav-setting i {
+  transition: color 0.3s ease;
+  flex: 35%;
+  display: grid;
+  place-items: center;
+}
 
-  .nav-setting  i{
-    transition: color 0.3s ease;
-    flex: 35%;
-    display: grid;
-    place-items: center;
-  }
-  
-  .nav-setting p{
-    padding-bottom: 0;
-    margin: 0;
-    padding-top:7px;
-    flex: 90%;
-    }
+.nav-setting p {
+  padding-bottom: 0;
+  margin: 0;
+  padding-top: 7px;
+  flex: 90%;
+}
 
 .nav-links .active, .nav-setting .active {
   background-color: #181e3e; 
-
   transition: background-color 0.3s ease;
 }
-
-.nav-links i, .nav-links p {
-  transition: color 0.3s ease;
-
-}
-.nav-links  i{
-  transition: color 0.3s ease;
-  flex: 35%;
-  display: grid;
-  place-items: center;
-  text-align: left;
-}
-
-.nav-links p{
-  padding-bottom: 0;
-  margin: 0;
-  padding-top:7px;
-  flex: 70%;
-  text-align: left;
-
-
-}
-
-  .nav-setting  i{
-    transition: color 0.3s ease;
-    flex: 35%;
-    display: grid;
-    place-items: center;
-  }
-  
-  .nav-setting p{
-    padding-bottom: 0;
-    margin: 0;
-    padding-top:7px;
-    flex: 90%;
-    }
 
 /* Report and Courses */
 
@@ -1753,7 +1748,7 @@ canvas {
 }
 
 .courses-container {
-  max-height: 620px;
+  max-height: 700px;
   overflow: hidden;
 }
 
@@ -1765,9 +1760,14 @@ canvas {
 }
 
 .courses {
-  padding-top: 10px;
-  scroll-snap-type: x mandatory;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 24px;
+  padding: 32px;
+  background-color: #f3f4f6; /* Optional light background */
 }
+
 
 .counter-container, .course-container {
   border: 1px solid var(--gray);
@@ -1781,12 +1781,32 @@ canvas {
   justify-content: space-between;
 }
 
-.course-container {
-  height: 150px;
-  transition: transform 0.3s, box-shadow 0.3s;
-  user-select: none;
-  scroll-snap-align: start;
+.carousel-button {
+  background-color: rgba(0, 0, 0, 0.2);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: background 0.2s ease;
 }
+
+.carousel-button:hover {
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+
+.course-container {
+  background-color: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  width: 300px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease;
+}
+
 
 .courses-container .courses .course-container {
   height: 200px;
@@ -1856,10 +1876,6 @@ canvas {
   width: 98%;
 }
 
-.pie-chart {
-
-}
-
 .pie-chart canvas {
   padding: 20px;
   width: 500px !important;
@@ -1881,20 +1897,21 @@ canvas {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: var(--blue);
   color: white;
   border: none;
   padding: 10px;
   cursor: pointer;
+  border-radius: 10%; 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
-
 .arrow:disabled {
   cursor: not-allowed;
   opacity: 0.5;
-}
-
-.arrow.left {
-  left: 70px;
 }
 
 .arrow.right {
@@ -2837,12 +2854,6 @@ der { background-color: lightblue; }
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   margin: 19px;
 }
-/* Admin Reports */
-
-.admin-reports-section {
-
-}
-
 
 /* Feedback */
 

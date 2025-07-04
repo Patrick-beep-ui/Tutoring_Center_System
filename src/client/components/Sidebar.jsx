@@ -1,21 +1,15 @@
-import React, {useCallback, memo, useEffect} from 'react';
+import React, { useState, useCallback, memo } from 'react';
 import { Navbar, Nav } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from "axios";
-import { useNavigate, useLocation, matchPath, Link } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import texts from "../texts/layout.json";
 
-
-function SideBar({user}) {
+function SideBar({ user }) {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true); // Sidebar is open by default
   const navigate = useNavigate();
   const location = useLocation();
   const currentPath = location.pathname;
-  console.log("Location:", currentPath);
-
-  useEffect(() => {
-    console.log("Location:", currentPath);
-    console.log(currentPath.startsWith("/settings"));
-  }, [])
 
   const logout = useCallback(async () => {
     try {
@@ -32,14 +26,16 @@ function SideBar({user}) {
 
 
   return (
-    <div className='sidebar'>
-      <Navbar variant="dark" className={texts.header.sidebar[0]["navbarClassname"]} >
-
-        <Navbar.Brand href="#home" className={texts.header.sidebar[0]["Navbar.BrandClassName"]} x>
-          <img src="/img/Picture1.svg" alt="CAE-logo" />
+    <div className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
+      <Navbar variant="dark" className={texts.header.sidebar[0]["navbarClassname"]}>
+        <Navbar.Brand
+          onClick={() => setIsSidebarOpen(!isSidebarOpen)} // Toggle sidebar when logo is clicked
+          className={texts.header.sidebar[0]["Navbar.BrandClassName"]}
+        >
+          <img src="/img/Picture1.svg" alt="CAE-logo" className="nav-logo" />
         </Navbar.Brand>
-
-        <Nav className={texts.header.sidebar[0]["navLinksClassName"]} >
+        
+        <Nav className={texts.header.sidebar[0]["navLinksClassName"]}>
           {texts.header.sidebar[0]["links"].map((link, index) => (
             <Nav.Link
               key={index}
@@ -55,19 +51,20 @@ function SideBar({user}) {
           {texts.header.sidebar[0]["settings"].map((setting, index) => (
             setting.label === "Logout" ? (
               <Nav.Link key={index} onClick={logout}>
-                <i className={`${setting.icon} ${currentPath === setting.url ? "active" : ""}`}
-                ></i> <p>{setting.label}</p>
+                <i className={`${setting.icon} ${currentPath === setting.url ? "active" : ""}`} />
+                <p>{setting.label}</p>
               </Nav.Link>
             ) : (
-              console.log("Setting Url:", setting.url),
               <Link key={index} to={`${setting.url}/${user.user_id}`} className={`nav-link ${currentPath.startsWith(setting.url) ? "active" : ""}`}>
-                <i className={`${setting.icon}`}></i> <p>{setting.label}</p>
+                <i className={`${setting.icon}`} />
+                <p>{setting.label}</p>
               </Link>
             )
           ))}
         </Nav>
-
       </Navbar>
+
+      {/* Removed the hamburger button, since the logo now handles the toggling */}
     </div>
   );
 }
