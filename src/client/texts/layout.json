@@ -23,24 +23,9 @@
                     {
                         "label": "Home",
                         "url": "/",
-                        "icon": "bx bxs-home"
-                    },
-                    {
-                        "label": "Tutors",
-                        "url": "/tutors",
-                        "icon": "bx bxs-group"
-                    },
-                    
-                    {
-                        "label": "Sessions",
-                        "url": "/sessions",
                         "icon": "bx bxs-chalkboard"
                     },
-                    {
-                        "label": "Reports",
-                        "url": "/report",
-                        "icon": "bx bxs-bar-chart-alt-2"
-                    },
+                
                     {
                         "label": "Users",
                         "url": "/users",

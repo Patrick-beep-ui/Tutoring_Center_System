@@ -41,6 +41,7 @@ export const getSessionsByTutor = async (req, res) => {
 export const createSession = async (req, res) => {
     try {
         const tutor_id = req.params.tutor_id
+        console.log("Data received:", req.body);
 
         const session = new TutorSession({
             tutor_id:tutor_id,

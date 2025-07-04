@@ -32,3 +32,24 @@ export const addSemester = async (req, res) => {
         console.error(e)
     }
 }
+
+export const getCurrentSemester = async (req, res) => {
+    try {
+        const currentSemester = await Semester.findOne({
+            where: {
+                is_current: true
+            }
+        });
+
+        if (!currentSemester) {
+            return res.status(404).json({ msg: 'No current semester found' });
+        }
+
+        res.status(200).json({
+            currentSemester
+        });
+    } catch (e) {
+        console.error(e);
+        res.status(500).json({ msg: 'Server error' });
+    }
+}

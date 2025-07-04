@@ -138,6 +138,8 @@ app.post(
 );
 
 
+
+
 app.post('/signup', async (req, res) => {
   try {
     const { first_name, last_name, email, password_hash, ku_id, major, courses } = req.body;
