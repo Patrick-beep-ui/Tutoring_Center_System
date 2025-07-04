@@ -124,8 +124,6 @@ function Home() {
                     <Link to={'/auth/test'}>See resources</Link>
                 </button>
             </section>
-
-
         </>
     );
 }

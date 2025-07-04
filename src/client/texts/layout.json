@@ -22,7 +22,6 @@
                     },
                     {
                         "label": "Home",
-
                         "url": "/",
                         "icon": "bx bxs-chalkboard"               
                     },
