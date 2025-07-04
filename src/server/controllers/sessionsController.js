@@ -48,7 +48,7 @@ export const getSessions = async (req, res) => {
                      JOIN users student ON student.ku_id = s.student_id  -- Get student's name
                      JOIN courses c ON s.course_id = c.course_id
                      JOIN semester semester ON semester.semester_id = s.semester_id  -- Join with semester table
-            WHERE semester.semester_id = 1 
+            WHERE semester.is_current = TRUE 
             ORDER BY week_number, session_date;
         `, {
             type: QueryTypes.SELECT
@@ -70,7 +70,8 @@ export const getSessionsByTutor = async (req, res) => {
             FROM sessions s JOIN tutors t on s.tutor_id = t.tutor_id
             JOIN users u ON u.user_id = t.user_id
             JOIN courses c ON s.course_id = c.course_id
-            WHERE t.tutor_id = ${id}
+            JOIN semester semester ON semester.semester_id = s.semester_id
+            WHERE t.tutor_id = ${id} AND semester.is_current = TRUE
             GROUP BY session_id, tutor_name, student, total_hours
             ORDER BY course_name;`, {
                 type: QueryTypes.SELECT

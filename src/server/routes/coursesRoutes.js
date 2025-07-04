@@ -1,5 +1,5 @@
 import express from "express";
-import { getCourses, addCourse, getTutorCourses, getCoursesByMajor } from "../controllers/coursesController.js";
+import { getCourses, addCourse, getTutorCourses, getCoursesByMajor, getCoursesByUser } from "../controllers/coursesController.js";
 
 const CoursesRouter = express.Router();
 
@@ -12,5 +12,8 @@ CoursesRouter.route("/major/:major_id")
 
 CoursesRouter.route("/:tutor_id")
 .get(getTutorCourses);
+
+CoursesRouter.route("/user/:user_id")
+.get(getCoursesByUser)
 
 export default CoursesRouter;

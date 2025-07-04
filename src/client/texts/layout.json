@@ -22,6 +22,11 @@
                     },
                     {
                         "label": "Home",
+                        "url": "/",
+                        "icon": "bx bxs-chalkboard"               
+                    },
+                    {
+                        "label": "Admin_Home",
                         "url": "/home",
                         "icon": "bx bxs-home"
                     },
@@ -36,11 +41,7 @@
                         "url": "/",
                         "icon": "bx bxs-book-open"
                     },
-                    {
-                        "label": "Reports",
-                        "url": "/report",
-                        "icon": "bx bxs-bar-chart-alt-2"
-                    },
+                
                     {
                         "label": "Users",
                         "url": "/users",

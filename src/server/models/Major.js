@@ -13,7 +13,8 @@ const Major = connection.define('Major', {
         allowNull: false
     }
 }, {
-    timestamps: false
+    timestamps: false,
+    tableName: 'majors'
 });
 
 export default Major;

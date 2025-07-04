@@ -37,6 +37,44 @@ export const getCourses = async (req, res) => {
     }
 }
 
+export const getCoursesByUser = async (req, res) => {
+    const { user_id } = req.params;
+    console.log("User ID from params:", user_id);
+    try {   
+        const courses = await Course.findAll({
+            attributes: {
+              include: [
+                [Sequelize.fn('COUNT', Sequelize.fn('DISTINCT', Sequelize.col('user_id'))), 'tutors_counter']
+              ]
+            },
+            include: [
+              {
+                model: TutorCourse,
+                attributes: ['user_id', 'tutor_course_id'], 
+                required: true,
+                where: {
+                    user_id: user_id
+                }
+              },
+              {
+                model: Major,
+                attributes: ['major_name', 'major_id'], 
+                required: false
+              }
+            ],
+            group: ['course_id', 'major_id', 'TutorCourses.tutor_course_id', 'TutorCourses.user_id', 'Major.major_id'] 
+        });
+        
+
+        res.status(200).json({
+            courses
+        })
+    }
+    catch(e) {
+        console.error(e);
+    }
+}
+
 export const getCoursesByMajor = async (req, res) => {
     try {
         const major_id = req.params.major_id;

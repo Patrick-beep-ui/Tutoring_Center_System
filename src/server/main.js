@@ -10,7 +10,7 @@ import TutorCourse from "./models/TutorCourse.js";
 import bcrypt from 'bcryptjs';
 import cors from 'cors';
 import dotenv from 'dotenv';
-dotenv.config();
+
 import { generateToken } from "./utils/jwt.js";
 
 const app = express();
@@ -37,13 +37,14 @@ app.use(cors({
 app.use('/api', api);
 
 
+dotenv.config();
 
 const JWT_SECRET = process.env.SECRET_KEY; 
 
 const opts = {}
 opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
 opts.secretOrKey =  JWT_SECRET;
-console.log('SECRET_KEY:', process.env.SECRET_KEY);
+
 passport.use(new JwtStrategy(opts, async (jwt_payload, done) => {
   try {
     const user = await User.findOne({
@@ -135,6 +136,8 @@ app.post(
     res.status(200).json({ message: "User authenticated", user: req.user, token });
   }
 );
+
+
 
 
 app.post('/signup', async (req, res) => {
