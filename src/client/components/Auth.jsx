@@ -23,7 +23,7 @@ const Auth = () => {
               },
             });
             console.log("Response:", response);
-            if (response.statusText=== "OK") {
+            if (/*response.statusText=== "OK"*/ response?.status === 200 && response.data?.user) {
 
               setIsAuthenticated(true);
               setUser(response.data.user)
