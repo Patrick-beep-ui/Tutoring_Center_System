@@ -136,8 +136,8 @@ export const getSessionsReport = async (req, res) => {
 
           const weeklyData = await TutorSession.findAll({
             attributes: [
-              [literal("CONCAT('Week ', WEEK(session_date, 1) - WEEK(semester.start_date, 1) + 1)"), 'name'],
-              [literal("WEEK(session_date, 1) - WEEK(semester.start_date, 1) + 1"), 'week_num'],
+              [literal("CONCAT('Week ', WEEK(session_date, 1) - WEEK(Semester.start_date, 1) + 1)"), 'name'],
+              [literal("WEEK(session_date, 1) - WEEK(Semester.start_date, 1) + 1"), 'week_num'],
               [fn('COUNT', col('TutorSession.session_id')), 'sessions'],
               [fn('SUM', literal("CASE WHEN `SessionDetails`.session_status = 'completed' THEN 1 ELSE 0 END")), 'completed'],
               [fn('SUM', literal("CASE WHEN `SessionDetails`.session_status = 'canceled' THEN 1 ELSE 0 END")), 'cancelled'],
