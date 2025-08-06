@@ -1881,9 +1881,6 @@ canvas {
   width: 98%;
 }
 
-.pie-chart {
-
-}
 
 .pie-chart canvas {
   padding: 20px;
@@ -2713,8 +2710,6 @@ strong {
 }
 
 
-
-
 .activity-card-header{
   width: 100%;
   padding: 0px 100px 0px 100px;
@@ -2863,12 +2858,6 @@ der { background-color: lightblue; }
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   margin: 19px;
 }
-/* Admin Reports */
-
-.admin-reports-section {
-
-}
-
 
 /* Feedback */
 
