@@ -1,4 +1,5 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import axios from "axios"
 import { Card } from "react-bootstrap"
 import { Tabs, Tab } from "react-bootstrap"
 import {
@@ -20,8 +21,42 @@ import { exportChartAsImage } from "../../services/exportChartAsImage";
 
 export default function SessionsReport() {
   const [chartType, setChartType] = useState("bar")
+  //const [weeklyData, setWeeklyData] = useState([])
+  const [hourlyData, setHourlyData] = useState([])
+  const [completionData, setCompletionData] = useState([])
 
-  // Sample data for sessions by week
+  useEffect(() => {
+    const getReportData = async () => {
+      try {
+        const response = await axios.get("/api/report/sessions")
+        const data = response.data
+        //setWeeklyData(data.weeklyData || [])
+        setHourlyData(data.hourlyData || [])
+
+        const statusColorMap = {
+          completed: '#68AF58',
+          canceled: '#C6453A',
+          pending: '#D3A257',
+          scheduled: '#5B99DE',
+        };
+
+        //setCompletionData(data.completionData || [])
+        const pieChartData = (data.completionData || []).map(item => ({
+          ...item,
+          color: statusColorMap[item.name] || '#d1d5db',
+        }));
+        
+        setCompletionData(pieChartData);
+      }
+      catch(e) {
+        console.error("Error fetching report data:", e)
+      }
+    }
+
+    getReportData()
+  }, [])
+
+  // Sample data for sessions by weeks
   const weeklyData = [
     { name: "Week 1", sessions: 45, completed: 42, cancelled: 3 },
     { name: "Week 2", sessions: 52, completed: 48, cancelled: 4 },
@@ -32,6 +67,8 @@ export default function SessionsReport() {
     { name: "Week 7", sessions: 78, completed: 72, cancelled: 6 },
     { name: "Week 8", sessions: 90, completed: 85, cancelled: 5 },
   ]
+
+  /*
 
   // Sample data for sessions by hour
   const hourlyData = [
@@ -55,6 +92,7 @@ export default function SessionsReport() {
     { name: "Cancelled", value: 10, color: "#f87171" },
     { name: "No-Show", value: 5, color: "#fbbf24" },
   ]
+    */
 
   // Sample data for feedback scores
   const feedbackData = [
@@ -135,9 +173,17 @@ export default function SessionsReport() {
               </div>
               <button
                 className="btn btn-outline-primary mb-3"
+                style={{ marginTop: "20px" }}
                 onClick={() => exportToCSV(weeklyData, "sessions_by_week", chartType)}
               >
                 Export Weekly Data
+              </button>
+              <button
+                className="btn btn-outline-primary mb-3"
+                style={{ marginLeft: "15px", marginTop: "20px" }}
+                onClick={() => exportChartAsImage(chartType)}
+              >
+                Export Chart as Image
               </button>
             </Card.Body>
           </Card>
@@ -152,7 +198,7 @@ export default function SessionsReport() {
                 <ResponsiveContainer width="100%" height="100%" minHeight="400px">
                   <BarChart data={hourlyData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                     <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
+                    <XAxis dataKey="session_duration" />
                     <YAxis />
                     <Tooltip />
                     <Legend />

@@ -1,4 +1,6 @@
-// EmailForm.jsx
+// ------------- Testing Component for Sending Emails -------------
+
+// EmailForm.jsx Testing Component
 import { useState } from 'react';
 import axios from 'axios';
 
@@ -22,7 +24,7 @@ const EmailForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form className = "bg-black" onSubmit={handleSubmit}>
       <input
         type="email"
         placeholder="Recipient Email"

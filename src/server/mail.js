@@ -7,6 +7,7 @@ import { fileURLToPath } from 'url';
 // ES Module __dirname workaround
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
+
 // Create transporter
 const transporter = nodemailer.createTransport({
   host: "mail.keiseruniversity.edu.ni",
@@ -15,6 +16,7 @@ const transporter = nodemailer.createTransport({
   auth: {
     user: "se.student@keiseruniversity.edu.ni",
     pass: "35ChRz)$ieeg"
+
   }
 });
 

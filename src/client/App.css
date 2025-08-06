@@ -176,6 +176,19 @@ details[open] summary::after {
   cursor: pointer;
 }
 
+.navigation-item-input {
+  width: 255px;
+  height: 50px;
+  font-size: 1.1rem;
+  padding: 10px;
+  border-radius: 5px;
+  color: #574f4f;
+  font-weight: 400;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
 .navigation-item-select option {
   font-size: 1.1rem;
   padding: 5px;
@@ -927,6 +940,13 @@ a:visited {
 .course-element:has(input:checked) {
   background-color: var(--yellow);
 }
+
+.course-element.selected {
+  background-color: var(--yellow);
+  border-radius: 10px;
+  transition: background-color 0.3s ease;
+}
+
 
 /* Aqui Termina el Signup*/
 

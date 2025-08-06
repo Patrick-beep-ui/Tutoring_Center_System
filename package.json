@@ -19,6 +19,7 @@
     "@fullcalendar/react": "^6.1.15",
     "@headlessui/react": "^2.2.0",
     "@mui/material": "^5.17.1",
+    "@tailwindcss/vite": "^4.1.11",
     "axios": "^1.6.8",
     "bcryptjs": "^2.4.3",
     "bootstrap": "^5.3.3",
@@ -62,6 +63,7 @@
     "sequelize": "^6.37.3",
     "sonner": "^1.4.41",
     "systeminformation": "^5.27.7",
+    "tailwindcss": "^4.1.11",
     "uuid": "^9.0.1",
     "vite-express": "*",
     "xlsx": "^0.18.5"
