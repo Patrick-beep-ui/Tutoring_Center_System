@@ -1,4 +1,6 @@
-// EmailForm.jsx
+// ------------- Testing Component for Sending Emails -------------
+
+// EmailForm.jsx Testing Component
 import { useState } from 'react';
 import axios from 'axios';
 

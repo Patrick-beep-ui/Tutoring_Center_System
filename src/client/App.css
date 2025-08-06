@@ -941,6 +941,13 @@ a:visited {
   background-color: var(--yellow);
 }
 
+.course-element.selected {
+  background-color: var(--yellow);
+  border-radius: 10px;
+  transition: background-color 0.3s ease;
+}
+
+
 /* Aqui Termina el Signup*/
 
 /* Home */

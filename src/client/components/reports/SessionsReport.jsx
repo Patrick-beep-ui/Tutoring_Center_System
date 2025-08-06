@@ -21,7 +21,7 @@ import { exportChartAsImage } from "../../services/exportChartAsImage";
 
 export default function SessionsReport() {
   const [chartType, setChartType] = useState("bar")
-  const [weeklyData, setWeeklyData] = useState([])
+  //const [weeklyData, setWeeklyData] = useState([])
   const [hourlyData, setHourlyData] = useState([])
   const [completionData, setCompletionData] = useState([])
 
@@ -30,7 +30,7 @@ export default function SessionsReport() {
       try {
         const response = await axios.get("/api/report/sessions")
         const data = response.data
-        setWeeklyData(data.weeklyData || [])
+        //setWeeklyData(data.weeklyData || [])
         setHourlyData(data.hourlyData || [])
 
         const statusColorMap = {
@@ -56,8 +56,7 @@ export default function SessionsReport() {
     getReportData()
   }, [])
 
-  // Sample data for sessions by week
-  /*
+  // Sample data for sessions by weeks
   const weeklyData = [
     { name: "Week 1", sessions: 45, completed: 42, cancelled: 3 },
     { name: "Week 2", sessions: 52, completed: 48, cancelled: 4 },
@@ -68,6 +67,8 @@ export default function SessionsReport() {
     { name: "Week 7", sessions: 78, completed: 72, cancelled: 6 },
     { name: "Week 8", sessions: 90, completed: 85, cancelled: 5 },
   ]
+
+  /*
 
   // Sample data for sessions by hour
   const hourlyData = [
@@ -172,9 +173,17 @@ export default function SessionsReport() {
               </div>
               <button
                 className="btn btn-outline-primary mb-3"
+                style={{ marginTop: "20px" }}
                 onClick={() => exportToCSV(weeklyData, "sessions_by_week", chartType)}
               >
                 Export Weekly Data
+              </button>
+              <button
+                className="btn btn-outline-primary mb-3"
+                style={{ marginLeft: "15px", marginTop: "20px" }}
+                onClick={() => exportChartAsImage(chartType)}
+              >
+                Export Chart as Image
               </button>
             </Card.Body>
           </Card>
