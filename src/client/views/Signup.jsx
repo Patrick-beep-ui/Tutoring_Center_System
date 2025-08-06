@@ -7,7 +7,7 @@ import texts from "../texts/login.json"
 import CourseSelector from "../components/UserCoursesSelector";
 
 function Signup() {
-    const { register, handleSubmit, formState: { errors } } = useForm();
+    const { register, handleSubmit, formState: { errors }, getValues, setValue } = useForm();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const [majors, setMajors] = useState([]);
@@ -145,6 +145,8 @@ function Signup() {
                             majorId={selectedMajor}
                             register={register}
                             errors={errors}
+                            getValues={getValues}
+                            setValue={setValue}
                         />
 
                         <div className="form-group">

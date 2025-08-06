@@ -54,6 +54,8 @@ import { SemesterProvider } from './context/currentSemester';
 
 //import App from "./App";
 
+import EmailForm from "./components/Email.jsx";
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -195,7 +197,13 @@ const router = createBrowserRouter([
   {
     path: "/feedback/submission",
     element: <ThanksFeedback />
+  },
+  {
+    path: "/email-testing",
+    element: <EmailForm />
   }
+
+
 ], { basename: "/" });
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
