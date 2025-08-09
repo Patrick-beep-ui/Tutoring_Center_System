@@ -23,8 +23,7 @@ function AddClass() {
         }
     }
 
-    return(
-        <>
+    return( <div className="add-class-page">
         <h1>Add Class</h1>
 
         <section>
@@ -49,7 +48,7 @@ function AddClass() {
         <div>
             <Link to={"/classes"}>See Classes</Link>
         </div>
-        </>
+        </div>
     )
 }
 
