@@ -23,8 +23,7 @@ function AddSemester() {
         }
     }
 
-    return(
-        <>
+    return(<div className="add-semester-page">
         <h1>Add Semester</h1>
 
         <section className="mt-4 add">
@@ -61,7 +60,7 @@ function AddSemester() {
         <div>
             <Link to={"/classes"}>See Classes</Link>
         </div>
-        </>
+        </div>
     )
 }
 
