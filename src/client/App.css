@@ -1,3 +1,4 @@
+/*------------------- GENERAL ------------------*/
 :root {
   --blue: #192D64;
   --yellow: #EEAF32;
@@ -53,7 +54,9 @@ body {
   text-align: center;
   height: 100vh;
 }
+/*------------------- END GENERAL ------------------*/
 
+/*------------------- SECTION ------------------*/
 .section {
   width: 100%;
   height: 100%;
@@ -63,15 +66,14 @@ body {
 }
 
 h1 {
-  font-size: calc(1.3rem + .6vw);
-  text-align: left;
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--blue);
+  margin-top: 1rem;
 }
-
-/* Main Dashboard */
-
-
-/* Users Directories View*/
-
+/*------------------- END SECTION ------------------*/
+/*------------------- USERS ------------------*/
 .users-section {
   overflow: scroll;
 }
@@ -94,7 +96,8 @@ h1 {
   font-size: 20px;
   border-radius: 5px;
 }
-
+/*------------------- END USERS ------------------*/
+/*------------------- SUMMARY ------------------*/
 summary {
   list-style: none; /* Remove default arrow */
   display: flex;
@@ -134,7 +137,8 @@ summary::after {
   margin-left: 10px;  /* Space between button and arrow */
   transition: transform 0.3s ease;
 }
-
+/*------------------- END SUMMARY ------------------*/
+/*------------------- NAVIGATION ------------------*/
 /* Rotate arrow when open */
 details[open] summary::after {
   transform: rotate(180deg);
@@ -237,15 +241,6 @@ details[open] summary::after {
   position: sticky;
 }
 
-/*
-.users-navigation-table tbody tr td {
-  max-width: 400px; 
-  overflow: hidden; 
-  text-overflow: ellipsis; 
-  white-space: nowrap; 
-}
-  */
-
 .users-navigation-table tbody tr td {
   padding: 0px 10px;
   border: none;
@@ -295,70 +290,400 @@ details[open] summary::after {
   text-align: left;
 }
 
-.form-container {
-  background-color: #fff;
+/*   FORM DESIGN (ADD COURSES, ADD MAJORS                */
+.add-class-page {
+  font-family: 'Poppins', sans-serif;
+  background-color: var(--white);
+  padding: 2rem;
+  min-height: 100vh;
+}
+
+/* Solo el h1 de esta página */
+.add-class-page h1 {
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--white);
+  margin-top: 1rem;
+}
+
+/* Solo los section con enlaces aquí */
+.add-class-page {
+  background-color: var(--blue);
+}
+.add-class-page section a {
+  text-decoration: none;
+  color: var(--yellow);
+  font-weight: 500;
+  padding: 0.6rem 1rem;
+  border: 2px solid var(--yellow);
   border-radius: 8px;
-  padding: 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  width: 300px;
+  display: inline-block;
+  transition: all 0.3s ease;
 }
-.form-container h1 {
-  font-size: 24px;
-  margin-bottom: 20px;
+
+.add-class-page section a:hover {
+  background-color: var(--yellow);
+  color: var(--black);
 }
-.form-container section {
-  margin-bottom: 15px;
+
+/* Contenedor del form */
+.add-class-page .add {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
 }
-.form-container label {
-  font-weight: bold;
-}
-.form-container input[type="text"],
-.form-container input[type="email"] {
+
+.add-class-page .form-container {
+  background-color: var(--white);
+  border-radius: 16px;
+  padding: 2rem;
   width: 100%;
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-sizing: border-box;
+  max-width: 380px;
+  color: var(--black);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
 }
-.form-container button {
-  padding: 10px 20px;
-  background-color: #007bff;
-  color: #fff;
+
+.add-class-page .form-container label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 0.4rem;
+}
+
+.add-class-page .form-container input {
+  width: 100%;
+  padding: 0.8rem;
   border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-.form-container button:hover {
-  background-color: #0056b3;
-}
-.error {
-  color: red;
-  font-size: 12px;
-}
-.form-container input[type="checkbox"] {
-  appearance: none;
-  -webkit-appearance: none; /* For older versions of webkit browsers */
-  -moz-appearance: none; /* For Firefox */
-  /* Add custom styling here */
+  border-radius: 8px;
+  background-color: #f0f0f0;
+  color: var(--black);
+  font-size: 0.95rem;
+  margin-bottom: 1rem;
 }
 
-.classes {
-  overflow: scroll;
-  padding: 5px;
-  border-radius: 5px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+.add-class-page .form-container input:focus {
+  outline: none;
+  border: 2px solid var(--yellow);
 }
 
-label {
-  cursor: pointer; 
-  padding: 5px;
+.add-class-page .form-container button {
   width: 100%;
+  padding: 0.9rem;
+  background-color: var(--yellow);
+  color: var(--black);
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-.highlighted {
-  background-color: rgb(146, 146, 136); 
+.add-class-page .form-container button:hover {
+  background-color: #d99a28;
+  transform: translateY(-2px);
 }
 
+.add-class-page .error {
+  color: #ff6b6b;
+  font-size: 0.85rem;
+  margin-top: 0.4rem;
+}
+
+/* Link final "See Classes" */
+
+.add-class-page > div a {
+  text-decoration: none;
+  color: var(--yellow);
+  font-weight: 500;
+  padding: 0.6rem 1rem;
+  border: 2px solid var(--yellow);
+  border-radius: 8px;
+  display: inline-block;
+  transition: all 0.3s ease;
+}
+
+.add-class-page > div a:hover {
+  background-color: var(--yellow);
+  color: var(--black);
+}
+
+.add-semester-page section a {
+  text-decoration: none;
+  color: var(--yellow);
+  font-weight: 500;
+  padding: 0.6rem 1rem;
+  border: 2px solid var(--yellow);
+  border-radius: 8px;
+  display: inline-block;
+  transition: all 0.3s ease;
+}
+
+.add-semester-page section a:hover {
+  background-color: var(--yellow);
+  color: var(--black);
+}
+
+.add-semester-page .add {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.add-semester-page .form-container {
+  background-color: var(--white);
+  border-radius: 16px;
+  padding: 2rem;
+  width: 100%;
+  max-width: 420px;
+  color: var(--black);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.add-semester-page .form-container label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 0.4rem;
+}
+
+.add-semester-page .form-container input,
+.add-semester-page .form-container select {
+  width: 100%;
+  padding: 0.8rem;
+  border: none;
+  border-radius: 8px;
+  background-color: #f0f0f0;
+  color: var(--black);
+  font-size: 0.95rem;
+  margin-bottom: 1rem;
+}
+
+.add-semester-page .form-container input:focus,
+.add-semester-page .form-container select:focus {
+  outline: none;
+  border: 2px solid var(--yellow);
+}
+
+.add-semester-page .form-container button {
+  width: 100%;
+  padding: 0.9rem;
+  background-color: var(--yellow);
+  color: var(--black);
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.add-semester-page .form-container button:hover {
+  background-color: var(--btn-hover);
+  transform: translateY(-2px);
+}
+
+.add-semester-page .error {
+  color: var(--error);
+  font-size: 0.85rem;
+  margin-top: 0.4rem;
+}
+
+.add-semester-page > div a {
+  text-decoration: none;
+  color: var(--yellow);
+  font-weight: 500;
+  padding: 0.6rem 1rem;
+  border: 2px solid var(--yellow);
+  border-radius: 8px;
+  display: inline-block;
+  transition: all 0.3s ease;
+}
+
+.add-semester-page > div a:hover {
+  background-color: var(--yellow);
+  color: var(--black);
+}
+/*------------------- END SEMESTER ------------------*/
+
+/*--------------------- ADD TUTORS ------------------------*/
+/* ==== PAGE BASE ==== */
+.add-tutor-page {
+  font-family: 'Poppins', sans-serif;
+  background-color: var(--blue);
+  padding: 2rem;
+  min-height: 100vh;
+}
+
+.add-tutor-page h1 {
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 1rem;
+}
+
+.add-tutor-page section a {
+  text-decoration: none;
+  color: var(--yellow);
+  font-weight: 500;
+  padding: 0.6rem 1rem;
+  border: 2px solid var(--yellow);
+  border-radius: 8px;
+  display: inline-block;
+  transition: all 0.3s ease;
+}
+
+.add-tutor-page section a:hover {
+  background-color: var(--yellow);
+  color: var(--black);
+}
+
+/* ==== FORM CONTAINER ==== */
+.add-tutor-page .add {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.add-tutor-page .form-container {
+  background-color: var(--white);
+  border-radius: 16px;
+  padding: 2rem;
+  color: var(--black);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.add-tutor-page .form-container section {
+  margin-bottom: 1.2rem;
+}
+
+.add-tutor-page label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 0.4rem;
+}
+
+.add-tutor-page input,
+.add-tutor-page select {
+  width: 100%;
+  padding: 0.8rem;
+  border: none;
+  border-radius: 8px;
+  background-color: #f0f0f0;
+  color: var(--black);
+  font-size: 0.95rem;
+}
+
+.add-tutor-page input:focus,
+.add-tutor-page select:focus {
+  outline: none;
+  border: 2px solid var(--yellow);
+}
+
+.add-tutor-page button[type="submit"] {
+  width: 100%;
+  padding: 0.9rem;
+  background-color: var(--yellow);
+  color: var(--black);
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.add-tutor-page button[type="submit"]:hover {
+  background-color: var(--btn-hover);
+  transform: translateY(-2px);
+}
+
+.add-tutor-page .error {
+  color: var(--error);
+  font-size: 0.85rem;
+  margin-top: 0.4rem;
+}
+
+/* ==== SCHEDULE BLOCKS ==== */
+.days-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.day-checkbox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.day-checkbox input[type="checkbox"] {
+  display: none;
+}
+
+.day-checkbox label {
+  padding: 0.5rem;
+  border: 2px solid var(--yellow);
+  border-radius: 6px;
+  color: var(--black);
+  background-color: var(--white);
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.85rem;
+}
+
+.day-checkbox input[type="checkbox"]:checked + label {
+  background-color: var(--yellow);
+  color: var(--black);
+  font-weight: 600;
+}
+
+/* ==== ADD / REMOVE SCHEDULE BUTTONS ==== */
+.add-tutor-page .form-container button[type="button"] {
+  background-color: var(--blue);
+  color: var(--white);
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.add-tutor-page .form-container button[type="button"]:hover {
+  background-color: #0f1c3a;
+  transform: translateY(-1px);
+}
+
+/* ==== CLASSES CHECKBOX GRID ==== */
+.classes {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 0.6rem;
+}
+
+.classes input[type="checkbox"] {
+  display: none;
+}
+
+.classes label {
+  padding: 0.6rem;
+  border: 2px solid var(--yellow);
+  border-radius: 8px;
+  color: var(--black);
+  background-color: var(--white);
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+}
+
+.classes input[type="checkbox"]:checked + label {
+  background-color: var(--yellow);
+  color: var(--black);
+  font-weight: 600;
+}
+/*------------------- END ADD TUTORS ------------------*/
 /* Profile */
 
 .profile-info {
@@ -625,12 +950,6 @@ label {
 .slider-container {
   width: 50%;
 }
-
-/*
-.tutor_schedule {
-  height: auto;
-}
-*/
 
 /*Login */
 
@@ -1901,9 +2220,6 @@ canvas {
   width: 98%;
 }
 
-.pie-chart {
-
-}
 
 .pie-chart canvas {
   padding: 20px;
@@ -2733,8 +3049,6 @@ strong {
 }
 
 
-
-
 .activity-card-header{
   width: 100%;
   padding: 0px 100px 0px 100px;
@@ -2883,12 +3197,6 @@ der { background-color: lightblue; }
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   margin: 19px;
 }
-/* Admin Reports */
-
-.admin-reports-section {
-
-}
-
 
 /* Feedback */
 

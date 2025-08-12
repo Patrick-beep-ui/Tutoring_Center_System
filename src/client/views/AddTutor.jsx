@@ -92,14 +92,14 @@ function AddTutor() {
     }
 
     return(
-        <>
+        <div className="add-tutor-page">
+        <h1>Add Tutor</h1>
          <Toaster />
          <section>
         <Link to={'/'}>Go Home</Link>
         </section>
-         <section className="mt-4 add">
+         <section className="mt-1 add">
         <form onSubmit={handleSubmit(processData)} className="form-container">
-        <h1>Add Tutor</h1>
             <section>
                 <label>Tutor ID:</label>
                 <input type="text" {...register("id", {required: true})}/>
@@ -201,7 +201,7 @@ function AddTutor() {
         </form>
         </section>
 
-        </>
+        </div>
     )
 }
 

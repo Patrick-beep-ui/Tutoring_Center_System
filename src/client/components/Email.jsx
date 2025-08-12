@@ -24,7 +24,7 @@ const EmailForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form className = "bg-black" onSubmit={handleSubmit}>
       <input
         type="email"
         placeholder="Recipient Email"
