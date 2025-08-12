@@ -1,6 +1,6 @@
 export default function userCheck(req, res, next) {
     if (req?.session?.passport?.user) {
-        //console.log("User ID:", req.session.passport.user); 
+        console.log("User ID:", req.session.passport.user); 
         const paramId = req.params.user_id || req.params.tutor_id;
 
         if (req.session.passport.user == paramId) { 
