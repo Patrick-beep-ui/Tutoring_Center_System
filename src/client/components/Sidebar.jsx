@@ -11,6 +11,11 @@ function SideBar({ user }) {
   const location = useLocation();
   const currentPath = location.pathname;
 
+  useEffect(() => {
+    console.log("Location:", currentPath);
+    console.log(currentPath.startsWith("/settings"));
+  }, [])
+
   const logout = useCallback(async () => {
     try {
         await axios.post("/logout"); 
@@ -34,18 +39,32 @@ function SideBar({ user }) {
         >
           <img src="/img/Picture1.svg" alt="CAE-logo" className="nav-logo" />
         </Navbar.Brand>
-        
+
         <Nav className={texts.header.sidebar[0]["navLinksClassName"]}>
-          {texts.header.sidebar[0]["links"].map((link, index) => (
-            <Nav.Link
-              key={index}
-              href={link.url}
-              className={currentPath === link.url ? texts.header.sidebar[0]["activeLinkClassName"] : ''}
-            >
-              <i className={link.icon}></i> <p>{link.label}</p>
-            </Nav.Link>
-          ))}
+          {texts.header.sidebar[0]["links"]
+            .filter(link => {
+              // If the link has a role array → check if the user's role is in it
+              if (link.role) {
+                return link.role.includes(user.role);
+              }
+              // If no role restriction → always show
+              return true;
+            })
+            .map((link, index) => (
+              <Nav.Link
+                key={index}
+                href={link.url}
+                className={
+                  currentPath === link.url
+                    ? texts.header.sidebar[0]["activeLinkClassName"]
+                    : ""
+                }
+              >
+                <i className={link.icon}></i> <p>{link.label}</p>
+              </Nav.Link>
+            ))}
         </Nav>
+
 
         <Nav className={texts.header.sidebar[0]["logoutButtonClassName"]}>
           {texts.header.sidebar[0]["settings"].map((setting, index) => (

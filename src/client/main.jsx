@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 import { createBrowserRouter, RouterProvider} from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css'; 
 import 'bootstrap/dist/js/bootstrap.bundle.min';
+import RequireRole from "./wrappers/RequireRole.jsx";
 
 //Views
 import MainDashboard from "./views/MainDashboard";
@@ -67,7 +68,10 @@ const router = createBrowserRouter([
       },
       {
         path: "/home",
-        element: <AdminHome />
+        element: <RequireRole allowedRoles={["admin", "dev"]} />,
+        children: [
+          {index: true, element: <AdminHome />}, 
+        ]
       },
       {
         path: "/users",
@@ -79,15 +83,24 @@ const router = createBrowserRouter([
       },
       {
         path: "/tutors/add",
-        element: <AddTutor />
+        element: <RequireRole allowedRoles={["admin", "dev"]} />,
+        children: [
+          {index: true, element: <AddTutor />}
+        ]
       },
       {
         path: "/classes",
-        element: <ClassName />
+        element: <RequireRole allowedRoles={["admin", "dev", "tutor"]} />,
+        children: [
+          {index: true, element: <ClassName />}
+        ]
       },
       {
         path: "/classes/add",
-        element: <AddClass />
+        element: <RequireRole allowedRoles={["admin", "dev"]} />,
+        children: [
+          {index: true, element: <AddClass />}
+        ]
       },
       {
         path: "/profile/:role?/:tutor_id",
@@ -107,11 +120,17 @@ const router = createBrowserRouter([
       },
       {
         path: "/terms/add",
-        element: <AddSemester />
+        element: <RequireRole allowedRoles={["admin", "dev"]} />,
+        children: [
+          {index: true, element: <AddSemester />}
+        ]
       },
       {
         path: "/activity",
-        element: <Activity />
+        element: <RequireRole allowedRoles={["admin", "dev"]} />,
+        children: [
+          {index: true, element: <Activity />}
+        ]
       },
       {
         path: "/activity-sessions",
@@ -135,19 +154,31 @@ const router = createBrowserRouter([
       },
       {
         path: "/sessions/:role/:tutor_id/:course_id",
-        element: <Session />
+        element: <RequireRole allowedRoles={["admin", "dev", "tutor"]} />,
+        children: [
+          {index: true, element: <Session />}
+        ]
       },
       {
         path: "/sessions/add/:tutor_id/:course_id",
-        element: <AddSession />
+        element: <RequireRole allowedRoles={["dev", "tutor"]} />,
+        children: [
+          {index: true, element: <AddSession />}
+        ]
       }, 
       {
         path: "/scheduled-sessions/:role/:tutor_id",
-        element: <ScheduledSessions />
+        element: <RequireRole allowedRoles={["admin", "dev", "tutor"]} />,
+        children: [
+          {index: true, element: <ScheduledSessions />}
+        ]
       },
       {
         path: "/session/edit/:session_id/:tutor_id?", //Tutor id added to manage security later on
-        element: <EditSession />
+        element: <RequireRole allowedRoles={["admin", "dev", "tutor"]} />,
+        children: [
+          {index: true, element: <EditSession />}
+        ]
       },
       {
         path: "/header",
@@ -161,8 +192,11 @@ const router = createBrowserRouter([
         element: <MyCalendar />
       },
       {
-        path: "/tutors/reports",
-        element: <TutorsReport/>
+        path: "/admin/reports",
+        element: <RequireRole allowedRoles={["admin", "dev"]} />,
+        children: [
+          {index: true, element: <TutorsReport />}
+        ]
       },
       {
         path: '/auth/test/:id?',
