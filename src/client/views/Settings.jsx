@@ -55,7 +55,7 @@ function Settings() {
                         <div className="profile-form-group profile-picture-form-group">
                             <div className="profile-picture-container user-picture-container">
                                 <img 
-                                    src={`/public/profile/tutor${user_id}.jpg?${new Date().getTime()}`} 
+                                    src={`/profile/tutor${user_id}.jpg?${new Date().getTime()}`} 
                                     alt={text["profile-picture"].alt} 
                                     className="profile-picture" 
                                 />
