@@ -14,7 +14,7 @@ function TutorProfile() {
     const [schedules, setSchedules] = useState([]);
     const [error, setError] = useState("");
     const { tutor_id, role } = useParams();
-    const [profilePicUrl, setProfilePicUrl] = useState(`/public/profile/${role}${tutor_id}.jpg?${new Date().getTime()}`);
+    const [profilePicUrl, setProfilePicUrl] = useState(`/profile/${role}${tutor_id}.jpg?${new Date().getTime()}`);
 
     console.log("User Role:", role);
 
@@ -41,7 +41,7 @@ function TutorProfile() {
             setCourse(coursesData);
             setSession(sessionData);
             setSchedules(schedulesData);
-            setProfilePicUrl(`/public/profile/tutor${tutor_id}.jpg`);
+            setProfilePicUrl(`/profile/tutor${tutor_id}.jpg`);
             setError("");
         } catch (error) {
 
@@ -81,7 +81,7 @@ function TutorProfile() {
     }, [role, fetchTutorData, fecthStudentData]);
 
     const handleImageUpload = useCallback(() => {
-        setProfilePicUrl(`/public/profile/${role}${tutor_id}.jpg?${new Date().getTime()}`);
+        setProfilePicUrl(`/profile/${role}${tutor_id}.jpg?${new Date().getTime()}`);
     }, [role, tutor_id]);
 
     if (error) {
