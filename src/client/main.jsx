@@ -3,7 +3,11 @@ import ReactDOM from "react-dom/client";
 import { createBrowserRouter, RouterProvider} from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css'; 
 import 'bootstrap/dist/js/bootstrap.bundle.min';
+
+// wrappers
 import RequireRole from "./wrappers/RequireRole.jsx";
+import CheckUser from "./wrappers/CheckUser.jsx";
+import RequireRoleAndCheck from "./wrappers/RequireRoleAndCheck.jsx";
 
 //Views
 import MainDashboard from "./views/MainDashboard";
@@ -108,15 +112,21 @@ const router = createBrowserRouter([
       },
       {
         path: "/settings/:user_id",
-        element: <Settings />,
-      },
+        element: <CheckUser />,
+        children: [
+          { index: true, element: <Settings /> }
+        ]
+      },      
       {
         path: "/majors",
         element: <Major />
       },
       {
         path: "/majors/add",
-        element: <AddMajor />
+        element: <RequireRole allowedRoles={["admin", "dev"]} />,
+        children: [
+          {index: true, element: <AddMajor />}
+        ]
       },
       {
         path: "/terms/add",
@@ -161,21 +171,39 @@ const router = createBrowserRouter([
       },
       {
         path: "/sessions/add/:tutor_id/:course_id",
-        element: <RequireRole allowedRoles={["dev", "tutor"]} />,
+        element: (
+          <RequireRoleAndCheck
+            allowedRoles={["admin", "dev", "tutor"]}
+            rolesToCheck={["tutor"]}
+            paramName="tutor_id"
+          />
+        ),
         children: [
           {index: true, element: <AddSession />}
         ]
       }, 
       {
         path: "/scheduled-sessions/:role/:tutor_id",
-        element: <RequireRole allowedRoles={["admin", "dev", "tutor"]} />,
+        element: (
+          <RequireRoleAndCheck
+            allowedRoles={["admin", "dev", "tutor"]}
+            rolesToCheck={["tutor"]}
+            paramName="tutor_id"
+          />
+        ),
         children: [
-          {index: true, element: <ScheduledSessions />}
+          { index: true, element: <ScheduledSessions /> }
         ]
       },
       {
         path: "/session/edit/:session_id/:tutor_id?", //Tutor id added to manage security later on
-        element: <RequireRole allowedRoles={["admin", "dev", "tutor"]} />,
+        element: (
+          <RequireRoleAndCheck
+            allowedRoles={["admin", "dev", "tutor"]}
+            rolesToCheck={["tutor"]}
+            paramName="tutor_id"
+          />
+        ), 
         children: [
           {index: true, element: <EditSession />}
         ]
@@ -200,7 +228,10 @@ const router = createBrowserRouter([
       },
       {
         path: '/auth/test/:id?',
-        element: <Test />
+        element: <RequireRole allowedRoles={["admin", "dev"]} />,
+        children: [
+          {index: true, element: <Test />}
+        ]
       }
     ]
   },
