@@ -232,7 +232,7 @@ const router = createBrowserRouter([
         children: [
           {index: true, element: <Test />}
         ]
-      }
+      },
     ]
   },
   {
@@ -251,9 +251,6 @@ const router = createBrowserRouter([
   } , {
     path: "/sidebar", 
     element: <SideBar />
-  }, {
-    path: "/test",
-    element: <Test/>
   },
   {
     path: "/feedback/:sessionId/:userId",

@@ -9,7 +9,7 @@ TutorsRouter.route("/")
 .post(addTutor);
 
 TutorsRouter.route("/:tutor_id")
-.get(/*userCheck,*/ getTutorById);
+.get(userCheck, getTutorById);
 
 TutorsRouter.route('/user/:user_id')
 .get(getTutorsByUser)

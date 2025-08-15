@@ -2,7 +2,7 @@ import Header from "../components/Header";
 import { useParams } from "react-router-dom";
 import settingsText from "../texts/settings.json";
 import { memo, useState, useEffect } from "react";
-import axios from "axios";
+import api from "../axiosService";
 
 function Settings() {
     const [user, setUser] = useState([]);
@@ -13,7 +13,7 @@ function Settings() {
     useEffect(() => {
         const getUser = async () => {
             try {
-                const response = await axios.get(`/api/users/${user_id}`);
+                const response = await api.get(`/users/${user_id}`);
                const userData = response.data.user;
                console.log(userData)
                setUser(userData);

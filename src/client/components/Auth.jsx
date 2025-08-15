@@ -29,7 +29,12 @@ const Auth = () => {
               setUser(response.data.user)
             }
           } catch (error) {
-            console.error(error);
+            if (error.response?.status === 401 || error.response?.status === 403) {
+              localStorage.removeItem("jwtToken"); // optional: remove invalid token
+              navigate("/login");
+            } else {
+              console.error(error);
+            }
           } finally {
             setIsLoading(false);
           }
