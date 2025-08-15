@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback, memo } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
@@ -97,17 +97,17 @@ function ClassName() {
 
     }, [programFilter, courseFilter, idFilter, semesterFilter]);
 
-    const nextPage = () => {
+    const nextPage = useCallback(() => {
         if (currentPage < Math.ceil(course.length / itemsPerPage) - 1) {
             setCurrentPage(currentPage + 1);
         }
-    };
+    }, [currentPage, course.length, itemsPerPage]);
 
-    const prevPage = () => {
+    const prevPage = useCallback(() => {
         if (currentPage > 0) {
             setCurrentPage(currentPage - 1);
         }
-    };
+    }, [currentPage]);
 
     const currentCourses = course.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage);
 
@@ -210,5 +210,5 @@ const UserNavigators = ({ programFilter, courseFilter, idFilter, semesterFilter,
     );
 };
 
-export default ClassName;
+export default memo(ClassName);
 

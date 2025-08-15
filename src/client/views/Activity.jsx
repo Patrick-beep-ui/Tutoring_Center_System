@@ -9,6 +9,7 @@ import Activity_Sessions from "./Activity_Sessions.jsx";
 
 const Activity = () => {
     const [selectedSection, setSelectedSection] = useState('sessions');
+    console.log("Activity rendered"); 
 
     const renderSection = useCallback(() => {
         switch (selectedSection) {

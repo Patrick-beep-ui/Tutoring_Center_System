@@ -27,11 +27,15 @@ app.use(expressSession({
   }
 }));
 
+dotenv.config();
+
+const allowedOrigin = process.env.FRONTEND_URL || 'http://localhost:3000';
+
 app.use(express.urlencoded({extended: false}));
 app.use(express.json());
 app.use(passport.authenticate('session')); 
 app.use(cors({
-  origin: "http://localhost:3000", // frontend dev server
+  origin: allowedOrigin, // frontend dev server
   methods: ["GET", "POST", "PUT", "DELETE"],
   allowedHeaders: ["Authorization", "Content-Type"],
   credentials: true
@@ -39,9 +43,6 @@ app.use(cors({
 
 
 app.use('/api', api);
-
-
-dotenv.config();
 
 const JWT_SECRET = process.env.SECRET_KEY; 
 
