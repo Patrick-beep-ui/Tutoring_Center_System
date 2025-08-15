@@ -8,6 +8,7 @@ import "../App.css";
 import texts from "../texts/sessions.json";
 import { exportToCSV } from "../services/exportCSV";
 import { SemesterContext } from "../context/currentSemester";
+import api from "../axiosService";
 
 function Home() {
     const [sessions, setSessions] = useState([]);
@@ -18,7 +19,7 @@ function Home() {
     useEffect(() => {
         const getSessions = async () => {
             try {
-                const response = await axios.get(`/api/sessions`);
+                const response = await api.get(`/sessions`);
                 const { data } = response;
                 setSessions(data.sessions);
 

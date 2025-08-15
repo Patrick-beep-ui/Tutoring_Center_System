@@ -1,7 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState, useCallback } from "react";
 import Header from "../components/Header";
-import SessionCard from "../components/SessionCard.jsx";
-import { NavLink, Link } from "react-router-dom";
 
 import "../App.css";
 import Mini_Nav from "../components/Mini_Nav.jsx";
@@ -10,12 +8,9 @@ import Activity_Tutors from "./Activity_Tutors.jsx";
 import Activity_Sessions from "./Activity_Sessions.jsx";
 
 const Activity = () => {
-
     const [selectedSection, setSelectedSection] = useState('sessions');
 
-
-
-    const renderSection = () => {
+    const renderSection = useCallback(() => {
         switch (selectedSection) {
             case 'sessions':
                 return <Activity_Sessions/>;
@@ -28,9 +23,7 @@ const Activity = () => {
             default:
                 return <div>Select a section</div>;
         }
-    };
-
-
+    }, [selectedSection]);
 
     return (
         <>
