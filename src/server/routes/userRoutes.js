@@ -11,8 +11,8 @@ UserRouter.route("/")
 
 UserRouter.route("/:user_id")
   .get(
-    passport.authenticate("jwt", { session: false }),
-    userCheck,
+    /*passport.authenticate("jwt", { session: false }),
+    userCheck,*/
     getUser
   );
 

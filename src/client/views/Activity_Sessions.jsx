@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, memo } from "react";
 import SessionCard from "../components/SessionCard.jsx";
 import api from "../axiosService.js";
 
@@ -31,4 +31,4 @@ const Activity_Sessions = () => {
     );
 };
 
-export default Activity_Sessions;
+export default memo(Activity_Sessions);

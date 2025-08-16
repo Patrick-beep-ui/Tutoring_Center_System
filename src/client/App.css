@@ -193,6 +193,12 @@ details[open] summary::after {
   -moz-appearance: none;
 }
 
+.pointer-disabled {
+  pointer-events: none; /* Disable pointer events */
+  opacity: 0.5; 
+  background-image: none;
+}
+
 .navigation-item-select option {
   font-size: 1.1rem;
   padding: 5px;
@@ -2503,6 +2509,22 @@ canvas {
   margin: 80px 0px 20px 20px;
 
 }
+
+.navbar-container ul li {
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.navbar-container ul li:hover {
+  background: #e0e0e0;
+}
+
+.navbar-container ul li.active {
+  background: #333; /* dark color */
+  color: #fff;
+}
+
 
 .date-box{
   margin-left: 235px;

@@ -1,7 +1,7 @@
 import {v4 as uuid} from "uuid";
 import { Link } from "react-router-dom";
 
-const UserNavigationTable = ({ users, role }) => {
+const UserNavigationTable = ({ users, role, coursesRole='tutor' }) => {
     return(
      <div className="users-navigation-table-container">
                     <table className="table align-middle mb-0 users-navigation-table">
@@ -26,16 +26,16 @@ const UserNavigationTable = ({ users, role }) => {
                                         className="rounded-circle"/>
                                     </Link>
                                         <div className="ms-3 tutor-name-cell">
-                                            <p className="mb-1 users-navigation-data" >{student.tutor_name}</p>
-                                            <p className="mb-0 users-navigation-email">{student.tutor_email}</p>
+                                            <p className="mb-1 users-navigation-data">{student[`${role}_name`]}</p>
+                                            <p className="mb-0 users-navigation-email">{student[`${role}_email`]}</p>
                                         </div>
                                     </div>
                                 </td>
                                 <td>
-                                <p className="mb-1 users-navigation-data">{student.tutor_major}</p>
+                                <p className="mb-1 users-navigation-data">{student[`${role}_major`]}</p>
                                 </td>
-                                <td className="users-navigation-data">{student.tutor_courses}</td>
-                                <td className="users-navigation-data">{student.tutor_id}</td>
+                                <td className="users-navigation-data">{student[`${coursesRole}_courses`]}</td>
+                                <td className="users-navigation-data">{student[`${role}_id`]}</td>
                                 <td>
                                     <i class='bx bxs-pencil'></i>
                                     <i class='bx bxs-user-detail'></i>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, memo } from "react";
 import { useOutletContext } from "react-router-dom";
 import axios from "axios";
 
@@ -41,9 +41,16 @@ function Users() {
         <>
         <Header />
         <section className="section users-section">
-            <TutorsListComponent majors={majors} userCourses={courses} />
-            <StudentsListComponent majors={majors} userCourses={courses} />
+            {user.user_role === "student" ? (
+                <StudentsListComponent majors={majors} userCourses={courses} />
+            ) : (
+                <>
+                    <TutorsListComponent majors={majors} userCourses={courses} />
+                    <StudentsListComponent majors={majors} userCourses={courses} />
+                </>
+            )}
         </section>
+
         </>
     )
 }
