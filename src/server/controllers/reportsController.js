@@ -4,9 +4,11 @@ import SessionDetail from "../models/SessionDetail.js";
 import User from "../models/User.js";
 import Major from "../models/Major.js";
 import TutorSession from "../models/TutorSession.js";
+import SessionFeedback from "../models/SessionFeedback.js";
 import Semester from "../models/Semester.js";
-import {literal, fn, col} from "sequelize";
+import {literal, fn, col, Op} from "sequelize";
 import connection from "../connection.js";
+import safeQuery from "../utils/safeQuery.js";
 
 export const getReportData = async (req, res) => {
     try {
@@ -89,16 +91,20 @@ export const getMajorSessions = async (req, res) => {
 
 export const getSessionsReport = async (req, res) => {
     try {  
-        const sessionsAmount = await TutorSession.count({
+        const sessionsAmount = await safeQuery(
+          TutorSession.count({
             include: {
               model: Semester,
               where: { is_current: true },
               attributes: [] // do not return Semester fields
             }
-          });
+          }),
+          0 // fallback to 0 if the count fails
+        );
 
           // Count of completed Sessions
-          const completedSessions = await TutorSession.count({
+          const completedSessions = await safeQuery(
+            TutorSession.count({
             include: [
               {
                 model: Semester,
@@ -111,14 +117,17 @@ export const getSessionsReport = async (req, res) => {
                 attributes: []
               }
             ]
-          });
+          }),
+            0 // fallback to 0 if the count fails
+        );
 
         // Calculate the completion rate
         const completionRate = sessionsAmount > 0
         ? Math.round((completedSessions / sessionsAmount) * 10000) / 100  // rounded to 2 decimal places
         : 0;
 
-        const [result] = await connection.query(`
+        const [result] = await safeQuery(
+          connection.query(`
             SELECT AVG(s.session_totalhours) as average_duration
             FROM sessions s
             JOIN semester sem ON s.semester_id = sem.semester_id
@@ -129,12 +138,31 @@ export const getSessionsReport = async (req, res) => {
                 WHERE sd.session_id = s.session_id
                   AND sd.session_status = 'completed'
               )
-          `);
+          `),
+          [[]] // fallback empty result
+        );
           
           
           const averageDuration = parseFloat(result[0]?.average_duration || 0).toFixed(2);
 
-          const weeklyData = await TutorSession.findAll({
+        // Average Rating
+        const averageRating = await safeQuery(
+          SessionFeedback.findOne({
+            attributes: [
+              [fn('ROUND', fn('AVG', col('rating')), 1), 'avg_rating']
+            ],
+            where: {
+              rating: { [Op.ne]: null } // Exclude null ratings properly
+            },
+            raw: true
+          }),
+          0
+        );
+
+          console.log('Average Rating:', averageRating);
+
+          const weeklyData = await safeQuery(
+            TutorSession.findAll({
             attributes: [
               [literal("CONCAT('Week ', WEEK(session_date, 1) - WEEK(Semester.start_date, 1) + 1)"), 'name'],
               [literal("WEEK(session_date, 1) - WEEK(Semester.start_date, 1) + 1"), 'week_num'],
@@ -149,9 +177,12 @@ export const getSessionsReport = async (req, res) => {
             group: ['name','week_num'],
             order: [['week_num', 'ASC']],
             raw: true,
-          });
+          }),
+          [] // fallback empty result
+        );
 
-          const hourlyData = await TutorSession.findAll({
+          const hourlyData = await safeQuery(
+            TutorSession.findAll({
             attributes: [
               [fn("TIME_FORMAT", col("SessionDetails.session_time"), "%l %p"), "session_duration"],
               [fn("COUNT", "*"), "sessions"]
@@ -172,11 +203,13 @@ export const getSessionsReport = async (req, res) => {
             group: [literal("session_duration")],
             order: [literal("STR_TO_DATE(session_duration, '%l %p')")],
             raw: true // <== IMPORTANT: tells Sequelize not to include session_id etc.
-          });
+          }),
+          [] // fallback empty result
+        );
           
-          
-
-          const completionData = await TutorSession.findAll({
+          // Completion Data
+          const completionData = await safeQuery(
+            TutorSession.findAll({
             include: [
               {
                 model: SessionDetail,
@@ -194,19 +227,37 @@ export const getSessionsReport = async (req, res) => {
             ],
             group: ['SessionDetails.session_status'],
             raw: true,
-          });
+          }),
+          [] // fallback empty result
+        );
           
 
-          console.log('Completion Data:', completionData);
+        // Raitings Count
+        const feedbackCounts = await safeQuery(
+          SessionFeedback.findAll({
+          attributes: [
+            [col('rating'), 'rating'],
+            [fn('COUNT', col('feedback_id')), 'count']
+          ],
+          where: {
+            rating: { [Op.ne]: null }
+          },
+          group: ['rating'],
+          raw: true
+        }), []
+      );
 
 
           res.status(200).json({
             sessionsAmount: sessionsAmount,
             completionRate: completionRate,
             averageDuration: averageDuration,
+            averageRating: averageRating.avg_rating,
             weeklyData: weeklyData,
             hourlyData: hourlyData,
-            completionData: completionData
+            completionData: completionData,
+            feedbackCounts: feedbackCounts
+            
           })
     }
     catch(e) {
