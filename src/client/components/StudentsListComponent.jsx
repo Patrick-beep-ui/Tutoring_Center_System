@@ -1,6 +1,7 @@
 import UserNavigators from "./UsersNavigators";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, memo } from "react";
 import StudentsNavigationTable from "./StudentsNavigationTable";
+import UserNavigationTable from "./UsersNavigationTable";
 import { exportToCSV } from "../services/exportCSV";
 import axios from "axios";
 
@@ -97,7 +98,7 @@ const StudentsListComponent = ({majors, userCourses}) => {
                 idFilter={idFilter}
                 setIdFilter={setIdFilter}
                 />
-                <StudentsNavigationTable users={filteredStudents} role={"student"}/>
+                <UserNavigationTable users={filteredStudents} role={"student"} coursesRole='user'/>
                 <div className="export-csv-container">
                     <button className="export-csv" onClick={handleExportCSV}>
                         Export as CSV
@@ -108,4 +109,4 @@ const StudentsListComponent = ({majors, userCourses}) => {
     );
 }
 
-export default StudentsListComponent;
+export default memo(StudentsListComponent);

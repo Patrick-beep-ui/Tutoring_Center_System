@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { useParams } from "react-router-dom";
 import {v4 as uuid} from "uuid";
 import { Link } from "react-router-dom";
 import { Toaster, toast } from 'sonner';

@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, memo, useContext } from "react";
+import { SemesterContext } from "../context/currentSemester";
 
 const UserNavigators = ({ 
     programFilter = "all",
@@ -12,8 +13,13 @@ const UserNavigators = ({
     majors = [],
     courses = [],
     students = [], 
+    isInputSearch = false,
+    IdLabel = "ID",
+    IdPlaceholder = "Type student ID / Name"
 }) => {
     const [searchTerm, setSearchTerm] = useState(idFilter);
+    const { currentSemester } = useContext(SemesterContext);
+
 
     useEffect(() => {
         const timeout = setTimeout(() => {
@@ -40,24 +46,35 @@ const UserNavigators = ({
             </div>
             <div className="users-navigation-item">
                 <label className="navigation-item-label">Course</label>
-                <select
-                    className="navigation-item-select"
-                    value={courseFilter}
-                    onChange={(e) => setCourseFilter(e.target.value)}
-                >
-                    <option value="all">All Courses</option>
-                    <option value="user-courses">My Courses</option>
-                    {courses.map(course => (
-                        <option key={course.id} value={course.course_code}>{course.course_name}</option>
-                    ))}
-                </select>
+                {isInputSearch ? (
+                    <input
+                        className="navigation-item-input"
+                        type="text"
+                        value={courseFilter === "all" ? "" : courseFilter}
+                        placeholder="Search Course"
+                        onChange={(e) => setCourseFilter(e.target.value)}
+                    />
+                ) : (
+                    <select
+                        className="navigation-item-select"
+                        value={courseFilter}
+                        onChange={(e) => setCourseFilter(e.target.value)}
+                    >
+                        <option value="all">All Courses</option>
+                        <option value="user-courses">My Courses</option>
+                        {courses.map(course => (
+                            <option key={course.id} value={course.course_code}>{course.course_name}</option>
+                        ))}
+                    </select>
+                )}
             </div>
+
             <div className="users-navigation-item">
-                <label className="navigation-item-label">ID</label>
+                <label className="navigation-item-label">{IdLabel}</label>
                 <input
                     type="text"
                     className="navigation-item-input"
-                    placeholder="Type student ID / Name"
+                    placeholder={IdPlaceholder}
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                 />
@@ -65,16 +82,16 @@ const UserNavigators = ({
             <div className="users-navigation-item">
                 <label className="navigation-item-label">Semester</label>
                 <select
-                    className="navigation-item-select"
+                    className="navigation-item-select pointer-disabled"
                     value={semesterFilter}
                     onChange={(e) => setSemesterFilter(e.target.value)}
                     disabled={true}
                 >
-                    <option value="current">Current Semester</option>
+                    <option value="current">{currentSemester?.currentSemester?.semester_code}</option>
                 </select>
             </div>
         </section>
     );
 };
 
-export default UserNavigators;
+export default memo(UserNavigators);
