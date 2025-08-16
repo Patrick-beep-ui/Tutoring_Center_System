@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import axios from "axios"
 import { Card } from "react-bootstrap"
 import { Tabs, Tab } from "react-bootstrap"
@@ -24,6 +24,19 @@ export default function SessionsReport() {
   //const [weeklyData, setWeeklyData] = useState([])
   const [hourlyData, setHourlyData] = useState([])
   const [completionData, setCompletionData] = useState([])
+  const [feedbackData, setFeedbackData] = useState([])
+
+  // Direct Values
+  const [sessionAmount, setSessionAmount] = useState(0)
+  const [averageDuration, setAverageDuration] = useState(0)
+  const [completionRate, setCompletionRate] = useState(0)
+  const [averageRating, setAverageRating] = useState(4.5)
+
+  const weeklyRef = useRef(null);
+  const hourlyRef = useRef(null);
+  const completionRef = useRef(null);
+  const feedbackRef = useRef(null);
+
 
   useEffect(() => {
     const getReportData = async () => {
@@ -32,6 +45,13 @@ export default function SessionsReport() {
         const data = response.data
         //setWeeklyData(data.weeklyData || [])
         setHourlyData(data.hourlyData || [])
+        setFeedbackData(data.feedbackCounts || [])
+
+        // Direct Values
+        setSessionAmount(data.sessionsAmount || 0)
+        setAverageDuration(data.averageDuration || 0)
+        setCompletionRate(data.completionRate || 0)
+        setAverageRating(data.averageRating || 4.5)
 
         const statusColorMap = {
           completed: '#68AF58',
@@ -40,6 +60,14 @@ export default function SessionsReport() {
           scheduled: '#5B99DE',
         };
 
+        const feedbackColorMap = {
+          '5': "#22c55e",
+          4: "#84cc16",
+          3: "#facc15",
+          2: "#f97316",
+          1: "#ef4444",
+        }
+
         //setCompletionData(data.completionData || [])
         const pieChartData = (data.completionData || []).map(item => ({
           ...item,
@@ -47,6 +75,17 @@ export default function SessionsReport() {
         }));
         
         setCompletionData(pieChartData);
+
+
+        const feedbackPieData = (data.feedbackCounts || []).map(item => ({
+          name: `${item.rating} Stars`,  
+          value: item.count,             
+          color: feedbackColorMap[item.rating] || '#d1d5db',
+        }));
+        setFeedbackData(feedbackPieData);
+
+        setFeedbackData(feedbackPieData);
+        console.log("Feedback color data", feedbackPieData)
       }
       catch(e) {
         console.error("Error fetching report data:", e)
@@ -95,7 +134,7 @@ export default function SessionsReport() {
     */
 
   // Sample data for feedback scores
-  const feedbackData = [
+  const raitingData = [
     { name: "5 Stars", value: 45, color: "#22c55e" },
     { name: "4 Stars", value: 30, color: "#84cc16" },
     { name: "3 Stars", value: 15, color: "#facc15" },
@@ -110,7 +149,7 @@ export default function SessionsReport() {
           <Card className="h-100">
             <Card.Body>
               <Card.Title>Total Sessions</Card.Title>
-              <Card.Text className="display-4">533</Card.Text>
+              <Card.Text className="display-4">{sessionAmount}</Card.Text>
               <div className="small text-muted">
                 <span className="text-success">+12%</span> from last period
               </div>
@@ -121,7 +160,7 @@ export default function SessionsReport() {
           <Card className="h-100">
             <Card.Body>
               <Card.Title>Completion Rate</Card.Title>
-              <Card.Text className="display-4">85%</Card.Text>
+              <Card.Text className="display-4">{completionRate}%</Card.Text>
               <div className="small text-muted">
                 <span className="text-success">+3%</span> from last period
               </div>
@@ -132,7 +171,7 @@ export default function SessionsReport() {
           <Card className="h-100">
             <Card.Body>
               <Card.Title>Average Duration</Card.Title>
-              <Card.Text className="display-4">58 min</Card.Text>
+              <Card.Text className="display-4">{averageDuration} hr</Card.Text>
               <div className="small text-muted">
                 <span className="text-danger">-2 min</span> from last period
               </div>
@@ -143,7 +182,7 @@ export default function SessionsReport() {
           <Card className="h-100">
             <Card.Body>
               <Card.Title>Average Rating</Card.Title>
-              <Card.Text className="display-4">4.3/5</Card.Text>
+              <Card.Text className="display-4">{averageRating}/5</Card.Text>
               <div className="small text-muted">
                 <span className="text-success">+0.2</span> from last period
               </div>
@@ -158,7 +197,7 @@ export default function SessionsReport() {
             <Card.Body>
               <Card.Title>Sessions by Week</Card.Title>
               <Card.Subtitle className="mb-2 text-muted">Number of tutoring sessions scheduled each week</Card.Subtitle>
-              <div className="h-100" style={{ minHeight: "400px", width: "100%" }}>
+              <div ref={weeklyRef} className="h-100" style={{ minHeight: "400px", width: "100%" }}>
                 <ResponsiveContainer width="100%" height="100%" minHeight="400px">
                   <BarChart data={weeklyData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                     <CartesianGrid strokeDasharray="3 3" />
@@ -181,7 +220,7 @@ export default function SessionsReport() {
               <button
                 className="btn btn-outline-primary mb-3"
                 style={{ marginLeft: "15px", marginTop: "20px" }}
-                onClick={() => exportChartAsImage(chartType)}
+                onClick={() => exportChartAsImage(weeklyRef.current, "png", "sessions_by_week")}
               >
                 Export Chart as Image
               </button>
@@ -194,7 +233,7 @@ export default function SessionsReport() {
             <Card.Body>
               <Card.Title>Sessions by Hour</Card.Title>
               <Card.Subtitle className="mb-2 text-muted">Distribution of tutoring sessions throughout the day</Card.Subtitle>
-              <div className="h-100" style={{ minHeight: "400px", width: "100%" }}>
+              <div ref={hourlyRef} className="h-100" style={{ minHeight: "400px", width: "100%" }}>
                 <ResponsiveContainer width="100%" height="100%" minHeight="400px">
                   <BarChart data={hourlyData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                     <CartesianGrid strokeDasharray="3 3" />
@@ -208,9 +247,17 @@ export default function SessionsReport() {
               </div>
               <button
                 className="btn btn-outline-primary mb-3"
+                style={{ marginTop: "20px" }}
                 onClick={() => exportToCSV(hourlyData, "sessions_by_hour", chartType)}
               >
                 Export Hourly Data
+              </button>
+              <button
+                className="btn btn-outline-primary mb-3"
+                style={{ marginLeft: "15px", marginTop: "20px" }}
+                onClick={() => exportChartAsImage(hourlyRef.current, "png", "sessions_by_hour")}
+              >
+                Export Chart as Image
               </button>
             </Card.Body>
           </Card>
@@ -221,7 +268,7 @@ export default function SessionsReport() {
             <Card.Body>
               <Card.Title>Session Completion Rate</Card.Title>
               <Card.Subtitle className="mb-2 text-muted">Breakdown of completed, cancelled, and no-show sessions</Card.Subtitle>
-              <div className="h-100 d-flex align-items-center justify-content-center" style={{ minHeight: "400px", width: "100%" }}>
+              <div ref={completionRef} className="h-100 d-flex align-items-center justify-content-center" style={{ minHeight: "400px", width: "100%" }}>
                 <ResponsiveContainer width="100%" height="100%" minHeight="400px">
                   <PieChart margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                     <Pie
@@ -245,9 +292,17 @@ export default function SessionsReport() {
               </div>
               <button
                 className="btn btn-outline-primary mb-3"
+                style={{ marginTop: "20px" }}
                 onClick={() => exportToCSV(completionData, "completion_rate", chartType)}
               >
                 Export Completion Rate Data
+              </button>
+              <button
+                className="btn btn-outline-primary mb-3"
+                style={{ marginLeft: "15px", marginTop: "20px" }}
+                onClick={() => exportChartAsImage(completionRef.current, "png", "completion_rate")}
+              >
+                Export Chart as Image
               </button>
             </Card.Body>
           </Card>
@@ -258,7 +313,7 @@ export default function SessionsReport() {
             <Card.Body>
               <Card.Title>Feedback Scores Distribution</Card.Title>
               <Card.Subtitle className="mb-2 text-muted">Distribution of student ratings for tutoring sessions</Card.Subtitle>
-              <div className="h-100 d-flex align-items-center justify-content-center" style={{ minHeight: "400px", width: "100%" }}>
+              <div ref={feedbackRef} className="h-100 d-flex align-items-center justify-content-center" style={{ minHeight: "400px", width: "100%" }}>
                 <ResponsiveContainer width="100%" height="100%" minHeight="400px">
                   <PieChart margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                     <Pie
@@ -275,16 +330,24 @@ export default function SessionsReport() {
                         <Cell key={`cell-${index}`} fill={entry.color} />
                       ))}
                     </Pie>
-                    <Tooltip formatter={(value) => [`${value} sessions`, "Count"]} />
+                    <Tooltip formatter={(count) => [`${count} sessions`, "Count"]} />
                     <Legend />
                   </PieChart>
                 </ResponsiveContainer>
               </div>
               <button
                 className="btn btn-outline-primary mb-3"
+                style={{ marginTop: "20px" }}
                 onClick={() => exportToCSV(feedbackData, "feedback_scores", chartType)}
               >
                 Export Feedback Data
+              </button>
+              <button
+                className="btn btn-outline-primary mb-3"
+                style={{ marginLeft: "15px", marginTop: "20px" }}
+                onClick={() => exportChartAsImage(feedbackRef.current, "png", "feedback_scores")}
+              >
+                Export Chart as Image
               </button>
             </Card.Body>
           </Card>
