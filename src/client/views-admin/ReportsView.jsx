@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { FaSearch, FaBell, FaDownload, FaCalendarAlt, FaSyncAlt } from 'react-icons/fa';
 import { Tab } from '@headlessui/react';
 import Header from '../components/Header';
@@ -6,7 +7,7 @@ import TutorsReport from "../components/reports/TutorsReport";
 import StudentsReport from "../components/reports/StudentsReport";
 import DepartmentReport from "../components/reports/DepartmentReports";
 
-export default function ReportsPage() {
+function ReportsPage() {
   return (
     <>
     <Header/>
@@ -61,3 +62,5 @@ export default function ReportsPage() {
     </>
   );
 }
+
+export default memo(ReportsPage);

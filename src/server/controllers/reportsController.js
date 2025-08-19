@@ -265,3 +265,41 @@ export const getSessionsReport = async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 }
+
+export const getTutorsReport = async (req, res) => {
+  try {
+    const tutorsAmount = await safeQuery(
+      User.count({
+        where: {
+          role: 'tutor'
+        }
+      }),
+      0 // fallback to 0 if the count fails
+    );
+
+    const [result] = await safeQuery(
+      connection.query(`
+       SELECT ROUND(AVG(tutor_sessions), 2) AS avg_sessions_per_tutor
+        FROM (SELECT COUNT(s.session_id) AS tutor_sessions
+            FROM sessions s
+            JOIN users u ON u.user_id = s.tutor_id
+            JOIN semester se ON s.semester_id = se.semester_id
+            WHERE se.is_current = TRUE
+            GROUP BY s.tutor_id
+        ) AS subquery
+      `),
+      [[]] // fallback empty result
+    );
+
+    const avgSessionsPerTutor = parseFloat(result[0]?.avg_sessions_per_tutor || 0).toFixed(2);
+
+    res.status(200).json({
+      tutorsAmount: tutorsAmount,
+      avgSessionsPerTutor: avgSessionsPerTutor
+    });
+  }
+  catch(e) {
+    console.error(e);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+}
