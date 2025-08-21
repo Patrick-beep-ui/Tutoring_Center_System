@@ -30,6 +30,7 @@
     "dotenv": "^16.4.7",
     "express": "^4.19.2",
     "express-session": "^1.18.0",
+    "file-saver": "^2.0.5",
     "handlebars": "^4.7.8",
     "html2canvas": "^1.4.1",
     "ics": "^3.7.6",

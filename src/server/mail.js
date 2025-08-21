@@ -14,8 +14,8 @@ const transporter = nodemailer.createTransport({
   port: 587,
   secure: false,
   auth: {
-    user: "se.student@keiseruniversity.edu.ni",
-    pass: "35ChRz)$ieeg"
+    user: "tutoring.center@keiseruniversity.edu.ni",
+    pass: "tYn8C9-+&2i&"
 
   }
 });
@@ -32,7 +32,7 @@ transporter.verify((error, success) => {
 // Basic email sender
 export const sendEmail = async (to, subject, text) => {
   const mailOptions = {
-    from: 'se.student@keiseruniversity.edu.ni',
+    from: 'tutoring.center@keiseruniversity.edu.ni',
     to,
     subject,
     text,
@@ -62,7 +62,7 @@ export async function sendSessionRequestEmail(to, data) {
     const text = `Hello ${data.tutorName}, you have a new session request from ${data.studentName} for ${data.courseName} on ${data.date} at ${data.time}.`;
 
     const mailOptions = {
-      from: 'se.student@keiseruniversity.edu.ni',
+      from: 'tutoring.center@keiseruniversity.edu.ni',
       to,
       subject,
       text,
@@ -98,7 +98,7 @@ export async function sendFeedbackEmail(to, data) {
     const text = `Hello ${data.studentName}, Thank you for attending the session. Please provide feedback.`;
   
     const mailOptions = {
-      from: 'se.student@keiseruniversity.edu.ni',
+      from: 'tutoring.center@keiseruniversity.edu.ni',
       to,
       subject,
       text,

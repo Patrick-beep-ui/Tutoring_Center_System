@@ -318,7 +318,7 @@ export const editSession = async (req, res) => {
             //const feedbackUrl = `${protocol}://${host}/feedback/${session.session_id}/${student.user_id}`;
 
             const localIP = getLocalIPAddress();
-            const feedbackUrl = `http://${localIP}:3000/feedback/${session.session_id}/${student.user_id}`;
+            const feedbackUrl = `http://${localIP}:3000/feedback/${session.session_id}/${student.ku_id}`;
 
             await sendFeedbackEmail(student.email, {
                 tutorName: `${tutor.first_name} ${tutor.last_name}`,

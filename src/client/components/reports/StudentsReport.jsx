@@ -15,7 +15,7 @@ import {
   YAxis,
 } from "recharts";
 
-import { exportToCSV } from "../../services/exportChart";
+import exportToExcel from "../../services/exportChart"
 
 const StudentsReport = () => {
   const [chartType, setChartType] = useState("bar");
@@ -127,7 +127,7 @@ const StudentsReport = () => {
                   </BarChart>
                 </ResponsiveContainer>
               </div>
-              <Button onClick={() => exportToCSV(attendanceData, "Attendance Data", chartType)} variant="primary" className="mt-3">
+              <Button onClick={() => exportToExcel(attendanceData, "Attendance Data", chartType)} variant="primary" className="mt-3">
                 Export to CSV
               </Button>
             </Card.Body>
@@ -151,7 +151,7 @@ const StudentsReport = () => {
                   </BarChart>
                 </ResponsiveContainer>
               </div>
-              <Button onClick={() => exportToCSV(subjectsData, "Popular Subjects", chartType)} variant="primary" className="mt-3">
+              <Button onClick={() => exportToExcel(subjectsData, "Popular Subjects", chartType)} variant="primary" className="mt-3">
                 Export to CSV
               </Button>
             </Card.Body>
@@ -176,7 +176,7 @@ const StudentsReport = () => {
                   </PieChart>
                 </ResponsiveContainer>
               </div>
-              <Button onClick={() => exportToCSV(majorsData, "Students by Major", chartType)} variant="primary" className="mt-3">
+              <Button onClick={() => exportToExcel(majorsData, "Students by Major", chartType)} variant="primary" className="mt-3">
                 Export to CSV
               </Button>
             </Card.Body>
@@ -201,7 +201,7 @@ const StudentsReport = () => {
                   </PieChart>
                 </ResponsiveContainer>
               </div>
-              <Button onClick={() => exportToCSV(retentionData, "Student Retention", chartType)} variant="primary" className="mt-3">
+              <Button onClick={() => exportToExcel(retentionData, "Student Retention", chartType)} variant="primary" className="mt-3">
                 Export to CSV
               </Button>
             </Card.Body>

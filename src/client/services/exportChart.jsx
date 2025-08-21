@@ -1,28 +1,30 @@
-export const exportToCSV = (data, filename, chartType) => {
-    const csvRows = []
-  
-    // Add chart type as metadata
-    csvRows.push(`Chart Type: ${chartType}`)
-  
-    // Get headers from keys of the first object
-    const headers = Object.keys(data[0])
-    csvRows.push(headers.join(","))
-  
-    // Convert each row to CSV
-    for (const row of data) {
-      const values = headers.map(header => {
-        const escaped = ("" + row[header]).replace(/"/g, '\\"')
-        return `"${escaped}"`
-      })
-      csvRows.push(values.join(","))
-    }
-  
-    // Create Blob and trigger download
-    const blob = new Blob([csvRows.join("\n")], { type: "text/csv" })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement("a")
-    a.href = url
-    a.download = `${filename}.csv`
-    a.click()
-    URL.revokeObjectURL(url)
-}
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
+
+const exportToExcel = (data, filename, chartType) => {
+  try {
+      // Prepare data: optionally add chart type as metadata
+  const wsData = [
+    [`Chart Type: ${chartType}`],
+    Object.keys(data[0]), // headers
+    ...data.map(row => Object.values(row))
+  ];
+
+  // Create worksheet
+  const ws = XLSX.utils.aoa_to_sheet(wsData);
+
+  // Create workbook and append worksheet
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Chart Data");
+
+  // Write workbook and trigger download
+  const wbout = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+  const blob = new Blob([wbout], { type: "application/octet-stream" });
+  saveAs(blob, `${filename}.xlsx`);
+  }
+  catch (error) {
+    console.error("Error exporting to Excel:", error);
+  }
+};
+
+export default exportToExcel;
