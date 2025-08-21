@@ -38,7 +38,7 @@ function SessionsReportComponent() {
   const [sessionAmount, setSessionAmount] = useState(0);
   const [averageDuration, setAverageDuration] = useState(0);
   const [completionRate, setCompletionRate] = useState(0);
-  const [averageRating, setAverageRating] = useState(4.5);
+  const [averageRating, setAverageRating] = useState(0);
   const [chartType, setChartType] = useState("bar");
 
   const weeklyRef = useRef(null);
@@ -77,10 +77,12 @@ function SessionsReportComponent() {
           }))
         );
 
+        const rate = data.averageRating || 0;
+
         setSessionAmount(data.sessionsAmount || 0);
         setAverageDuration(data.averageDuration || 0);
         setCompletionRate(data.completionRate || 0);
-        setAverageRating(data.averageRating || 4.5);
+        setAverageRating(data.averageRating % 1 === 0 ?  Math.trunc(rate) : rate);
       } catch (e) {
         console.error("Error fetching report data:", e);
       }
@@ -106,7 +108,7 @@ function SessionsReportComponent() {
         </BarChart>
       </ResponsiveContainer>
     ),
-    []
+    [weeklyData]
   );
 
   const hourlyChart = useMemo(

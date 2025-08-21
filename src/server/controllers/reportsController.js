@@ -6,6 +6,9 @@ import Major from "../models/Major.js";
 import TutorSession from "../models/TutorSession.js";
 import SessionFeedback from "../models/SessionFeedback.js";
 import Semester from "../models/Semester.js";
+import Course from "../models/Course.js";
+import Schedule from "../models/Schedule.js";
+
 import {literal, fn, col, Op} from "sequelize";
 import connection from "../connection.js";
 import safeQuery from "../utils/safeQuery.js";
@@ -145,21 +148,35 @@ export const getSessionsReport = async (req, res) => {
           
           const averageDuration = parseFloat(result[0]?.average_duration || 0).toFixed(2);
 
-        // Average Rating
-        const averageRating = await safeQuery(
-          SessionFeedback.findOne({
-            attributes: [
-              [fn('ROUND', fn('AVG', col('rating')), 1), 'avg_rating']
-            ],
-            where: {
-              rating: { [Op.ne]: null } // Exclude null ratings properly
-            },
-            raw: true
-          }),
-          0
-        );
+          const [result_rating] = await safeQuery(
+            SessionFeedback.findAll({
+              attributes: [
+                [fn('ROUND', fn('AVG', col('rating')), 1), 'avg_rating']
+              ],
+              where: {
+                rating: { [Op.ne]: null } 
+              },
+              include: [
+                {
+                  model: TutorSession,
+                  required: true,
+                  attributes: [],
+                  include: [
+                    {
+                      model: Semester,
+                      required: true, // Only include sessions from the current semester
+                      where: { is_current: true },
+                      attributes: []
+                    }
+                  ]
+                }
+              ],
+              raw: true
+            }),
+            [{ avg_rating: 0 }] // fallback result
+          );
 
-          console.log('Average Rating:', averageRating);
+          const averageRating = result_rating?.avg_rating || 0;
 
           const weeklyData = await safeQuery(
             TutorSession.findAll({
@@ -191,7 +208,7 @@ export const getSessionsReport = async (req, res) => {
               {
                 model: SessionDetail,
                 attributes: [],
-                required: false
+                required: true
               },
               {
                 model: Semester,
@@ -239,6 +256,20 @@ export const getSessionsReport = async (req, res) => {
             [col('rating'), 'rating'],
             [fn('COUNT', col('feedback_id')), 'count']
           ],
+          include: [
+            {
+              model: TutorSession,
+              attributes: [],
+              required: true,
+              include: [
+                {
+                  model: Semester,
+                  where: { is_current: true },
+                  attributes: []
+                }
+              ]
+            }
+          ],
           where: {
             rating: { [Op.ne]: null }
           },
@@ -252,7 +283,7 @@ export const getSessionsReport = async (req, res) => {
             sessionsAmount: sessionsAmount,
             completionRate: completionRate,
             averageDuration: averageDuration,
-            averageRating: averageRating.avg_rating,
+            averageRating: averageRating,
             weeklyData: weeklyData,
             hourlyData: hourlyData,
             completionData: completionData,
@@ -293,9 +324,127 @@ export const getTutorsReport = async (req, res) => {
 
     const avgSessionsPerTutor = parseFloat(result[0]?.avg_sessions_per_tutor || 0).toFixed(2);
 
+    const [result_rating] = await safeQuery(
+      connection.query(`
+        SELECT ROUND(AVG(tutor_rating), 1) as avg_rating_per_tutor
+        FROM(
+        SELECT s.tutor_id as 'tutor_id', ROUND(AVG(f.rating), 2) as 'tutor_rating'
+        from session_feedback f JOIN sessions s ON f.session_id = s.session_id
+        JOIN semester se ON s.semester_id = se.semester_id
+        WHERE se.is_current = TRUE
+        GROUP BY tutor_id
+        ) AS subquery
+      `),
+      [[]] // fallback empty result
+    );
+
+    const avgRatingPerTutor = parseFloat(result_rating[0]?.avg_rating_per_tutor || 0).toFixed(1);
+
+    const totalHours = await safeQuery(
+      TutorSession.findAll({
+        attributes: [[fn('SUM', col('session_totalhours')), 'total_hours']],
+        include: [
+          {
+            model: Semester,
+            where: { is_current: true },
+            attributes: []
+          }
+        ],
+        raw: true
+      }),
+      0 // fallback empty result
+    );
+
+    const [tutorsPerformance] = await safeQuery(
+      connection.query(`
+        SELECT 
+          CONCAT(u.first_name, ' ', u.last_name) AS tutor_name,
+          COUNT(s.session_id) AS sessions_amount,
+          ROUND(AVG(f.rating), 2) AS avg_rating,
+          COUNT(s.student_id) AS students_count
+        FROM users u
+        JOIN sessions s 
+          ON u.user_id = s.tutor_id
+          AND s.semester_id IN (
+            SELECT semester_id FROM semester WHERE is_current = TRUE
+          )
+        LEFT JOIN session_feedback f 
+          ON s.session_id = f.session_id
+        WHERE u.role = 'tutor'
+        GROUP BY tutor_name;
+      `)
+    , 
+    [[]]
+  );
+
+  const [tutorsHours] = await safeQuery(
+    connection.query(`
+      SELECT CONCAT(u.first_name, ' ', u.last_name) AS 'tutor_name', sum(s.session_totalhours) as 'total_hours'
+      FROM sessions s JOIN semester se ON s.semester_id = se.semester_id
+      JOIN users u ON s.tutor_id = u.user_id 
+      WHERE se.is_current = TRUE
+      GROUP BY tutor_id;
+      `)
+    ,
+    [[]]
+  );
+
+  const sessionsPerMajor = await safeQuery(
+    Major.findAll({
+    attributes: [
+      "major_name",
+      [fn("COUNT", col("Courses.TutorSessions.session_id")), "sessions_amount"]
+    ],
+    include: [
+      {
+        model: Course,
+        attributes: [],
+        include: [
+          {
+            model: TutorSession,
+            attributes: [],
+            required: true,
+            include: [
+              {
+                model: Semester,
+                attributes: [],
+                required: true,
+                where: { is_current: true }
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    group: ["Major.major_name"],
+    raw: true
+    }), 
+    [[]]
+  );
+
+  const availabilityData = await safeQuery(
+    Schedule.findAll({
+      attributes: [
+        [literal("CONCAT(start_time, '-', end_time)"), 'time_block'],
+        [fn('COUNT', fn('DISTINCT', col('user_id'))), 'tutors_count']
+      ],
+      group: ['time_block'],
+      order: [[literal("tutors_count"), "DESC"]],
+      limit: 4,
+      raw: true,
+    }),
+    [[]] 
+  )
+
     res.status(200).json({
       tutorsAmount: tutorsAmount,
-      avgSessionsPerTutor: avgSessionsPerTutor
+      avgSessionsPerTutor: avgSessionsPerTutor,
+      avgRatingPerTutor: avgRatingPerTutor,
+      totalHours: totalHours[0]?.total_hours,
+      tutorsPerformance: tutorsPerformance,
+      tutorsHours: tutorsHours,
+      sessionsPerMajor: sessionsPerMajor,
+      availabilityData: availabilityData
     });
   }
   catch(e) {

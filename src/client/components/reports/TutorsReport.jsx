@@ -85,8 +85,82 @@ const TutorsReport = () => {
         setLoading(true);
         const {data} = await api.get("/report/tutors");
 
+        const total_hours = data.totalHours || 0;
+
         setActiveTutors(data.tutorsAmount || 0);
         setAvgSessionsPerTutor(data.avgSessionsPerTutor || 0);
+        setAvgRating(data.avgRatingPerTutor || 0);
+        setTotalHours(data.totalHours % 1 === 0 ? Math.trunc(total_hours) : total_hours.toFixed(1) || 0);
+
+        setPerformanceData(
+          (data.tutorsPerformance || []).map(t => {
+            const rawRating = t.avg_rating === null ? 0 : parseFloat(t.avg_rating);
+            const formattedRating =
+              rawRating % 1 === 0 ? Math.trunc(rawRating) : rawRating.toFixed(1);
+        
+            return {
+              name: t.tutor_name,
+              sessions: t.sessions_amount,
+              rating: formattedRating,
+              students: t.students_count,
+            };
+          })
+        );
+
+        setHoursData(
+          (data.tutorsHours || []).map(t => {
+            const formattedHours = t.total_hours % 1 === 0 ? Math.trunc(t.total_hours) : t.total_hours.toFixed(1); 
+
+            return {
+              name: t.tutor_name,
+              hours: formattedHours,
+            };
+          })
+        )
+
+        setMajorsData(
+          (data.sessionsPerMajor || [])
+            .filter(t => t.sessions_amount > 0) // only keep majors with sessions
+            .map(t => ({
+              name: t.major_name,
+              value: t.sessions_amount, 
+              color: {
+                "Software Engineering": "#60a5fa",
+                "Business Administration": "#34d399",
+                "General Studies": "#a78bfa",
+                "Psychology": "#f87171",
+                "Management Information Systems": "#fbbf24",
+                "Political Science": "#94a3b8",
+              }[t.major_name] || "#a78bfa"
+            }))
+        );
+
+        setAvailabilityData(
+          (data.availabilityData || []).map((t, index) => {
+            // Split the time block into start and end
+            const [start, end] = t.time_block.split('-');
+        
+            // Convert to AM/PM
+            const formatTime = (timeStr) => {
+              const [hour, minute] = timeStr.split(':').map(Number);
+              const ampm = hour >= 12 ? 'PM' : 'AM';
+              const hour12 = hour % 12 === 0 ? 12 : hour % 12;
+              return `${hour12}:${minute.toString().padStart(2, '0')} ${ampm}`;
+            };
+        
+            return {
+              name: `${formatTime(start)} - ${formatTime(end)}`,
+              value: t.tutors_count,
+              color: [
+                "#60a5fa",
+                "#34d399",
+                "#a78bfa",
+                "#f87171"
+              ][index] || "#a78bfa"
+            };
+          })
+        );
+        
 
       } catch (error) {
         console.error("Error fetching report data:", error);
@@ -101,7 +175,7 @@ const TutorsReport = () => {
   const performanceChart = useMemo(
     () => (
       <ResponsiveContainer width="100%" height="100%" minHeight="400px">
-        <BarChart data={performanceSampleData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+        <BarChart data={performanceData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="name" />
             <YAxis yAxisId="left" orientation="left" stroke="#60a5fa" />
@@ -114,13 +188,13 @@ const TutorsReport = () => {
         </BarChart>
       </ResponsiveContainer>
     ), 
-    []
+    [performanceData]
   );
 
   const hoursDataChart = useMemo(
     () => (
       <ResponsiveContainer width="100%" height="100%" minHeight="400px">
-        <BarChart data={hoursSampleData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+        <BarChart data={hoursData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="name" />
             <YAxis />
@@ -130,7 +204,7 @@ const TutorsReport = () => {
         </BarChart>
       </ResponsiveContainer>
     ),
-    []
+    [hoursData]
   );
 
   const majorsDataChart = useMemo(
@@ -138,7 +212,7 @@ const TutorsReport = () => {
       <ResponsiveContainer width="100%" height="100%" minHeight="400px">
         <PieChart margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
           <Pie
-            data={subjectsSampleData}
+            data={majorsData}
             cx="50%"
             cy="50%"
             labelLine={true}
@@ -147,7 +221,7 @@ const TutorsReport = () => {
             fill="#8884d8"
             dataKey="value"
           >
-            {subjectsSampleData.map((entry, index) => (
+            {majorsData.map((entry, index) => (
               <Cell key={`cell-${index}`} fill={entry.color} />
             ))}
           </Pie>
@@ -156,7 +230,7 @@ const TutorsReport = () => {
         </PieChart>
       </ResponsiveContainer>
     ),
-    []
+    [majorsData]
   )
 
   const availabilityDataChart = useMemo(
@@ -164,7 +238,7 @@ const TutorsReport = () => {
       <ResponsiveContainer width="100%" height="100%" minHeight="400px">
         <PieChart margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
           <Pie
-            data={availabilitySampleData}
+            data={availabilityData}
             cx="50%"
             cy="50%"
             labelLine={true}
@@ -173,16 +247,16 @@ const TutorsReport = () => {
             fill="#8884d8"
             dataKey="value"
           >
-            {availabilitySampleData.map((entry, index) => (
+            {availabilityData.map((entry, index) => (
               <Cell key={`cell-${index}`} fill={entry.color} />
             ))}
           </Pie>
-          <Tooltip formatter={(value) => [`${value} hours`, "Available"]} />
+          <Tooltip formatter={(value) => [`${value} Tutors`, "Available"]} />
           <Legend />
         </PieChart>
       </ResponsiveContainer>
     ),
-    []
+    [availabilityData]
   )
 
   return (
@@ -191,8 +265,8 @@ const TutorsReport = () => {
       <div className="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 mb-4">
         <CardSummary title="Active Tutors" value={activeTutors} change="+2"/>
         <CardSummary title="Avg. Sessions per Tutor" value={avgSessionsPerTutor} change="+3.5"/>
-        <CardSummary title="Avg. Raiting" value="4.7/5" change="+0.1"/>
-        <CardSummary title="Total Hours" value="286" change="+12%"/>
+        <CardSummary title="Avgerage Raiting" value={`${avgRating}/5`} change="+0.1"/>
+        <CardSummary title="Total Hours" value={totalHours} change="+12%"/>
       </div>
 
       {/* Tabs with Charts */}
@@ -205,7 +279,7 @@ const TutorsReport = () => {
               {performanceChart}
             </Card.Body>
             <ExportButtons
-                data={performanceSampleData}
+                data={performanceData}
                 refEl={performanceRef}
                 filename="tutors_performance"
                 chartType={chartType}
@@ -223,7 +297,7 @@ const TutorsReport = () => {
               {/*</div>}*/}
             </Card.Body>
             <ExportButtons
-                data={hoursSampleData}
+                data={hoursData}
                 refEl={hoursRef}
                 filename="tutors_hours"
                 chartType={chartType}
@@ -241,7 +315,7 @@ const TutorsReport = () => {
               </div>
             </Card.Body>
             <ExportButtons
-                data={subjectsSampleData}
+                data={majorsData}
                 refEl={majorsRef}
                 filename="tutors_by_major"
                 chartType={chartType}
@@ -259,7 +333,7 @@ const TutorsReport = () => {
               </div>
             </Card.Body>
             <ExportButtons
-              data={availabilitySampleData}
+              data={availabilityData}
               refEl={availabilityRef}
               filename="tutors_availability"
               chartType={chartType}
