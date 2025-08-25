@@ -2,6 +2,7 @@ import TutorSession from "../models/TutorSession.js";
 import User from "../models/User.js";
 import Course from "../models/Course.js";
 import SessionDetail from "../models/SessionDetail.js";
+import Semester from "../models/Semester.js";
 import connection from "../connection.js";
 import { sendFeedbackEmail } from "../mail.js";
 import { QueryTypes } from "sequelize";
@@ -224,6 +225,11 @@ export const getScheduledSessionsItems = async (req, res) => {
 // Add a new session from tutor profile
 export const addSession = async (req, res) => {
     try {
+        const current_semester = await Semester.findOne({
+            where: {
+                is_current: true
+            }
+        })
         
         const tutor_id = req.params.tutor_id
         const course_id = req.params.course_id
@@ -232,7 +238,7 @@ export const addSession = async (req, res) => {
             tutor_id: tutor_id,
             student_id: req.body.student_id,
             course_id: course_id,
-            semester_id: req.body.semester_id,
+            semester_id: current_semester.semester_id,
             session_date: req.body.session_date,
             session_totalhours: req.body.session_hours,
             feedback: req.body.feedback
