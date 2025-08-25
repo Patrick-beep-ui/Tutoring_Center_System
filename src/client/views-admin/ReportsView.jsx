@@ -43,7 +43,7 @@ function ReportsPage() {
                     <Tab className="nav-link">Sessions</Tab>
                     <Tab className="nav-link">Tutors</Tab>
                     <Tab className="nav-link">Students</Tab>
-                    <Tab className="nav-link">Departments</Tab>
+                    <Tab className="nav-link">Majors</Tab>
                   </Tab.List>
                   <Tab.Panels>
                     <Tab.Panel><SessionsReport /></Tab.Panel>

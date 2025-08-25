@@ -12,6 +12,7 @@ import Schedule from "../models/Schedule.js";
 import {literal, fn, col, Op} from "sequelize";
 import connection from "../connection.js";
 import safeQuery from "../utils/safeQuery.js";
+import { AwardIcon } from "lucide-react";
 
 export const getReportData = async (req, res) => {
     try {
@@ -99,6 +100,7 @@ export const getSessionsReport = async (req, res) => {
             include: {
               model: Semester,
               where: { is_current: true },
+              required: true,
               attributes: [] // do not return Semester fields
             }
           }),
@@ -112,11 +114,13 @@ export const getSessionsReport = async (req, res) => {
               {
                 model: Semester,
                 where: { is_current: true },
+                required: true,
                 attributes: []
               },
               {
                 model: SessionDetail,
                 where: { session_status: 'completed' },
+                required: true,
                 attributes: []
               }
             ]
@@ -188,8 +192,8 @@ export const getSessionsReport = async (req, res) => {
               [fn('SUM', literal("CASE WHEN `SessionDetails`.session_status = 'canceled' THEN 1 ELSE 0 END")), 'cancelled'],
             ],
             include: [
-              { model: SessionDetail, attributes: [] },
-              { model: Semester, where: { is_current: true }, attributes: [] }
+              { model: SessionDetail, attributes: [], required: true },
+              { model: Semester, where: { is_current: true }, attributes: [], required: true }
             ],
             group: ['name','week_num'],
             order: [['week_num', 'ASC']],
@@ -208,7 +212,8 @@ export const getSessionsReport = async (req, res) => {
               {
                 model: SessionDetail,
                 attributes: [],
-                required: true
+                required: true,
+                where: { session_status: 'completed' },
               },
               {
                 model: Semester,
@@ -308,21 +313,28 @@ export const getTutorsReport = async (req, res) => {
       0 // fallback to 0 if the count fails
     );
 
-    const [result] = await safeQuery(
-      connection.query(`
-       SELECT ROUND(AVG(tutor_sessions), 2) AS avg_sessions_per_tutor
-        FROM (SELECT COUNT(s.session_id) AS tutor_sessions
-            FROM sessions s
-            JOIN users u ON u.user_id = s.tutor_id
-            JOIN semester se ON s.semester_id = se.semester_id
-            WHERE se.is_current = TRUE
-            GROUP BY s.tutor_id
-        ) AS subquery
-      `),
-      [[]] // fallback empty result
-    );
+    const sessionsAmount = await safeQuery(
+      TutorSession.count({
+        include: [
+          {
+            model: SessionDetail,
+            attributes: [],
+            required: true,
+            where: { session_status: 'completed' } 
+          },
+          {
+            model: Semester,
+            where: { is_current: true },
+            attributes: [],
+            required: true 
+          }
+        ],
+      }),
+    )
 
-    const avgSessionsPerTutor = parseFloat(result[0]?.avg_sessions_per_tutor || 0).toFixed(2);
+    console.log('Sessions Amount:', sessionsAmount);
+
+    const avgSessionsPerTutor = parseFloat(sessionsAmount / tutorsAmount || 0).toFixed(2);
 
     const [result_rating] = await safeQuery(
       connection.query(`
@@ -348,6 +360,12 @@ export const getTutorsReport = async (req, res) => {
             model: Semester,
             where: { is_current: true },
             attributes: []
+          },
+          {
+            model: SessionDetail,
+            attributes: [],
+            where: { session_status: 'completed' }, 
+            required: true
           }
         ],
         raw: true
@@ -359,19 +377,21 @@ export const getTutorsReport = async (req, res) => {
       connection.query(`
         SELECT 
           CONCAT(u.first_name, ' ', u.last_name) AS tutor_name,
-          COUNT(s.session_id) AS sessions_amount,
+          COUNT(DISTINCT s.session_id) AS sessions_amount,
           ROUND(AVG(f.rating), 2) AS avg_rating,
-          COUNT(s.student_id) AS students_count
+          COUNT(DISTINCT s.student_id) AS students_count
         FROM users u
         JOIN sessions s 
           ON u.user_id = s.tutor_id
           AND s.semester_id IN (
             SELECT semester_id FROM semester WHERE is_current = TRUE
           )
+        LEFT JOIN session_details sd ON s.session_id = sd.session_id
         LEFT JOIN session_feedback f 
           ON s.session_id = f.session_id
-        WHERE u.role = 'tutor'
-        GROUP BY tutor_name;
+        WHERE u.role = 'tutor' AND sd.session_status = 'completed'
+        GROUP BY tutor_name
+        ORDER BY sessions_amount DESC, avg_rating DESC;
       `)
     , 
     [[]]
@@ -381,8 +401,9 @@ export const getTutorsReport = async (req, res) => {
     connection.query(`
       SELECT CONCAT(u.first_name, ' ', u.last_name) AS 'tutor_name', sum(s.session_totalhours) as 'total_hours'
       FROM sessions s JOIN semester se ON s.semester_id = se.semester_id
+      JOIN session_details sd ON s.session_id = sd.session_id
       JOIN users u ON s.tutor_id = u.user_id 
-      WHERE se.is_current = TRUE
+      WHERE se.is_current = TRUE AND sd.session_status = 'completed'
       GROUP BY tutor_id;
       `)
     ,
@@ -410,7 +431,8 @@ export const getTutorsReport = async (req, res) => {
                 attributes: [],
                 required: true,
                 where: { is_current: true }
-              }
+              },
+              
             ]
           }
         ]
@@ -446,6 +468,316 @@ export const getTutorsReport = async (req, res) => {
       sessionsPerMajor: sessionsPerMajor,
       availabilityData: availabilityData
     });
+  }
+  catch(e) {
+    console.error(e);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+}
+
+export const getStudentsReport = async (req, res) => {
+  try {
+    const studentsAmount = await safeQuery(
+      User.count({
+        where: {
+          role: 'student'
+        }
+      }),
+      0 
+    );
+
+    const attendanceData = await safeQuery(
+      SessionDetail.findAll({
+      attributes: [
+        [fn('SUM', literal(`CASE WHEN session_status = 'completed' THEN 1 ELSE 0 END`)), 'completed'],
+        [fn('SUM', literal(`CASE WHEN session_status IN ('scheduled','completed') THEN 1 ELSE 0 END`)), 'confirmed']
+      ],
+      include: [{
+        model: TutorSession,
+        attributes: [],
+        required: true,
+        include: [
+          {
+          model: Semester,
+          required: true,
+          attributes: [],
+          where: { is_current: true }
+        }
+      ]
+      }],
+      raw: true
+    }),
+    0
+  );
+    
+    const completed = Number(attendanceData[0].completed || 0);
+    const confirmed = Number(attendanceData[0].confirmed || 0);
+    const attendanceRate = confirmed ? completed / confirmed : 0;
+
+    const [studentsSessions] = await safeQuery(
+      connection.query(`
+        SELECT ROUND(AVG(session_count), 2) AS avg_sessions_per_student
+        FROM (
+          SELECT s.student_id, COUNT(s.session_id) AS session_count
+          FROM sessions s JOIN session_details sd ON s.session_id = sd.session_id
+          JOIN semester se ON s.semester_id = se.semester_id
+          WHERE sd.session_status = 'completed' AND se.is_current = TRUE
+          GROUP BY student_id
+        ) AS per_student;
+      `),
+      0 // fallback empty result
+    )
+
+    const [retentionRate] = await safeQuery(
+      connection.query(`
+        SELECT 
+        ROUND(
+            100.0 * SUM(CASE WHEN session_count > 1 THEN 1 ELSE 0 END) / COUNT(*), 
+            2
+        ) AS retention_rate
+        FROM (
+            SELECT s.student_id, COUNT(s.session_id) AS session_count
+            FROM sessions s JOIN semester se ON s.semester_id = se.semester_id
+            JOIN session_details sd ON s.session_id = sd.session_id
+            WHERE se.is_current = TRUE AND sd.session_status = 'completed'
+            GROUP BY student_id
+        ) AS student_sessions;
+
+        `
+      ),
+      0
+    );
+
+    const weeklyData = await safeQuery(
+      TutorSession.findAll({
+      attributes: [
+        [literal("CONCAT('Week ', WEEK(session_date, 1) - WEEK(Semester.start_date, 1) + 1)"), 'name'],
+        [literal("WEEK(session_date, 1) - WEEK(Semester.start_date, 1) + 1"), 'week_num'],
+        [fn('SUM', literal("CASE WHEN `SessionDetails`.session_status IN ('completed') THEN 1 ELSE 0 END")), 'attended'],
+        [fn('SUM', literal("CASE WHEN `SessionDetails`.session_status IN ('scheduled') THEN 1 ELSE 0 END")), 'scheduled'],
+        [fn('SUM', literal("CASE WHEN `SessionDetails`.session_status = 'canceled' THEN 1 ELSE 0 END")), 'missed'],
+      ],
+      include: [
+        { model: SessionDetail, attributes: [], required: true },
+        { model: Semester, where: { is_current: true }, attributes: [], required: true }
+      ],
+      group: ['name','week_num'],
+      order: [['week_num', 'ASC']],
+      raw: true,
+    }),
+    [] // fallback empty result
+  );
+
+  const [popularCourses] = await safeQuery(
+    connection.query(`
+      SELECT 
+        c.course_name AS course_name,
+        COUNT(s.session_id) AS sessions_count,
+        SUM(CASE WHEN sd.session_status = 'completed' THEN 1 ELSE 0 END) AS completed,
+        SUM(CASE WHEN sd.session_status = 'scheduled' THEN 1 ELSE 0 END) AS scheduled,
+        SUM(CASE WHEN sd.session_status = 'pending' THEN 1 ELSE 0 END) AS pending
+      FROM courses c
+      JOIN sessions s ON s.course_id = c.course_id
+      JOIN session_details sd ON s.session_id = sd.session_id
+      JOIN semester se ON se.semester_id = s.semester_id
+      WHERE se.is_current = TRUE
+        AND sd.session_status IN ('completed', 'scheduled', 'pending')
+      GROUP BY c.course_name
+      ORDER BY sessions_count DESC
+      LIMIT 8;
+      `),
+      [[]] // fallback empty result
+  );
+
+  const studentsByMajor = await safeQuery(
+    Major.findAll({
+      attributes: [
+        'major_name',
+        [fn('COUNT', col('Users.user_id')), 'students_count']
+      ],
+      include: [
+        {
+          model: User,
+          where: { role: 'student' },
+          attributes: [],
+          required: true
+        }
+      ],
+      group: ['major_name'],
+      raw: true
+    }),
+    [] 
+  )
+
+  const [studentRetention] = await safeQuery(
+    connection.query(`
+      SELECT 
+          SUM(CASE WHEN session_count = 1 THEN 1 ELSE 0 END) AS one_time_students,
+          SUM(CASE WHEN session_count > 1 THEN 1 ELSE 0 END) AS returning_students
+      FROM (
+        SELECT s.student_id, COUNT(s.session_id) AS session_count
+        FROM sessions s JOIN semester se ON s.semester_id = se.semester_id
+        JOIN session_details sd ON s.session_id = sd.session_id
+        WHERE se.is_current = TRUE AND sd.session_status = 'completed'
+        GROUP BY student_id
+      ) AS student_sessions;
+          `),
+    [[]] // fallback empty result
+  )
+    
+    res.status(200).json({
+      studentsAmount: studentsAmount,
+      attendanceRate: (attendanceRate * 100).toFixed(2),
+      retentionRate: retentionRate[0]?.retention_rate || 0,
+      avgSessionsPerStudent: studentsSessions[0]?.avg_sessions_per_student || 0,
+      weeklyData: weeklyData,
+      popularCourses: popularCourses,
+      studentsByMajor: studentsByMajor,
+      studentRetention: studentRetention
+    });
+  }
+  catch(e) {
+    console.error(e);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+}
+
+export const getMajorsReport = async (req, res) => {
+  try {
+    const majorsCount = await Major.count();
+
+    const [result] = await safeQuery(
+      connection.query(`
+        SELECT 
+            ROUND(AVG(sessions_count), 2) AS avg_sessions_per_major
+        FROM (
+            SELECT 
+                m.major_name,
+                COUNT(s.session_id) AS sessions_count
+            FROM majors m
+            LEFT JOIN courses c ON m.major_id = c.major_id
+            LEFT JOIN sessions s ON s.course_id = c.course_id
+            LEFT JOIN session_details sd ON s.session_id = sd.session_id
+            LEFT JOIN semester se ON s.semester_id = se.semester_id
+            WHERE (se.is_current = TRUE OR se.semester_id IS NULL) 
+              AND (sd.session_status = 'completed' OR sd.session_id IS NULL)
+            GROUP BY m.major_name
+        ) AS subquery;
+
+      `),
+      [[]] 
+    );
+
+    const avgSessionsPerMajor = parseFloat(result[0]?.avg_sessions_per_major || 0).toFixed(2);
+
+    const [majorTotalHours] = await safeQuery(
+      connection.query(`
+        SELECT SUM(sessions_hours) as major_hours
+        FROM(
+          select m.major_name as 'major_name', SUM(s.session_totalhours) as 'sessions_hours'
+          FROM sessions s JOIN courses c ON s.course_id = c.course_id
+          JOIN session_details sd ON s.session_id = sd.session_id
+          LEFT JOIN majors m ON c.major_id = m.major_id
+          JOIN semester se ON s.semester_id = se.semester_id
+          WHERE se.is_current = TRUE AND sd.session_status = 'completed'
+          GROUP BY major_name
+        ) as subquery;
+      `),
+      [[]] // fallback empty result
+    );
+
+    const majorHours = parseFloat(majorTotalHours[0]?.major_hours || 0);
+
+    const [result_rating] = await safeQuery(
+      connection.query(`
+        SELECT ROUND(AVG(major_rating), 1) AS avg_rating_per_major
+        FROM (
+          SELECT m.major_name as 'major_name', ROUND(AVG(f.rating), 2) AS major_rating
+          FROM session_feedback f 
+          JOIN sessions s ON f.session_id = s.session_id
+          JOIN semester se ON s.semester_id = se.semester_id
+          JOIN courses c ON c.course_id = s.course_id
+            JOIN majors m ON c.major_id = m.major_id
+          WHERE se.is_current = TRUE
+          GROUP BY major_name
+        ) AS subquery;
+      `),
+      [[]] // fallback empty result
+    );
+
+    const avgRatingPerMajor = parseFloat(result_rating[0]?.avg_rating_per_major || 0).toFixed(1);
+
+    const [result_sessions_usage] = await safeQuery(
+      connection.query(`
+        select m.major_name as 'major_name', count(s.session_id) as 'sessions_count', sum(s.session_totalhours) as 'session_hours'
+        FROM sessions s JOIN session_details sd ON s.session_id = sd.session_id
+        JOIN courses c ON s.course_id = c.course_id
+        JOIN majors m ON c.major_id = m.major_id
+        JOIN semester se ON s.semester_id = se.semester_id
+        WHERE se.is_current = TRUE AND sd.session_status = 'completed'
+        GROUP BY major_name;
+      `),
+      [[]] 
+    );
+
+    const tutorsByMajor = await safeQuery(
+      Major.findAll({
+        attributes: [
+          'major_name',
+          [fn('COUNT', col('Users.user_id')), 'tutors_count']
+        ],
+        include: [
+          {
+            model: User,
+            attributes: [],
+            required: true,
+            where: { role: 'tutor' },
+          }
+        ],
+        group: ['major_name'],
+        raw: true
+      }),
+      [] 
+    );
+
+    const [result_sessions_by_major] = await safeQuery(
+      connection.query(`
+      SELECT m.major_name as 'major_name', count(s.session_id) as 'sessions_count'
+      FROM sessions s JOIN courses c ON s.course_id = c.course_id
+      JOIN session_details sd ON s.session_id = sd.session_id
+      LEFT JOIN majors m ON c.major_id = m.major_id
+      JOIN semester se ON s.semester_id = se.semester_id
+      WHERE se.is_current = TRUE AND sd.session_status = 'completed'
+      GROUP BY major_name;
+      `),
+      [[]] 
+    );
+
+    const [result_satisfaction_by_major] = await safeQuery(
+      connection.query(`
+        SELECT m.major_name as 'major_name', ROUND(AVG(f.rating), 2) AS major_rating
+        FROM session_feedback f 
+        JOIN sessions s ON f.session_id = s.session_id
+        JOIN semester se ON s.semester_id = se.semester_id
+        JOIN courses c ON c.course_id = s.course_id
+        JOIN majors m ON c.major_id = m.major_id
+        WHERE se.is_current = TRUE
+        GROUP BY major_name;
+      `),
+      [[]]
+    )
+
+    res.status(200).json({
+        majorsCount: majorsCount,
+        avgSessionsPerMajor: avgSessionsPerMajor,
+        totalHours: majorHours,
+        avgRatingPerMajor: avgRatingPerMajor,
+        sessionsUsage: result_sessions_usage,
+        tutorsByMajor: tutorsByMajor,
+        sessionsByMajor: result_sessions_by_major,
+        satisfactionByMajor: result_satisfaction_by_major
+      });
+
   }
   catch(e) {
     console.error(e);

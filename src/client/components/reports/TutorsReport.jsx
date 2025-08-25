@@ -225,7 +225,7 @@ const TutorsReport = () => {
               <Cell key={`cell-${index}`} fill={entry.color} />
             ))}
           </Pie>
-          <Tooltip formatter={(value) => [`${value} tutors`, "Count"]} />
+          <Tooltip formatter={(value) => [`${value} sessions`, "Count"]} />
           <Legend />
         </PieChart>
       </ResponsiveContainer>
@@ -273,7 +273,7 @@ const TutorsReport = () => {
       <Tabs defaultActiveKey="weekly" id="report-tabs" className="mb-3">
         <Tab eventKey="weekly" title="Tutor Performance" onClick={() => setChartType("bar")}>
           <Card>
-            <Card.Body ref={hoursRef}>
+            <Card.Body ref={performanceRef}>
               <Card.Title>Tutor Performance</Card.Title>
               <Card.Subtitle className="mb-2 text-muted">Sessions conducted and average ratings by tutor</Card.Subtitle>
               {performanceChart}
@@ -305,10 +305,10 @@ const TutorsReport = () => {
           </Card>
         </Tab>
 
-        <Tab eventKey="completion" title="Subjects Covered" onClick={() => setChartType("pie")}>
+        <Tab eventKey="completion" title="Majors Covered" onClick={() => setChartType("pie")}>
           <Card>
             <Card.Body ref={majorsRef}>
-              <Card.Title>Subjects Covered</Card.Title>
+              <Card.Title>Majors Covered</Card.Title>
               <Card.Subtitle className="mb-2 text-muted">Distribution of tutoring sessions by subject area</Card.Subtitle>
               <div className="h-100 d-flex align-items-center justify-content-center" style={{ minHeight: "400px", width: "100%" }}>
                 {majorsDataChart}
@@ -379,4 +379,4 @@ const ExportButtons = memo(({ data, refEl, filename, chartType }) => (
   </>
 ));
 
-export default TutorsReport;
+export default memo(TutorsReport);
