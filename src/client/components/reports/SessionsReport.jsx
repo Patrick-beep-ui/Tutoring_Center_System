@@ -19,8 +19,8 @@ import {
 import { exportChartAsImage } from "../../services/exportChartAsImage";
 import exportToExcel from "../../services/exportChart";
 
-// Datos de ejemplo para weeklyData
-const weeklyData = [
+// Datos de ejemplo para weeklySampleData
+const weeklySampleData = [
   { name: "Week 1", sessions: 45, completed: 42, cancelled: 3 },
   { name: "Week 2", sessions: 52, completed: 48, cancelled: 4 },
   { name: "Week 3", sessions: 48, completed: 45, cancelled: 3 },
@@ -32,14 +32,17 @@ const weeklyData = [
 ];
 
 function SessionsReportComponent() {
+  const [chartType, setChartType] = useState("bar");
+
   const [hourlyData, setHourlyData] = useState([]);
   const [completionData, setCompletionData] = useState([]);
   const [feedbackData, setFeedbackData] = useState([]);
+  const [weeklyData, setWeeklyData] = useState([]);
+
   const [sessionAmount, setSessionAmount] = useState(0);
   const [averageDuration, setAverageDuration] = useState(0);
   const [completionRate, setCompletionRate] = useState(0);
   const [averageRating, setAverageRating] = useState(0);
-  const [chartType, setChartType] = useState("bar");
 
   const weeklyRef = useRef(null);
   const hourlyRef = useRef(null);
@@ -50,6 +53,8 @@ function SessionsReportComponent() {
     const getReportData = async () => {
       try {
         const { data } = await api.get("/report/sessions");
+
+        setWeeklyData(data.weeklyData || []);
 
         setHourlyData(data.hourlyData || []);
         setCompletionData(
