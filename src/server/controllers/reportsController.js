@@ -330,6 +330,7 @@ export const getTutorsReport = async (req, res) => {
           }
         ],
       }),
+      0
     )
 
     console.log('Sessions Amount:', sessionsAmount);
@@ -737,7 +738,7 @@ export const getMajorsReport = async (req, res) => {
         group: ['major_name'],
         raw: true
       }),
-      [] 
+      [[]] 
     );
 
     const [result_sessions_by_major] = await safeQuery(

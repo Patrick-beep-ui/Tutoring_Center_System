@@ -95,6 +95,8 @@ const StudentsReport = () => {
         setAvgSessions(data.avgSessionsPerStudent);
         setRetentionRate(formatRates(data.retentionRate));
 
+        setWeeklyData(data.weeklyData || [])
+
         setPopularCourses((data.popularCourses || []).map(course => {
           return {
             name: course.course_name,
@@ -139,17 +141,18 @@ const StudentsReport = () => {
 
   const attendanceChart = useMemo(() => (
     <ResponsiveContainer width="100%" height="100%" minHeight="400px">
-      <BarChart data={attendanceSampleData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+      <BarChart data={weeklyData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="name" />
         <YAxis />
         <Tooltip />
         <Legend />
         <Bar dataKey="attended" name="Attended" fill="#4ade80" />
+        <Bar dataKey="scheduled" name="Scheduled" fill="#60a5fa" />
         <Bar dataKey="missed" name="Missed" fill="#f87171" />
       </BarChart>
     </ResponsiveContainer>
-  ), [attendanceSampleData]);
+  ), [weeklyData]);
 
   const coursesChart = useMemo(() => (
     <ResponsiveContainer width="100%" height="100%" minHeight="400px">
