@@ -11,8 +11,10 @@ const RequireRoleAndCheck = ({ allowedRoles, rolesToCheck = [], paramName }) => 
 
     // Apply user check only if role is in rolesToCheck
     if (rolesToCheck.includes(user.role)) {
-        if (String(user.user_id) !== String(params[paramName])) {
-        return <Navigate to="/" replace />;
+        if(paramName) {
+            if (String(user.user_id) !== String(params[paramName])) {
+            return <Navigate to="/" replace />;
+            }
         }
     }
 
