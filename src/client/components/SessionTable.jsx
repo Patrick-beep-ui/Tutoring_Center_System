@@ -2,7 +2,7 @@ import {v4 as uuid} from "uuid";
 import { Link } from "react-router-dom";
 
 
-const SessionTable = ({ session, isEditable }) => {
+const SessionTable = ({ session, isEditable, tutorId }) => {
 
     return(
         <div className="table-container">
@@ -28,7 +28,7 @@ const SessionTable = ({ session, isEditable }) => {
                         <td>{s.total_hours}</td>
                         {isEditable ? (
                         <>
-                        <td><Link to={`/session/edit/${s.session_id}`}><i className='bx bx-pencil edit'></i></Link></td>
+                        <td><Link to={`/session/edit/${s.session_id}/${tutorId}`}><i className='bx bx-pencil edit'></i></Link></td>
                         <td name='major_id' value={s.session_id} onClick={(event) => deleteStudent(event)}><i className='bx bx-trash delete'></i></td>
                         </>
                         ) : (
