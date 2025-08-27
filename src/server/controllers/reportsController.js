@@ -97,12 +97,19 @@ export const getSessionsReport = async (req, res) => {
     try {  
         const sessionsAmount = await safeQuery(
           TutorSession.count({
-            include: {
-              model: Semester,
-              where: { is_current: true },
-              required: true,
-              attributes: [] // do not return Semester fields
-            }
+            distinct: true,
+            col: 'session_id',
+            include: [
+              {
+                model: SessionDetail, 
+                required: true
+              },
+              {
+                model: Semester,
+                where: { is_current: true },
+                required: true
+              }
+            ]
           }),
           0 // fallback to 0 if the count fails
         );

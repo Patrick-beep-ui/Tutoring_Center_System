@@ -122,27 +122,30 @@ export const getTutorCourses = async (req, res) => {
         if(id) {
             const tutor_classes = await connection.query(`
                 SELECT 
-                u.first_name AS tutor_first_name,
-                u.last_name AS tutor_last_name,
-                c.course_name,
-                c.course_id as course_id,
-                COUNT(s.session_id) AS completed_sessions
+                    u.first_name AS tutor_first_name,
+                    u.last_name AS tutor_last_name,
+                    c.course_name,
+                    c.course_id,
+                    COUNT(CASE WHEN sd.session_status = 'completed' AND sem.is_current = TRUE THEN s.session_id END) AS completed_sessions
                 FROM 
                     users u
                 JOIN 
-                    tutors t ON u.user_id = t.user_id
-                JOIN 
-                    user_courses uc ON t.user_id = uc.user_id
+                    user_courses uc ON u.user_id = uc.user_id
                 LEFT JOIN 
                     courses c ON uc.course_id = c.course_id
                 LEFT JOIN 
-                    sessions s ON t.tutor_id = s.tutor_id AND s.course_id = c.course_id
+                    sessions s ON u.user_id = s.tutor_id 
+                            AND s.course_id = c.course_id
+                LEFT JOIN 
+                    session_details sd ON s.session_id = sd.session_id
+                LEFT JOIN 
+                    semester sem ON s.semester_id = sem.semester_id
                 WHERE 
                     u.user_id = :user_id
                 GROUP BY 
                     u.user_id, c.course_id
                 ORDER BY 
-                    tutor_first_name, tutor_last_name, c.course_name, course_id;`, {
+                    tutor_first_name, tutor_last_name, c.course_name, c.course_id;`, {
                     replacements: { user_id: id },
                     type: QueryTypes.SELECT
                 });
