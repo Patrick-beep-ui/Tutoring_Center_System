@@ -6,6 +6,7 @@ import Semester from "../models/Semester.js";
 import connection from "../connection.js";
 import { sendFeedbackEmail } from "../mail.js";
 import { QueryTypes } from "sequelize";
+import { sanitizeUserInput } from "../utils/sanitize.js";
 
 import os from 'os';
 
@@ -67,15 +68,23 @@ export const getSessionsByTutor = async (req, res) => {
     try {
         const id = req.params.tutor_id
 
+        // Validate and sanitize tutor_id
+        const sanitizedId = sanitizeUserInput(id);
+
+        if (!Number.isInteger(Number(sanitizedId))) {
+            return res.status(400).json({ error: 'Invalid tutor ID' });
+        } 
+
         const sessions = await connection.query(`SELECT s.session_id as 'session_id', CONCAT(u.first_name, ' ', u.last_name) as 'tutor_name', s.student_id as 'student',  c.course_name as 'course_name', s.session_totalhours as 'total_hours', s.session_date as 'session_date'
             FROM sessions s JOIN tutors t on s.tutor_id = t.tutor_id
             JOIN users u ON u.user_id = t.user_id
             JOIN courses c ON s.course_id = c.course_id
             JOIN semester semester ON semester.semester_id = s.semester_id
-            WHERE t.tutor_id = ${id} AND semester.is_current = TRUE
+            WHERE t.tutor_id = :id AND semester.is_current = TRUE
             GROUP BY session_id, tutor_name, student, total_hours
             ORDER BY course_name;`, {
-                type: QueryTypes.SELECT
+                type: QueryTypes.SELECT,
+                replacements: { id: sanitizedId }
             })
     
             res.status(200).json({ sessions });
@@ -91,15 +100,25 @@ export const getSessionsByTutorCourse = async (req, res) => {
         const tutor_id = req.params.tutor_id;
         const course_id = req.params.course_id;
 
+        // Validate and sanitize tutor_id and course_id
+        const sanitizedTutorId = sanitizeUserInput(tutor_id);
+        const sanitizedCourseId = sanitizeUserInput(course_id);
+
+        if (!Number.isInteger(Number(sanitizedTutorId)) || !Number.isInteger(Number(sanitizedCourseId))) {
+            return res.status(400).json({ error: 'Invalid tutor ID or course ID' });
+        }
+
         const sessions = await connection.query(` SELECT s.session_id as 'session_id', CONCAT(u.first_name, ' ', u.last_name) as 'tutor_name', s.student_id as 'student',  c.course_name as 'course_name', s.session_totalhours as 'total_hours', s.session_date as 'session_date'
             FROM sessions s JOIN tutors t on s.tutor_id = t.tutor_id
             JOIN users u ON u.user_id = t.user_id
             JOIN courses c ON s.course_id = c.course_id
             JOIN session_details sd ON s.session_id = sd.session_id
-            WHERE t.tutor_id = ${tutor_id} AND s.course_id = ${course_id} AND sd.session_status = 'completed'
+            JOIN semester se ON s.semester_id = se.semester_id
+            WHERE t.tutor_id = :tutor_id AND s.course_id = :course_id AND sd.session_status = 'completed' AND se.is_current = TRUE
             GROUP BY session_id, tutor_name, student, total_hours
             ORDER BY course_name;`, {
-                type: QueryTypes.SELECT
+                type: QueryTypes.SELECT,
+                replacements: { tutor_id: sanitizedTutorId, course_id: sanitizedCourseId }
             })
     
             res.status(200).json({ sessions });
@@ -115,14 +134,22 @@ export const getTutorSessionById = async (req, res) => {
     try {
         const session_id = req.params.session_id
 
-        const session = await connection.query(`SELECT s.session_id as 'session_id', c.course_name as 'course_name', CONCAT(u.first_name, ' ', u.last_name) as 'scheduled_by', sd.session_time as 'session_time', FORMAT(s.session_totalhours, 0) as 'session_durarion' ,s.session_date as 'session_date', sd.session_status as 'session_status'
+         // Validate and sanitize tutor_id and course_id
+        const sanitizedSessionId = sanitizeUserInput(session_id);
+
+        if (!Number.isInteger(Number(sanitizedSessionId))) {
+            return res.status(400).json({ error: 'Invalid session ID' });
+        }
+
+        const session = await connection.query(`SELECT s.session_id as 'session_id', c.course_name as 'course_name', CONCAT(u.first_name, ' ', u.last_name) as 'scheduled_by', sd.session_time as 'session_time', FORMAT(s.session_totalhours, 0) as 'session_durarion' ,s.session_date as 'session_date', sd.session_status as 'session_status', s.topics as 'session_topics', s.feedback as 'session_feedback'
             FROM sessions s JOIN tutors t on s.tutor_id = t.tutor_id
             JOIN courses c ON s.course_id = c.course_id
             JOIN session_details sd ON s.session_id = sd.session_id
             JOIN users u ON u.user_id = sd.createdBy
-            WHERE s.session_id = ${session_id}
-            GROUP BY session_id, course_name, scheduled_by, session_time, session_date, session_status;`, {
-                type: QueryTypes.SELECT
+            WHERE s.session_id = :session_id
+            GROUP BY session_id, course_name, scheduled_by, session_time, session_date, session_status, session_topics;`, {
+                type: QueryTypes.SELECT,
+                replacements: { session_id: sanitizedSessionId }
             })
 
             res.status(200).json({ session });
@@ -135,13 +162,17 @@ export const getTutorSessionById = async (req, res) => {
 }
 
 
-
-
-
 // Get Sessions Details on sessions screen
 export const getSessionDetails = async (req, res) => {
     try {
         const session_id = req.params.session_id
+
+        // Validate and sanitize tutor_id and course_id
+        const sanitizedSessionId = sanitizeUserInput(session_id);
+
+        if (!Number.isInteger(Number(sanitizedSessionId))) {
+            return res.status(400).json({ error: 'Invalid session ID' });
+        }
 
         if(session_id) {
             const session = await connection.query(`SELECT CONCAT(u.first_name, ' ', u.last_name) as 'tutor_name', c.course_name as 'course_name', s.session_date as 'session_date', s.student_id as 'student_id', FORMAT(s.session_totalhours, 0) as 'session_hours', 
@@ -152,9 +183,11 @@ export const getSessionDetails = async (req, res) => {
             JOIN tutors t ON s.tutor_id = t.tutor_id
             JOIN users u ON u.user_id = t.user_id
             LEFT JOIN users su ON su.ku_id = s.student_id
-            WHERE s.session_id = ${session_id}
-            GROUP BY tutor_name, course_name, session_date, student_id, session_hours, session_time, student_user_id, student_name, session_status;`, {
-                type: QueryTypes.SELECT
+            WHERE s.session_id = :session_id
+            GROUP BY tutor_name, course_name, session_date, student_id, session_hours, session_time, student_user_id, student_name, session_status;`, 
+            {
+                type: QueryTypes.SELECT,
+                replacements: { session_id: sanitizedSessionId }
             })
             res.status(200).json({ session });
         }
@@ -166,9 +199,6 @@ export const getSessionDetails = async (req, res) => {
 }
 
 
-
-
-
 // Get Scheduled Sessions for the Tutor scheduled sessions alert in the tutor Profile
 export const getScheduledSessionsCount = async (req, res) => {
     try {
@@ -177,10 +207,18 @@ export const getScheduledSessionsCount = async (req, res) => {
         const scheduled_sessions = await SessionDetail.count({
             distinct: true,
             col: 'session_id',
-            include: [{
-                model: TutorSession,
-                where: { tutor_id: id }
-            }],
+            include: [
+                {
+                    model: TutorSession,
+                    where: { tutor_id: id },
+                    include: [
+                        {
+                            model: Semester,
+                            where: { is_current: true }
+                        }
+                    ]
+                },
+            ],
             where: {
                 session_status: 'scheduled'
             }
@@ -203,14 +241,23 @@ export const getScheduledSessionsItems = async (req, res) => {
         const scheduled = req.params.scheduled
         const id = req.params.tutor_id;
 
+        // Validate and sanitize tutor_id
+        const sanitizedId = sanitizeUserInput(id);
+
+        if (!Number.isInteger(Number(sanitizedId))) {
+            return res.status(400).json({ error: 'Invalid tutor ID' });
+        }        
+
         const scheduled_sessions = await connection.query(` SELECT s.session_id as 'session_id', CONCAT(u.first_name, ' ', u.last_name) as 'tutor_name', s.student_id as 'student',  c.course_name as 'course_name', s.session_totalhours as 'total_hours', s.session_date as 'session_date'
             FROM sessions s JOIN tutors t on s.tutor_id = t.tutor_id
             JOIN users u ON u.user_id = t.user_id
             JOIN courses c ON s.course_id = c.course_id
             JOIN session_details sd ON s.session_id = sd.session_id
-            WHERE t.tutor_id = ${id} AND sd.session_status = 'scheduled'
+            JOIN semester se ON s.semester_id = se.semester_id
+            WHERE t.tutor_id = :id AND sd.session_status = 'scheduled' AND se.is_current = TRUE
             GROUP BY session_id, tutor_name, student, total_hours
             ORDER BY course_name;`, {
+                replacements: { id: sanitizedId },
                 type: QueryTypes.SELECT
             })
 

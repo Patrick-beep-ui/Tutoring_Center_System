@@ -32,6 +32,7 @@ export const getTutors = async (req, res) => {
     }
 }
 
+// Mobile
 export const getTutorsByUser = async (req, res) => {
     try {
         const user_id = sanitizeUserInput(req.params.user_id)
@@ -74,6 +75,7 @@ export const getTutorsByUser = async (req, res) => {
         console.error(e)
     }
 }
+
 
 export const addTutor = async (req, res) => {
     try {
