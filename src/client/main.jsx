@@ -112,7 +112,13 @@ const router = createBrowserRouter([
       },
       {
         path: "/settings/:user_id",
-        element: <CheckUser />,
+        element: (
+          <RequireRoleAndCheck 
+            allowedRoles={["admin", "dev", "tutor", "student"]} 
+            rolesToCheck={["tutor", "student"]} 
+            paramName="user_id"
+          />
+        ),
         children: [
           { index: true, element: <Settings /> }
         ]
