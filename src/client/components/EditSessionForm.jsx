@@ -50,6 +50,10 @@ const EditSessionForm = ({ session, session_id }) => {
                 <label>Duration: </label>
                 <input type="number" {...register("session_hours")} defaultValue={session[0].session_durarion} />
             </section>
+            <section className="session-topics-container">
+                <label>Topics: </label>
+                <textarea cols="30" rows="10" {...register("topics")} defaultValue={session[0].session_topics}></textarea>
+            </section>
             <section className="session-feedback-container">
                 <label>Feedback: </label>
                 <textarea cols="30" rows="10" {...register("feedback")}></textarea>

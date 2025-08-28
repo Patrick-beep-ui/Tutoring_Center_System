@@ -1,5 +1,5 @@
 import express from "express";
-import { getUsers, getUser, getUserCourses } from "../controllers/usersController.js";
+import { getUsers, getUser, getUserCourses, editUser } from "../controllers/usersController.js";
 import passport from "passport";
 
 import userCheck from "../middlewares/userCheck.js";
@@ -14,6 +14,10 @@ UserRouter.route("/:user_id")
     /*passport.authenticate("jwt", { session: false }),
     userCheck,*/
     getUser
+  ).put(
+    /*passport.authenticate("jwt", { session: false }),
+    userCheck,*/
+    editUser
   );
 
 UserRouter.route("/:user_id/:ku_id")

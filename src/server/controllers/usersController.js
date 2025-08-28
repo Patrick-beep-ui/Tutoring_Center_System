@@ -31,6 +31,11 @@ export const getUser = async (req, res) => {
                     attributes: ["major_name"],
                     required: false,
                 },
+                {
+                    model: Contact,
+                    attributes: ["phone_number"], 
+                    required: false 
+                }
             ],
         });
         
@@ -45,6 +50,41 @@ export const getUser = async (req, res) => {
         res.status(500).json({ error: "Server error" });
     }
 };
+
+export const editUser = async (req, res) => {
+    try {
+        const userId = req.params.user_id;
+        const { first_name, last_name, email, phone_number } = req.body;
+
+        const user = await User.findByPk(userId);
+
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        user.first_name = first_name || user.first_name;
+        user.last_name = last_name || user.last_name;
+        user.email = email || user.email;
+
+        if (phone_number) {
+            let contact = await Contact.findOne({ where: { user_id: userId } });
+            if (contact) {
+                contact.phone_number = phone_number;
+                await contact.save();
+            } else {
+                contact = new Contact({ user_id: userId, phone_number });
+                await contact.save();
+            }
+        }
+
+        await user.save();
+
+        res.status(200).json({ message: "User updated successfully", user });
+    } catch (e) {
+        console.error(e);
+        res.status(500).json({ error: "Server error" });
+    }
+}
 
 export const getUserById = async (req, res) => {
     try {
