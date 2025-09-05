@@ -10,7 +10,7 @@ import { sanitizeUserInput } from "../utils/sanitize.js";
 export const getTutors = async (req, res) => {
     try {
         const tutors = await connection.query(` 
-        SELECT CONCAT(u.first_name, ' ', u.last_name) as 'tutor_name', u.email as 'tutor_email', u.ku_id as 'tutor_id', m.major_name as 'tutor_major', GROUP_CONCAT(DISTINCT c.course_code ORDER BY c.course_code SEPARATOR ', ') AS tutor_courses, t.tutor_id as 'id'
+        SELECT CONCAT(u.first_name, ' ', u.last_name) as 'tutor_name', u.email as 'tutor_email', u.ku_id as 'tutor_id', m.major_name as 'tutor_major', GROUP_CONCAT(DISTINCT c.course_code ORDER BY c.course_code SEPARATOR ', ') AS tutor_courses, GROUP_CONCAT(DISTINCT c.course_name ORDER BY c.course_name SEPARATOR ', ') AS tutor_courses_names, t.tutor_id as 'id'
         FROM users u 
         JOIN tutors t ON u.user_id = t.user_id
         JOIN majors m ON u.major_id = m.major_id

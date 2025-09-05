@@ -269,6 +269,20 @@ details[open] summary::after {
   cursor: pointer; 
 }
 
+.users-navigation-courses {
+  margin-top: 5px !important;
+  text-align: left;
+}
+
+.users-navigation-courses .course-badge { 
+  padding: 5px 10px;
+  border-radius: 15px;
+  border: 1px solid var(--blue);
+  font-size: 0.9rem;
+  margin-right: 5px;
+  display: inline-block;
+}
+
 /* Tutors */
 
 .tutors-table-container {
@@ -2477,7 +2491,7 @@ canvas {
   color: #333;
 }
 
-.sessions-grid {
+.sessions-grid, .feedbacks-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
   gap: 20px;

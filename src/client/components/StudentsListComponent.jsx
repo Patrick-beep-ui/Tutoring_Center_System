@@ -98,7 +98,7 @@ const StudentsListComponent = ({majors, userCourses}) => {
                 idFilter={idFilter}
                 setIdFilter={setIdFilter}
                 />
-                <UserNavigationTable users={filteredStudents} role={"student"} coursesRole='user'/>
+                <UserNavigationTable users={filteredStudents} role={"student"} coursesRole='student'/>
                 <div className="export-csv-container">
                     <button className="export-csv" onClick={handleExportCSV}>
                         Export as CSV

@@ -47,7 +47,6 @@ import AdminHome from "./views-admin/AdminHome.jsx";
 
 //Implementation
 import Activity from "./views/Activity";
-import Activity_Students from "./views/Activity_Students";
 import Activity_Tutors from "./views/Activity_Tutors.jsx";
 import Activity_Alerts from "./views/Activity_Alerts.jsx";
 import Activity_Sessions from "./views/Activity_Sessions.jsx";
@@ -60,6 +59,7 @@ import { SemesterProvider } from './context/currentSemester';
 //import App from "./App";
 
 import EmailForm from "./components/Email.jsx";
+import Activity_Feedback from "./views/Activity_Feedback.jsx";
 
 const router = createBrowserRouter([
   {
@@ -154,7 +154,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/activity-students",
-        element: <Activity_Students />
+        element: <Activity_Feedback />
       },
       {
         path: "/activity-tutors",
