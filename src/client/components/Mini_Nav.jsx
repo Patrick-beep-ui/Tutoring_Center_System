@@ -5,6 +5,7 @@ const Mini_Nav = ({ setSelectedSection, selectedSection }) => {
 
     const sections = useMemo(() => [
         { id: 'sessions', label: 'Sessions' },
+        { id: 'feedback', label: 'Feedback' },
         { id: 'tutors', label: 'Tutors' },
         { id: 'alerts', label: 'Alerts' }
     ], []);

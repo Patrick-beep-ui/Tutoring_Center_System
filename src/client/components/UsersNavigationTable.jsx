@@ -1,7 +1,20 @@
+import { useCallback } from "react";
 import {v4 as uuid} from "uuid";
 import { Link } from "react-router-dom";
 
 const UserNavigationTable = ({ users, role, coursesRole='tutor' }) => {
+
+    const separateCourses = useCallback((coursesString) => {
+        if (!coursesString) return "";
+
+        const coursesArray = coursesString.split(',').map(course => course.trim());
+        
+        return coursesArray.map((c, index) => (
+            <span key={index} className="course-badge">{c}</span>
+        ))
+
+    }, []);
+
     return(
      <div className="users-navigation-table-container">
                     <table className="table align-middle mb-0 users-navigation-table">
@@ -11,7 +24,6 @@ const UserNavigationTable = ({ users, role, coursesRole='tutor' }) => {
                                 <th scope="col">Major</th>
                                 <th>Courses</th>
                                 <th scope="col">ID</th>
-                                <th scope="col">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -34,13 +46,13 @@ const UserNavigationTable = ({ users, role, coursesRole='tutor' }) => {
                                 <td>
                                 <p className="mb-1 users-navigation-data">{student[`${role}_major`]}</p>
                                 </td>
-                                <td className="users-navigation-data">{student[`${coursesRole}_courses`]}</td>
-                                <td className="users-navigation-data">{student[`${role}_id`]}</td>
-                                <td>
-                                    <i class='bx bxs-pencil'></i>
-                                    <i class='bx bxs-user-detail'></i>
-                                    <i class='bx bx-dots-horizontal-rounded'></i>
+                                {/*<td className="users-navigation-data users-navigation-courses">{student[`${coursesRole}_courses_names`]}</td>*/}
+                                <td className="users-navigation-data users-navigation-courses"
+                                style={{display: 'flex', flexWrap: 'wrap', gap: '5px', paddingTop: '10px', paddingBottom: '10px'}}
+                                >
+                                    {separateCourses(student[`${coursesRole}_courses_names`])}
                                 </td>
+                                <td className="users-navigation-data">{student[`${role}_id`]}</td>
                             </tr>  
                             )}
                         </tbody>
