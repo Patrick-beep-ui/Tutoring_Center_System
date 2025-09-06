@@ -60,11 +60,12 @@ export const getFeedbacks = async (req, res) => {
     try {
         const feedbacks = await connection.query(
             `SELECT
-            f.feedback_id as 'feedback_id', s.session_id as 'session_id', CONCAT(t.first_name, ' ', t.last_name) as 'tutor_name', CONCAT(st.first_name, ' ', st.last_name) as 'student_name', f.feedback_text as 'feedback_text', f.rating as 'rating', f.created_at as 'creation_date'
+            f.feedback_id as 'feedback_id', s.session_id as 'session_id', CONCAT(t.first_name, ' ', t.last_name) as 'tutor_name', CONCAT(st.first_name, ' ', st.last_name) as 'student_name', f.feedback_text as 'feedback_text', f.rating as 'rating', f.created_at as 'creation_date', c.course_name as 'course_name'
             FROM session_feedback f JOIN sessions s ON f.session_id = s.session_id
             JOIN users t ON s.tutor_id = t.user_id
             JOIN users st ON s.student_id = st.ku_id
-            GROUP BY feedback_id, session_id, feedback_text, rating, creation_date
+            JOIN courses c ON s.course_id = c.course_id
+            GROUP BY feedback_id, session_id, feedback_text, rating, creation_date, course_name
             ORDER BY feedback_id;`,
             { type: connection.QueryTypes.SELECT }
         )

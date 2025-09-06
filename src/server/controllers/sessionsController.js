@@ -42,7 +42,8 @@ export const getSessions = async (req, res) => {
                     sd.session_status AS 'session_status',
                     WEEK(s.session_date, 1) - WEEK(semester.start_date, 1) + 1 AS 'week_number',
                     s.topics AS 'session_topics',
-                    s.feedback AS 'session_feedback'
+                    s.feedback AS 'session_feedback',
+                    IFNULL(fe.rating, 0) AS 'rating'
             FROM sessions s
                      JOIN session_details sd ON s.session_id = sd.session_id
                      JOIN tutors t ON s.tutor_id = t.tutor_id
@@ -50,6 +51,7 @@ export const getSessions = async (req, res) => {
                      JOIN users student ON student.ku_id = s.student_id  -- Get student's name
                      JOIN courses c ON s.course_id = c.course_id
                      JOIN semester semester ON semester.semester_id = s.semester_id  -- Join with semester table
+                     LEFT JOIN session_feedback as fe ON s.session_id = fe.session_id
             WHERE semester.is_current = TRUE 
             ORDER BY week_number, session_date;
         `, {
@@ -177,14 +179,14 @@ export const getSessionDetails = async (req, res) => {
         if(session_id) {
             const session = await connection.query(`SELECT CONCAT(u.first_name, ' ', u.last_name) as 'tutor_name', c.course_name as 'course_name', s.session_date as 'session_date', s.student_id as 'student_id', FORMAT(s.session_totalhours, 0) as 'session_hours', 
             s.feedback as 'session_feedback', sd.session_time as 'session_time', su.user_id AS 'student_user_id',
-            CONCAT(su.first_name, ' ', su.last_name) AS 'student_name'
+            CONCAT(su.first_name, ' ', su.last_name) AS 'student_name', s.topics as 'session_topics'
             FROM sessions s LEFT JOIN session_details sd ON s.session_id = sd.session_id
             JOIN courses c ON s.course_id = c.course_id
             JOIN tutors t ON s.tutor_id = t.tutor_id
             JOIN users u ON u.user_id = t.user_id
             LEFT JOIN users su ON su.ku_id = s.student_id
             WHERE s.session_id = :session_id
-            GROUP BY tutor_name, course_name, session_date, student_id, session_hours, session_time, student_user_id, student_name, session_status;`, 
+            GROUP BY tutor_name, course_name, session_date, student_id, session_hours, session_time, student_user_id, student_name, session_status, session_topics;`, 
             {
                 type: QueryTypes.SELECT,
                 replacements: { session_id: sanitizedSessionId }
