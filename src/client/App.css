@@ -1118,17 +1118,18 @@ a:visited {
     content: '';
     position: absolute;
     top: 50%;
-    width: 35%;
+    width: 32%;
     height: 1px;
+    opacity: 20%;
     background-color: var(--gray);
 }
 
 .community-label::before {
-    margin-left: -155px;
+    margin-left: -115px;
 }
 
 .community-label::after {
-    margin-left: 20px;
+    margin-left: 10px;
 }
 
 #sign-up-btn {
@@ -1141,6 +1142,89 @@ a:visited {
   color: inherit;
 }
 
+/* ===== Responsive Styles ===== */
+
+/* ===== Layout fixes for full-height centering ===== */
+.login-main {
+  min-height: 100vh; /* Full viewport height */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--blue);
+}
+
+.login-form-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  max-width: 500px; /* Keeps form narrow on large screens */
+}
+
+.form {
+  background-color: #fff;
+  border-radius: 20px;
+  padding: 1.5rem;
+  box-sizing: border-box;
+}
+
+/* Mobile adjustments */
+@media (max-width: 640px) {
+  .login-form {
+    height: auto;
+    width: 100%;
+    padding: 1rem;
+  }
+
+  .login-form-container {
+    padding: 1rem;
+  }
+
+  .cae-logo {
+    width: 70px;
+    height: 70px;
+  }
+    .community-label::before {
+      margin-left: -100px;
+  }
+
+  .community-label::after {
+      margin-left: 40px;
+  }
+}
+
+
+/* Tablet adjustments (641px to 1023px) */
+@media (min-width: 641px) and (max-width: 1023px) {
+  .login-form-container {
+    width: 70%;
+  }
+  .cae-logo {
+    width: 90px;
+    height: 90px;
+  }
+
+  .community-label {
+    width: 60%;
+    position: center;
+    opacity: 60%;
+  }
+    
+  .community-label::before {
+      margin-left: -95px;
+  }
+
+  .community-label::after {
+      margin-left: 20px;
+  }
+}
+
+/* Larger desktop tweaks (1024px and above) */
+@media (min-width: 1024px) {
+  .login-form-container {
+    width: 45%;
+  }
+}
 
 /*Aqui termina el diseño del login*/
 
@@ -1266,6 +1350,181 @@ a:visited {
   transition: background-color 0.3s ease;
 }
 
+/* ===== Improved Sign-Up Layout ===== */
+#signup-user {
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* vertically centers on screen */
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  max-width: 480px;
+  margin: auto;
+  padding: 2rem 1.5rem;
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+  box-sizing: border-box;
+}
+
+#signup-user h1 {
+  font-size: 1.75rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+
+#signup-user .form-group {
+  width: 100%;
+}
+
+#signup-user input {
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 1rem;
+  border: 1px solid var(--gray);
+  border-radius: 8px;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+#signup-user input:focus {
+  border-color: var(--blue);
+}
+
+#signup-btn {
+  width: 100%;
+  padding: 0.8rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 40px;
+  background: var(--yellow);
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+#signup-btn:hover {
+  background: #f3b400;
+}
+
+#signup-user .error-message {
+  color: red;
+  font-size: 0.85rem;
+  text-align: left;
+  width: 100%;
+}
+.courses-form-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* 🔹 dos columnas iguales */
+  gap: 0.75rem;
+  width: 100%;
+  max-width: 500px;
+  margin: 1rem auto;
+  padding: 0.5rem;
+  background: transparent;
+  border-radius: 8px;
+  max-height: 280px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Course card */
+.course-element {
+  background-color: var(--blue);
+  color: var(--white);
+  border-radius: 8px;
+  padding: 0.8rem 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+  text-align: center; /* se ve mejor centrado en cada box */
+  font-size: 0.95rem;
+  font-weight: 500;
+  white-space: normal;
+  word-break: break-word;
+}
+
+/* Hover */
+.course-element:hover {
+  background-color: #003366;
+}
+
+/* Scroll más elegante */
+.courses-form-group::-webkit-scrollbar {
+  width: 6px;
+}
+
+.courses-form-group::-webkit-scrollbar-thumb {
+  background: var(--blue);
+  border-radius: 4px;
+}
+
+/* Selected state */
+.course-element.selected {
+  background-color: var(--yellow);
+  color: #000;
+  font-weight: 600;
+}
+
+/* Hover feedback */
+.course-element:hover {
+  background-color: #1f4f91;
+}
+
+/* Course text */
+.course-text {
+  flex: 1;
+  font-size: 0.95rem;
+}
+
+/* Mobile tweaks */
+
+@media (max-width: 600px) {
+  .courses-form-group {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 768px) {
+  .signup-cae-logo {
+  align-items: center;
+  margin: 0 auto 10px auto;
+  display: block;
+  width: 120px;
+  height: auto;
+}
+  .courses-form-group {
+    max-width: 100%;
+    align-items: center;
+    max-height: none;
+    gap: 0.4rem;
+  }
+
+  .course-element {
+    font-size: 0.9rem;
+    padding: 0.65rem 0.9rem;
+  }
+  
+  .sign-up-container {
+    grid-template-columns: 1fr; /* stack image and form */
+  }
+
+  .signup-img {
+    display: none; /* hide side image on mobile */
+  }
+  
+  .signup-form {
+  width: 100%;  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.signup-form .form-group,
+.signup-form button {
+  width: 100%;
+  align-items: center;
+}
+}
 
 /* Aqui Termina el Signup*/
 
@@ -1834,6 +2093,12 @@ canvas {
   padding: 15px 20px 20px 20px;
 }
 
+.edit-session-form section{
+  margin-bottom: 15px;
+}
+
+
+
 .edit-session-form section input {
   width: 100%;
   padding: 8px;
@@ -1862,6 +2127,13 @@ canvas {
   height: 100px;
   padding: 5px;
   font-size: 0.9rem;
+}
+
+.session-topics-container textarea {
+  width: 100%;
+  padding: 5px;
+  font-size: 0.9rem;
+  height: 60px;
 }
 
 .edit-session-btn-container {
@@ -3137,14 +3409,6 @@ strong {
 der { background-color: lightblue; }
 .alert { background-color: orange; }
 
-
-
-
-
-
-
-
-
 .top-tutors {
   background: white;
   padding: 20px;
@@ -3350,4 +3614,47 @@ der { background-color: lightblue; }
 
 .sessions-csv {
   margin-top: 20px;
+}
+
+
+/* ---------------- GRID ---------------- */
+@media (max-width: 768px) {
+  .session-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------------- ACTION BUTTONS ---------------- */
+
+.session-actions button {
+  padding: 0.8rem 1.8rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  border: none;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+/* Secondary (outline) button */
+.session-actions .btn-secondary {
+  background: transparent;
+  border: 1px solid var(--gray);
+  color: var(--black);
+}
+
+.session-actions .btn-secondary:hover {
+  background: var(--gray);
+  color: var(--white);
+}
+
+/* Primary button */
+.session-actions .btn-primary {
+  background: var(--blue);
+  color: var(--white);
+}
+
+.session-actions .btn-primary:hover {
+  background: var(--yellow);
+  color: var(--black);
 }
