@@ -154,6 +154,10 @@ function SessionDetails() {
               </div>
             </div>
             <div className="session-data-container">
+            <div className="form-group">
+                <label htmlFor={`session-feedback-${s.id}`}>Session Topics:</label>
+                <p id={`session-feedback`} >{s.session_topics}</p>
+              </div>
               <div className="form-group">
                 <label htmlFor={`session-feedback-${s.id}`}>Session Outcomes:</label>
                 <p id={`session-feedback`} >{s.session_feedback}</p>
