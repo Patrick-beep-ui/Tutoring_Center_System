@@ -27,17 +27,22 @@ app.use(expressSession({
   }
 }));
 
+dotenv.config();
+
+const allowedOrigin = process.env.FRONTEND_URL || 'http://localhost:3000';
+
 app.use(express.urlencoded({extended: false}));
 app.use(express.json());
 app.use(passport.authenticate('session')); 
 app.use(cors({
-  allowedHeaders: ["Authorization", "Content-Type"]
+  origin: allowedOrigin, // frontend dev server
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Authorization", "Content-Type"],
+  credentials: true
 }));
 
+
 app.use('/api', api);
-
-
-dotenv.config();
 
 const JWT_SECRET = process.env.SECRET_KEY; 
 
@@ -49,7 +54,7 @@ passport.use(new JwtStrategy(opts, async (jwt_payload, done) => {
   try {
     const user = await User.findOne({
       where: { email: jwt_payload.email },
-      attributes: ['user_id', 'email', 'password_hash']
+      attributes: ['user_id', 'email', 'password_hash', 'role']
     });
 
     if (!user) {

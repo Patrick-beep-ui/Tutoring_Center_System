@@ -5,11 +5,19 @@ import TutorSession from "../models/TutorSession.js";
 import Tutor from "../models/Tutor.js";
 import User from "../models/User.js";
 import Course from "../models/Course.js";
+import Semester from "../models/Semester.js";
 import { sendEmail, sendSessionRequestEmail } from "../mail.js";
+import { sanitizeUserInput } from "../utils/sanitize.js";
 
 export const getSessionsByTutor = async (req, res) => {
     try {
         const tutor_id = req.params.tutor_id;
+
+        const sanitizedTutorId = sanitizeUserInput(tutor_id);
+
+        if (!Number.isInteger(Number(sanitizedTutorId))) {
+            return res.status(400).json({ error: 'Invalid tutor ID' });
+        }   
 
         const sessions = await connection.query(
             `SELECT s.session_id as 'session_id', c.course_name as 'course_name',
@@ -26,9 +34,13 @@ export const getSessionsByTutor = async (req, res) => {
             JOIN courses c ON s.course_id = c.course_id
             JOIN session_details sd ON s.session_id = sd.session_id
             JOIN users student ON student.user_id = sd.createdBy
-            WHERE t.tutor_id = ${tutor_id}
+            JOIN semester sem ON s.semester_id = sem.semester_id
+            WHERE t.tutor_id = :tutor_id AND sd.session_status = 'scheduled' AND sem.is_current = true
             GROUP BY session_id, course_name, scheduled_by, session_time, session_duration, session_date, session_status, tutor, sd.createdBy;`,
-            { type: QueryTypes.SELECT }
+            { 
+                type: QueryTypes.SELECT,
+                replacements: { tutor_id: sanitizedTutorId }
+             }
         );
 
         res.status(200).json({ sessions });
@@ -41,13 +53,18 @@ export const getSessionsByTutor = async (req, res) => {
 export const createSession = async (req, res) => {
     try {
         const tutor_id = req.params.tutor_id
-        console.log("Data received:", req.body);
+        
+        const current_semester = await Semester.findOne({
+            where: {
+                is_current: true
+            }
+        })
 
         const session = new TutorSession({
             tutor_id:tutor_id,
             student_id: req.body.student_id,
             course_id: req.body.course,
-            semester_id: req.body.semester_id,
+            semester_id: current_semester.semester_id,
             session_date: req.body.session_date,
             session_totalhours: req.body.session_hours,
             topics: req.body.session_topics,

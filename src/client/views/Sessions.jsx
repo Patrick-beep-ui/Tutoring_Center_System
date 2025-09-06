@@ -55,7 +55,7 @@ function Session() {
         <Header/>
         <section className={`sessions-container section ${layout}`}>
             <Link to={`/profile/${role}/${tutor_id}`} >Go Back</Link>
-            <SessionTable session={session} />
+            <SessionTable session={session} isEditable={true} tutorId={tutor_id} />
 
             {layout === "electron" ? (
                     <div>Desktop version layout</div>

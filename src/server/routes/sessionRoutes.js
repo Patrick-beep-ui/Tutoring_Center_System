@@ -9,11 +9,11 @@ import {
     getScheduledSessionsItems,
     addSession, 
     editSession } from "../controllers/sessionsController.js";
-//import { Session } from "express-session";
+import passport from "passport";
 
 const SessionsRouter = express.Router();
 
-SessionsRouter.route("/").get(getSessions);
+SessionsRouter.route("/").get(passport.authenticate("jwt", { session: false }), getSessions); // get sessions on sessions pool
 SessionsRouter.route("/:tutor_id").get(getSessionsByTutor);
 SessionsRouter.route("/session/:session_id") // This is for session details on the Tutor Sessions part
 .get(getTutorSessionById)

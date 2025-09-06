@@ -1,5 +1,4 @@
-import { useState, useEffect, useContext } from "react";
-import axios from "axios";
+import { useState, useEffect, useContext, useCallback, useMemo } from "react";
 import { v4 as uuid } from "uuid";
 import { Link, useNavigate } from "react-router-dom";
 import { Toaster, toast } from 'sonner';
@@ -7,22 +6,19 @@ import Header from "../components/Header";
 import "../App.css";
 import texts from "../texts/sessions.json";
 import { exportToCSV } from "../services/exportCSV";
-import { SemesterContext } from "../context/currentSemester";
+import api from "../axiosService";
 
 function Home() {
     const [sessions, setSessions] = useState([]);
     const [currentWeek, setCurrentWeek] = useState(1);  // Start at week 1
-    const { currentSemester } = useContext(SemesterContext);
     const navigate = useNavigate();
 
     useEffect(() => {
         const getSessions = async () => {
             try {
-                const response = await axios.get(`/api/sessions`);
+                const response = await api.get(`/sessions`);
                 const { data } = response;
                 setSessions(data.sessions);
-
-                console.log("Current semester:", currentSemester);
             } catch (e) {
                 console.error(e);
             }
@@ -30,32 +26,33 @@ function Home() {
         getSessions();
     }, []);         
 
-    const redirect = (sessionId) => {
+    const redirect = useCallback((sessionId) => {
         navigate(`/session/details/${sessionId}`);
-    };
+    }, [navigate]);
 
-    const handleLinkClick = (event) => {
-        event.stopPropagation(); // Prevent event from triggering the row's onClick
-    };
+    // Prevent Tutor Link click from propagating to the row click event
+    const handleLinkClick = useCallback((event) => {
+        event.stopPropagation();
+    }, []);
 
     // Filter sessions by current week
-    const filteredSessions = sessions.filter(session => session.week_number === currentWeek);
+    const filteredSessions = useMemo(() => {
+        return sessions.filter((session) => session.week_number === currentWeek);
+    }, [sessions, currentWeek]);
 
-    const goToNextWeek = () => {
-        if (currentWeek < 17) {  // Assuming max of 17 weeks
-            setCurrentWeek(prevWeek => prevWeek + 1);
-        }
-    };
+    const goToNextWeek = useCallback(() => {
+        setCurrentWeek((prevWeek) => (prevWeek < 17 ? prevWeek + 1 : prevWeek));
+    }, []);
 
-    const goToPreviousWeek = () => {
-        if (currentWeek > 1) {
-            setCurrentWeek(prevWeek => prevWeek - 1);
-        }
-    };
+    const goToPreviousWeek = useCallback(() => {
+        setCurrentWeek((prevWeek) => (prevWeek > 1 ? prevWeek - 1 : prevWeek));
+    }, []);
 
     // Function to export session data to CSV
-    const handleExportCSV = () => {
-        const headers = ["Tutor Name", "Student Name", "Student ID", "Course Name", "Total Hours", "Session Time", "Session Date", "Topics Discussed", "Outcomes"];
+    const handleExportCSV = useCallback(() => {
+        const headers = [
+            "Tutor Name", "Student Name", "Student ID", "Course Name", "Total Hours", "Session Time", "Session Date", "Topics Discussed", "Outcomes"
+        ];
         const rows = filteredSessions.map(session => [
             session.tutor_name,
             session.student_name,
@@ -68,7 +65,7 @@ function Home() {
             session.session_feedback
         ]);
         exportToCSV(rows, headers, `sessions_week${currentWeek}.csv`);
-    };
+    }, [filteredSessions, currentWeek]);
     
 
     return (
@@ -94,7 +91,7 @@ function Home() {
                         <tbody>
                             {filteredSessions.map(s => (
                                 <tr key={uuid()} className="session-info-row" onClick={() => redirect(s.session_id)} id={s.session_id} style={{ cursor: 'pointer' }}>
-                                    <td><Link to={`/profile/${s.tutor_id}`} onClick={handleLinkClick}>{s.tutor_name}</Link></td>
+                                    <td><Link to={`/profile/tutor/${s.tutor_id}`} onClick={handleLinkClick}>{s.tutor_name}</Link></td>
                                     <td>{s.student_name}</td>
                                     <td>{s.course_name}</td>
                                     <td>{s.total_hours}</td>

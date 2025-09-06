@@ -1,12 +1,12 @@
 import UserNavigators from "./UsersNavigators";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, memo } from "react";
 import axios from "axios";
 import UserNavigationTable from "./UsersNavigationTable";
 import {exportToCSV} from "../services/exportCSV";
 
 const TutorsListComponent = ({majors, userCourses}) => {
     const [tutors, setTutors] = useState([]);
-    const [filteredTutors, setFilteredTutors] = useState([]); // New state for filtered tutors (Provisional)
+    const [filteredTutors, setFilteredTutors] = useState([]); 
 
     // Filter states
     const [programFilter, setProgramFilter] = useState("all");
@@ -111,4 +111,4 @@ const TutorsListComponent = ({majors, userCourses}) => {
     );
 }
 
-export default TutorsListComponent;
+export default memo(TutorsListComponent);

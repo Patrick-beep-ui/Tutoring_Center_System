@@ -9,7 +9,8 @@ export const getStudents = async (req, res) => {
                 u.email AS student_email, 
                 u.ku_id AS student_id, 
                 m.major_name AS student_major, 
-                GROUP_CONCAT(DISTINCT c.course_code ORDER BY c.course_code SEPARATOR ', ') AS user_courses, 
+                GROUP_CONCAT(DISTINCT c.course_code ORDER BY c.course_code SEPARATOR ', ') AS user_courses,
+                GROUP_CONCAT(DISTINCT c.course_name ORDER BY c.course_name SEPARATOR ', ') AS student_courses_names,
                 u.user_id AS id
             FROM 
                 users u 

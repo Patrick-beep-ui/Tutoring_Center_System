@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, memo } from "react";
 import SessionCard from "../components/SessionCard.jsx";
+import api from "../axiosService.js";
 
 import "../App.css";
 
@@ -7,10 +8,16 @@ const Activity_Sessions = () => {
     const [sessions, setSessions] = useState([]);
 
     useEffect(() => {
-        fetch("http://localhost:3000/api/sessions")
-            .then((response) => response.json())
-            .then((data) => setSessions(data.sessions))
-            .catch((error) => console.error("Error fetching sessions:", error));
+        const fetchSessions = async () => {
+            try {
+                const response = await api.get("/sessions");
+                setSessions(response.data.sessions);
+            } catch (error) {
+                console.error("Error fetching sessions:", error);
+            }
+        };
+
+        fetchSessions();
     }, []);
 
     return (
@@ -24,4 +31,4 @@ const Activity_Sessions = () => {
     );
 };
 
-export default Activity_Sessions;
+export default memo(Activity_Sessions);

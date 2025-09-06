@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { FaSearch, FaBell, FaDownload, FaCalendarAlt, FaSyncAlt } from 'react-icons/fa';
 import { Tab } from '@headlessui/react';
 import Header from '../components/Header';
@@ -6,7 +7,7 @@ import TutorsReport from "../components/reports/TutorsReport";
 import StudentsReport from "../components/reports/StudentsReport";
 import DepartmentReport from "../components/reports/DepartmentReports";
 
-export default function ReportsPage() {
+function ReportsPage() {
   return (
     <>
     <Header/>
@@ -39,10 +40,19 @@ export default function ReportsPage() {
               <div className="card-body bg-light">
                 <Tab.Group>
                   <Tab.List className="nav nav-pills mb-4">
-                    <Tab className="nav-link">Sessions</Tab>
-                    <Tab className="nav-link">Tutors</Tab>
-                    <Tab className="nav-link">Students</Tab>
-                    <Tab className="nav-link">Departments</Tab>
+                  {["Sessions", "Tutors", "Students", "Majors"].map((tab) => (
+                  <Tab
+                      key={tab}
+                      className={({ selected }) =>
+                        `nav-link 
+                        ${selected 
+                          ? "text-black bg-white border border-[#dee2e6] rounded-[5px]" 
+                          : "text-gray-600 hover:bg-gray-100"}`
+                      }
+                    >
+                      {tab}
+                    </Tab>
+                  ))}
                   </Tab.List>
                   <Tab.Panels>
                     <Tab.Panel><SessionsReport /></Tab.Panel>
@@ -61,3 +71,5 @@ export default function ReportsPage() {
     </>
   );
 }
+
+export default memo(ReportsPage);

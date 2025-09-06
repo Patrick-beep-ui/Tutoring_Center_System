@@ -6,6 +6,7 @@ import { sendEmail } from './mail.js';
 import jwtAuth from './middlewares/jwtAuth.js';
 import passport from 'passport';
 import si from 'systeminformation';
+import userCheck from './middlewares/userCheck.js';
 
 // Association Models
 import Major from "./models/Major.js";
@@ -38,7 +39,7 @@ api.use("/terms", TermsRouter);
 api.use("/majors", MajorRouter);
 api.use("/courses", CoursesRouter);
 api.use("/comments", CommentsRouter);
-api.use("/sessions", SessionsRouter);
+api.use("/sessions",SessionsRouter);
 api.use("/users", UserRouter);
 api.use("/feedback", FeedbackRouter);
 api.use("/schedules", SchedulesRouter);

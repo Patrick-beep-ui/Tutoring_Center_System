@@ -31,7 +31,7 @@ function ScheduledSessions() {
         <Header/>
         <section className="sessions-container section">
             <Link to={`/profile/${role}/${tutor_id}`} >Go Back</Link>
-            <SessionTable session={session} isEditable={true} />
+            <SessionTable session={session} isEditable={true} tutorId={tutor_id} />
         </section>
 
         </>

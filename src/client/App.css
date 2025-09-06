@@ -193,6 +193,12 @@ details[open] summary::after {
   -moz-appearance: none;
 }
 
+.pointer-disabled {
+  pointer-events: none; /* Disable pointer events */
+  opacity: 0.5; 
+  background-image: none;
+}
+
 .navigation-item-select option {
   font-size: 1.1rem;
   padding: 5px;
@@ -261,6 +267,20 @@ details[open] summary::after {
 
 .users-navigation-table td i {
   cursor: pointer; 
+}
+
+.users-navigation-courses {
+  margin-top: 5px !important;
+  text-align: left;
+}
+
+.users-navigation-courses .course-badge { 
+  padding: 5px 10px;
+  border-radius: 15px;
+  border: 1px solid var(--blue);
+  font-size: 0.9rem;
+  margin-right: 5px;
+  display: inline-block;
 }
 
 /* Tutors */
@@ -1237,7 +1257,7 @@ a:visited {
 }
 
 .signup-img {
-  background: url("../../../public/img/Keiser LAC.jpg");
+  background: url("/img/Keiser LAC.jpg");
   background-size: cover;
   background-position: center;
 }
@@ -2091,6 +2111,11 @@ canvas {
   max-width: 600px;
   text-align: left;
   padding: 15px 20px 20px 20px;
+  gap: 20px;
+}
+
+.edit-session-form section {
+  margin-bottom: 15px;
 }
 
 .edit-session-form section{
@@ -2145,6 +2170,7 @@ canvas {
   background-color: #111;
   color: var(--white);
   transition: background-color 0.3s border-color 0.3s, color 0.3s;
+  margin-top: 20px;
 }
 
 .edit-session-btn-container button:hover {
@@ -2730,7 +2756,7 @@ canvas {
   color: #333;
 }
 
-.sessions-grid {
+.sessions-grid, .feedbacks-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
   gap: 20px;
@@ -2775,6 +2801,22 @@ canvas {
   margin: 80px 0px 20px 20px;
 
 }
+
+.navbar-container ul li {
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.navbar-container ul li:hover {
+  background: #e0e0e0;
+}
+
+.navbar-container ul li.active {
+  background: #333; /* dark color */
+  color: #fff;
+}
+
 
 .date-box{
   margin-left: 235px;

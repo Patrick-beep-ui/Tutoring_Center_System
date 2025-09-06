@@ -4,6 +4,11 @@ import { createBrowserRouter, RouterProvider} from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css'; 
 import 'bootstrap/dist/js/bootstrap.bundle.min';
 
+// wrappers
+import RequireRole from "./wrappers/RequireRole.jsx";
+import CheckUser from "./wrappers/CheckUser.jsx";
+import RequireRoleAndCheck from "./wrappers/RequireRoleAndCheck.jsx";
+
 //Views
 import MainDashboard from "./views/MainDashboard";
 import Home from "./views/Home";
@@ -42,7 +47,6 @@ import AdminHome from "./views-admin/AdminHome.jsx";
 
 //Implementation
 import Activity from "./views/Activity";
-import Activity_Students from "./views/Activity_Students";
 import Activity_Tutors from "./views/Activity_Tutors.jsx";
 import Activity_Alerts from "./views/Activity_Alerts.jsx";
 import Activity_Sessions from "./views/Activity_Sessions.jsx";
@@ -55,6 +59,7 @@ import { SemesterProvider } from './context/currentSemester';
 //import App from "./App";
 
 import EmailForm from "./components/Email.jsx";
+import Activity_Feedback from "./views/Activity_Feedback.jsx";
 
 const router = createBrowserRouter([
   {
@@ -67,7 +72,10 @@ const router = createBrowserRouter([
       },
       {
         path: "/home",
-        element: <AdminHome />
+        element: <RequireRole allowedRoles={["admin", "dev"]} />,
+        children: [
+          {index: true, element: <AdminHome />}, 
+        ]
       },
       {
         path: "/users",
@@ -79,15 +87,24 @@ const router = createBrowserRouter([
       },
       {
         path: "/tutors/add",
-        element: <AddTutor />
+        element: <RequireRole allowedRoles={["admin", "dev"]} />,
+        children: [
+          {index: true, element: <AddTutor />}
+        ]
       },
       {
         path: "/classes",
-        element: <ClassName />
+        element: <RequireRole allowedRoles={["admin", "dev", "tutor"]} />,
+        children: [
+          {index: true, element: <ClassName />}
+        ]
       },
       {
         path: "/classes/add",
-        element: <AddClass />
+        element: <RequireRole allowedRoles={["admin", "dev"]} />,
+        children: [
+          {index: true, element: <AddClass />}
+        ]
       },
       {
         path: "/profile/:role?/:tutor_id",
@@ -95,23 +112,41 @@ const router = createBrowserRouter([
       },
       {
         path: "/settings/:user_id",
-        element: <Settings />,
-      },
+        element: (
+          <RequireRoleAndCheck 
+            allowedRoles={["admin", "dev", "tutor", "student"]} 
+            rolesToCheck={["tutor", "student"]} 
+            paramName="user_id"
+          />
+        ),
+        children: [
+          { index: true, element: <Settings /> }
+        ]
+      },      
       {
         path: "/majors",
         element: <Major />
       },
       {
         path: "/majors/add",
-        element: <AddMajor />
+        element: <RequireRole allowedRoles={["admin", "dev"]} />,
+        children: [
+          {index: true, element: <AddMajor />}
+        ]
       },
       {
         path: "/terms/add",
-        element: <AddSemester />
+        element: <RequireRole allowedRoles={["admin", "dev"]} />,
+        children: [
+          {index: true, element: <AddSemester />}
+        ]
       },
       {
         path: "/activity",
-        element: <Activity />
+        element: <RequireRole allowedRoles={["admin", "dev"]} />,
+        children: [
+          {index: true, element: <Activity />}
+        ]
       },
       {
         path: "/activity-sessions",
@@ -119,7 +154,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/activity-students",
-        element: <Activity_Students />
+        element: <Activity_Feedback />
       },
       {
         path: "/activity-tutors",
@@ -135,19 +170,49 @@ const router = createBrowserRouter([
       },
       {
         path: "/sessions/:role/:tutor_id/:course_id",
-        element: <Session />
+        element: <RequireRole allowedRoles={["admin", "dev", "tutor"]} />,
+        children: [
+          {index: true, element: <Session />}
+        ]
       },
       {
         path: "/sessions/add/:tutor_id/:course_id",
-        element: <AddSession />
+        element: (
+          <RequireRoleAndCheck
+            allowedRoles={["admin", "dev", "tutor"]}
+            rolesToCheck={["tutor"]}
+            paramName="tutor_id"
+          />
+        ),
+        children: [
+          {index: true, element: <AddSession />}
+        ]
       }, 
       {
         path: "/scheduled-sessions/:role/:tutor_id",
-        element: <ScheduledSessions />
+        element: (
+          <RequireRoleAndCheck
+            allowedRoles={["admin", "dev", "tutor"]}
+            rolesToCheck={["tutor"]}
+            paramName="tutor_id"
+          />
+        ),
+        children: [
+          { index: true, element: <ScheduledSessions /> }
+        ]
       },
       {
         path: "/session/edit/:session_id/:tutor_id?", //Tutor id added to manage security later on
-        element: <EditSession />
+        element: (
+          <RequireRoleAndCheck
+            allowedRoles={["admin", "dev", "tutor"]}
+            rolesToCheck={["tutor"]}
+            paramName="tutor_id"
+          />
+        ), 
+        children: [
+          {index: true, element: <EditSession />}
+        ]
       },
       {
         path: "/header",
@@ -161,13 +226,19 @@ const router = createBrowserRouter([
         element: <MyCalendar />
       },
       {
-        path: "/tutors/reports",
-        element: <TutorsReport/>
+        path: "/admin/reports",
+        element: <RequireRole allowedRoles={["admin", "dev"]} />,
+        children: [
+          {index: true, element: <TutorsReport />}
+        ]
       },
       {
         path: '/auth/test/:id?',
-        element: <Test />
-      }
+        element: <RequireRole allowedRoles={["admin", "dev"]} />,
+        children: [
+          {index: true, element: <Test />}
+        ]
+      },
     ]
   },
   {
@@ -186,9 +257,6 @@ const router = createBrowserRouter([
   } , {
     path: "/sidebar", 
     element: <SideBar />
-  }, {
-    path: "/test",
-    element: <Test/>
   },
   {
     path: "/feedback/:sessionId/:userId",

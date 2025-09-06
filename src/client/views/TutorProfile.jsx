@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, memo } from "react";
 import axios from "axios";
-import { useParams } from "react-router-dom";
+import { useParams, useOutletContext } from "react-router-dom";
 import { Link } from "react-router-dom";
 import Header from "../components/Header";
 import Profile from "../components/Picture";
@@ -8,15 +8,17 @@ import texts from "../texts/tutorProfile.json"
 
 
 function TutorProfile() {
+    const { user: contextUser } = useOutletContext(); 
     const [user, setUser] = useState([]);
     const [courses, setCourse] = useState([]);
     const [session, setSession] = useState(0);
     const [schedules, setSchedules] = useState([]);
     const [error, setError] = useState("");
     const { tutor_id, role } = useParams();
-    const [profilePicUrl, setProfilePicUrl] = useState(`/public/profile/${role}${tutor_id}.jpg?${new Date().getTime()}`);
+    const [profilePicUrl, setProfilePicUrl] = useState(`/profile/${role}${tutor_id}.jpg?${new Date().getTime()}`);
 
     console.log("User Role:", role);
+    console.log("User context tole:", contextUser.role);
 
     const fetchTutorData = useCallback(async () => {
         try {
@@ -41,7 +43,7 @@ function TutorProfile() {
             setCourse(coursesData);
             setSession(sessionData);
             setSchedules(schedulesData);
-            setProfilePicUrl(`/public/profile/tutor${tutor_id}.jpg`);
+            setProfilePicUrl(`/profile/tutor${tutor_id}.jpg`);
             setError("");
         } catch (error) {
 
@@ -81,7 +83,7 @@ function TutorProfile() {
     }, [role, fetchTutorData, fecthStudentData]);
 
     const handleImageUpload = useCallback(() => {
-        setProfilePicUrl(`/public/profile/${role}${tutor_id}.jpg?${new Date().getTime()}`);
+        setProfilePicUrl(`/profile/${role}${tutor_id}.jpg?${new Date().getTime()}`);
     }, [role, tutor_id]);
 
     if (error) {
@@ -205,7 +207,6 @@ function TutorProfile() {
                                 <Link to={`/calendar/${tutor_id}`}><button className="btn btn-primary">{texts.profileInfo.viewCalendarButton}</button></Link>
                             : null}
                             {session >= 1 ? (
-                                
                             <div class="info">
                                 <div class="info__icon">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" viewBox="0 0 24 24" height="24" fill="none"><path fill="#393a37" d="m12 1.5c-5.79844 0-10.5 4.70156-10.5 10.5 0 5.7984 4.70156 10.5 10.5 10.5 5.7984 0 10.5-4.7016 10.5-10.5 0-5.79844-4.7016-10.5-10.5-10.5zm.75 15.5625c0 .1031-.0844.1875-.1875.1875h-1.125c-.1031 0-.1875-.0844-.1875-.1875v-6.375c0-.1031.0844-.1875.1875-.1875h1.125c.1031 0 .1875.0844.1875.1875zm-.75-8.0625c-.2944-.00601-.5747-.12718-.7808-.3375-.206-.21032-.3215-.49305-.3215-.7875s.1155-.57718.3215-.7875c.2061-.21032.4864-.33149.7808-.3375.2944.00601.5747.12718.7808.3375.206.21032.3215.49305.3215.7875s-.1155.57718-.3215.7875c-.2061.21032-.4864.33149-.7808.3375z"></path></svg>
@@ -215,10 +216,20 @@ function TutorProfile() {
                                 </div> 
                         
                             </div> 
+
                     
                             ) : (
                                 null
                             )}
+                            { contextUser.role === 'admin' || contextUser.role === 'dev' ? (
+                                <Link to={`/settings/${tutor_id}`}>
+                                <i 
+                                className="bx bxs-cog"
+                                style={{marginLeft: "10px", cursor: "pointer", fontSize: "24px", marginTop: "5px"}}
+                                >
+                                </i>
+                             </Link>
+                            ) : (null)}
                         </div> 
                     </div> // end of tutor-sched
                     )}
@@ -254,4 +265,4 @@ function TutorProfile() {
     );
 }
 
-export default TutorProfile;
+export default memo(TutorProfile);

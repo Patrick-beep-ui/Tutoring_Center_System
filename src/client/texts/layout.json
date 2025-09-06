@@ -13,44 +13,79 @@
                     {
                         "label": "Activity",
                         "url": "/activity",
-                        "icon": "bx bxs-megaphone"
+                        "icon": "bx bxs-megaphone",
+                        "role": [
+                            "admin",  
+                            "dev"
+                        ]
                     },
                     {
                         "label": "Courses",
                         "url": "/classes",
-                        "icon": "bx bxs-food-menu"
+                        "icon": "bx bxs-food-menu",
+                        "role": [
+                            "admin", 
+                            "tutor", 
+                            "student", 
+                            "dev"
+                        ]
+                        
                     },
                     {
                         "label": "Home",
                         "url": "/",
-                        "icon": "bx bxs-chalkboard"               
+                        "icon": "bx bxs-chalkboard",
+                        "role" : "none"               
                     },
                     {
                         "label": "Admin_Home",
                         "url": "/home",
-                        "icon": "bx bxs-home"
+                        "icon": "bx bxs-home",
+                        "role": [
+                            "admin", 
+                            "dev"
+                        ]
                     },
                     {
                         "label": "Tutors",
                         "url": "/tutors",
-                        "icon": "bx bxs-group"
+                        "icon": "bx bxs-group",
+                        "role": [
+                            "tutor",
+                            "dev"
+                        ]
                     },
                     
                     {
                         "label": "Sessions",
                         "url": "/",
-                        "icon": "bx bxs-book-open"
+                        "icon": "bx bxs-book-open",
+                        "role": [
+                            "tutor",
+                            "admin",
+                            "dev"
+                        ]
                     },
                 
                     {
                         "label": "Users",
                         "url": "/users",
-                        "icon": "bx bxs-user"
+                        "icon": "bx bxs-user",
+                        "role": [
+                            "admin", 
+                            "dev",
+                            "tutor",
+                            "student"
+                        ]
                     },
                     {
                         "label": "Admin Reports",
-                        "url": "/tutors/reports",
-                        "icon": "bx bxs-bar-chart-alt-2"
+                        "url": "/admin/reports",
+                        "icon": "bx bxs-bar-chart-alt-2",
+                        "role": [
+                            "admin", 
+                            "dev"
+                        ]
                     }
                 ],
                 "settings": [
