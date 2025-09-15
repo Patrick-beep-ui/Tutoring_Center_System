@@ -322,7 +322,7 @@ export const addSession = async (req, res) => {
 export const editSession = async (req, res) => {
     try {
         const session_id = req.params.session_id
-        const {session_date, session_hours, feedback, session_time} = req.body;
+        const {session_date, session_hours, feedback, session_time, topics} = req.body;
         
         const session = await TutorSession.findOne({
             where: {
@@ -333,7 +333,8 @@ export const editSession = async (req, res) => {
         await session.update({
             session_date: session_date,
             session_totalhours: session_hours,
-            feedback: feedback
+            feedback: feedback,
+            topics: topics
 
         })
 

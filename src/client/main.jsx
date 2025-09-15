@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 import { createBrowserRouter, RouterProvider} from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css'; 
 import 'bootstrap/dist/js/bootstrap.bundle.min';
+import { Toaster } from 'sonner';
 
 // wrappers
 import RequireRole from "./wrappers/RequireRole.jsx";
@@ -279,6 +280,7 @@ root.render(
   <React.StrictMode>
     <LayoutProvider>
       <SemesterProvider>
+      <Toaster position="top-right" richColors />
         <RouterProvider router={router}> 
           <Login />
         </RouterProvider>
