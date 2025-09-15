@@ -149,17 +149,21 @@ details[open] summary::after {
   display: flex;
   flex-direction: row;
   align-items: center;
+  justify-content: center; /* <-- centra horizontal */
+  gap: 30px;               /* <-- agrega espacio entre cajas */
   padding: 20px;
 }
 
+
 .users-navigation-item {
   width: 320px;
+  display: flex;
+  flex-direction: column;
 }
 
 .navigation-item-label {
-  font-size: 1.1rem;
-  font-weight: 500;
-  color: #333;
+  margin-bottom: 5px;
+  display: block;
 }
 
 .navigation-item-select {
@@ -191,6 +195,7 @@ details[open] summary::after {
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
+  
 }
 
 .pointer-disabled {
@@ -2337,7 +2342,6 @@ canvas {
 
 .nav-links .active, .nav-setting .active {
   background-color: #181e3e; 
-
   transition: background-color 0.3s ease;
 }
 
@@ -3667,7 +3671,6 @@ der { background-color: lightblue; }
 }
 
 /* ---------------- ACTION BUTTONS ---------------- */
-
 .session-actions button {
   padding: 0.8rem 1.8rem;
   border-radius: 8px;
@@ -3697,6 +3700,79 @@ der { background-color: lightblue; }
 }
 
 .session-actions .btn-primary:hover {
+  background: var(--yellow);
+  color: var(--black);
+}
+
+
+.edit-section-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 80px;
+}
+
+.edit-card {
+  background: var(--white);
+  max-width: 900px;
+  border: 1px solid var(--gray);
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  padding: 2px 9%;
+  align-items: center;
+}
+
+.edit-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+}
+
+.edit-card-title {
+  font-size: 1.4rem;
+  font-weight: 900;
+  color: var(--blue);
+  border-bottom: 2px solid var(--yellow);
+  display: inline-block;
+}
+
+/* compact form styling */
+.edit-card-content form {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.edit-card-content input,
+.edit-card-content select,
+.edit-card-content textarea {
+  border: 1px solid var(--gray);
+  border-radius: 8px;
+  font-size: 0.95rem;
+  background: #fff;
+  transition: border-color 0.2s;
+}
+
+.edit-card-content input:focus,
+.edit-card-content select:focus,
+.edit-card-content textarea:focus {
+  border-color: var(--blue);
+  outline: none;
+}
+
+.edit-card-content button {
+  align-self: flex-start;
+  background: var(--blue);
+  color: var(--white);
+  font-weight: 600;
+  padding: 8px 18px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  font-size: 0.9rem;
+}
+
+.edit-card-content button:hover {
   background: var(--yellow);
   color: var(--black);
 }

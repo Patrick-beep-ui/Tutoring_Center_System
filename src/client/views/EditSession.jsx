@@ -26,19 +26,19 @@ function EditSession() {
         getSession();
     }, [session_id])
 
-    return(
-       <>
-        <Header/>
-
-        <section className="edit-section-container section">
-            <div className="edit-session-form-container">
+return(
+   <>
+    <Header/>
+    <section className="edit-section-container">
+        <div className="edit-card">
+            <h1 className="edit-card-title">Edit Session</h1>
+            <div className="edit-card-content">
                 <EditSessionForm session={session} session_id={session_id}/>
             </div>
-        </section>
-       </>
-
-       
-    )
+        </div>
+    </section>
+   </>
+)
 
 }
 
