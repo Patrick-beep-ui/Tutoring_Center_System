@@ -1,19 +1,20 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form"
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { Toaster, toast } from 'sonner';
-import axios from "axios";
+import { toast } from 'sonner';
 import Header from "../components/Header";
+import LoadingSpinner from "../components/ui-snippets/LoadingSpinner";
 
 import { Card, CardHeader, CardContent } from 'semantic-ui-react'; 
 
 function AddSession() {
     const {register, handleSubmit, formState: { errors }} = useForm({model: "onChange"});
     const navigate = useNavigate();
-    const {tutor_id} = useParams();
-    const {course_id} = useParams();
+    const { tutor_id, course_id } = useParams();
+    const [isloading, setIsloading] = useState(false);
 
     const processData = async (formData) => {
+        setIsloading(true);
         try {
             const request = await fetch(`/api/sessions/${tutor_id}/${course_id}`, {
                 method: 'POST',
@@ -23,26 +24,30 @@ function AddSession() {
                 body: JSON.stringify(formData)
             });
 
-            const {sessions} = await request.json();
-            console.log(sessions);
-            //navigate('/')
+            if (!request.ok) throw new Error('Failed to add session');
 
-            toast.promise(promise(), {
-                loading: 'Adding tutor...',
-                success: (response) => {
-                  return `${response.name} Tutor has been added`;
-                },
-                error: (error) => `Error: ${error}`,
-              });
-              navigate('/tutors');
+            const data = await request.json();
+            console.log(data);
+
+            toast.success('Session added successfully!', {
+                duration: 3000
+              });  
+              setTimeout(() => {
+                navigate(`/sessions/tutor/${tutor_id}/${course_id}`);
+              }, 1000);
+              
         }
         catch(e) {
             console.error(e);
+        }
+        finally {
+            setIsloading(false);
         }
     }
 
     return(
         <>
+        {/*<Toaster position="top-right" richColors />*/}
          <Header />
         <section className="add-session-container section">
             <div className="add-session-form-container">
@@ -86,7 +91,9 @@ function AddSession() {
 
                     <div className="add-session-btns">
                         <button className="btn btn-danger cancel-btn">Cancel</button>
-                        <button type="submit">Save Session</button> 
+                        <button type="submit">
+                            {isloading ? <LoadingSpinner /> : 'Save Session'}
+                        </button> 
                     </div>
                    
 

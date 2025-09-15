@@ -1,10 +1,15 @@
 import { useForm } from "react-hook-form";
+import { toast } from 'sonner';
+import { useState } from "react";
+import LoadingSpinner from "./ui-snippets/LoadingSpinner";
 
-const EditSessionForm = ({ session, session_id }) => {
+const EditSessionForm = ({ session, session_id, tutor_id, navigate }) => {
     const { register, handleSubmit, formState: { errors } } = useForm({ mode: "onChange" });
+    const [isloading, setIsloading] = useState(false);
    
 
     const processData = async (formData) => {
+        setIsloading(true);
         try {
             const request = await fetch(`/api/sessions/session/${session_id}`, {
                 method: 'PUT',
@@ -14,11 +19,22 @@ const EditSessionForm = ({ session, session_id }) => {
                 body: JSON.stringify(formData)
             });
 
+            if (!request.ok) throw new Error('Failed to add session');
+
             const { session } = await request.json();
             console.log(session);
 
+            toast.success('Session updated successfully!', {
+                duration: 3000
+              });  
+              setTimeout(() => {
+                navigate(`/profile/tutor/${tutor_id}`);
+              }, 1000);
+
         } catch (e) {
             console.error(e);
+        } finally {
+            setIsloading(false);
         }
     }
 
@@ -56,10 +72,12 @@ const EditSessionForm = ({ session, session_id }) => {
             </section>
             <section className="session-feedback-container">
                 <label>Feedback: </label>
-                <textarea cols="30" rows="10" {...register("feedback")}></textarea>
+                <textarea cols="30" rows="10" {...register("feedback")}>{session[0].session_feedback}</textarea>
             </section>
             <section className="edit-session-btn-container">
-                <button type="submit">Complete</button>
+                <button type="submit">
+                    {isloading ? <LoadingSpinner /> : 'Complete'}
+                </button>
             </section>
         </form>
     );

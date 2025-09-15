@@ -7,8 +7,9 @@ import Header from "../components/Header";
 import EditSessionForm from "../components/EditSessionForm";
 
 function EditSession() {
-    const {session_id} = useParams();
+    const {session_id, tutor_id} = useParams();
     const [session, setSession] = useState([]);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const getSession = async () => {
@@ -33,7 +34,7 @@ return(
         <div className="edit-card">
             <h1 className="edit-card-title">Edit Session</h1>
             <div className="edit-card-content">
-                <EditSessionForm session={session} session_id={session_id}/>
+                <EditSessionForm session={session} session_id={session_id} tutor_id={tutor_id} navigate={navigate}/>
             </div>
         </div>
     </section>
