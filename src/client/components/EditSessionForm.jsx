@@ -3,7 +3,7 @@ import { toast } from 'sonner';
 import { useState } from "react";
 import LoadingSpinner from "./ui-snippets/LoadingSpinner";
 
-const EditSessionForm = ({ session, session_id, tutor_id, navigate }) => {
+const EditSessionForm = ({ session, session_id, tutor_id, navigate, source }) => {
     const { register, handleSubmit, formState: { errors } } = useForm({ mode: "onChange" });
     const [isloading, setIsloading] = useState(false);
    
@@ -16,7 +16,7 @@ const EditSessionForm = ({ session, session_id, tutor_id, navigate }) => {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify(formData)
+                body: JSON.stringify({ ...formData, source })
             });
 
             if (!request.ok) throw new Error('Failed to add session');
