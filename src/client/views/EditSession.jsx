@@ -4,7 +4,7 @@ import { Link, useNavigate, useParams, useLocation } from "react-router-dom";
 import { Toaster, toast } from 'sonner';
 import axios from "axios";
 import Header from "../components/Header";
-import EditSessionForm from "../components/EditSessionForm";
+import EditSessionForm from "../components/EditSessionForm";    
 
 function EditSession() {
     const {session_id, tutor_id} = useParams();
@@ -32,7 +32,21 @@ return(
    <>
     <Header/>
     <section className="edit-section-container">
-        <div className="edit-card">
+        <div className="edit-card" style={{position: 'relative'}}>
+            <button
+            style={{
+                position: 'absolute',
+                top: '10px',
+                left: '10px',
+                zIndex: 10,
+                border: '1px solid #949494',
+                padding: '5px 10px',
+                borderRadius: '20px',
+                fontSize: '12px',
+                fontWeight: 700,
+                color: '#fff',
+                backgroundColor: '#949494',
+              }}>Go Back</button>
             <h1 className="edit-card-title">{source == 'scheduled' ? 'Complete Session' : 'Edit Session'}</h1>
             <div className="edit-card-content">
                 <EditSessionForm 
