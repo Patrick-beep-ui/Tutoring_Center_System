@@ -408,3 +408,30 @@ export const editSession = async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 }
+
+export const cancelSession = async (req, res) => {
+    try {
+        const session_id = req.params.session_id;
+
+        const session_detail = await SessionDetail.findOne({
+            where: {
+                session_id: session_id
+            }
+        });
+
+        if(session_detail) {
+            await session_detail.update({
+                session_status: 'canceled',
+            })
+        }
+
+        res.status(201).json({
+            message: 'Session canceled successfully',
+            session: session_detail
+        })
+     }
+    catch(e) {
+        console.error(e);
+        res.status(500).json({ error: 'Internal Server Error '})
+    }
+}
