@@ -322,13 +322,15 @@ export const addSession = async (req, res) => {
 export const editSession = async (req, res) => {
     try {
         const session_id = req.params.session_id
-        const {session_date, session_hours, feedback, session_time, topics} = req.body;
+        const {session_date, session_hours, feedback, session_time, topics, source} = req.body;
         
         const session = await TutorSession.findOne({
             where: {
                 session_id: session_id
             }
         })
+
+        console.log("Source Status Reached:", source)
 
         await session.update({
             session_date: session_date,
@@ -344,11 +346,19 @@ export const editSession = async (req, res) => {
             }
         })
 
-        await session_detail.update({
-            session_time: session_time,
-            session_status: 'completed',
-            updatedAt: new Date()
-        })
+        // Change logic based on source status
+        if (source === 'scheduled') {
+            await session_detail.update({
+                session_time,
+                session_status: 'completed',
+                updatedAt: new Date()
+            });
+        } else {
+            await session_detail.update({
+                session_time,
+                updatedAt: new Date()  
+            });
+        }
 
         const student = await User.findOne({
             where: {
@@ -356,7 +366,7 @@ export const editSession = async (req, res) => {
             }
         })
 
-        if(student) {
+        if(source === 'scheduled' && student) {
             const tutor = await User.findOne({
                 where: {
                     user_id: session.tutor_id
