@@ -1745,6 +1745,16 @@ canvas {
 
 
 /*Comment*/
+
+.session-comments .comment {
+  display: flex;
+    flex-wrap: wrap;
+    align-content: center;
+    justify-content: flex-start;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
 .comment .card {
   width: 450px;
   height: fit-content;

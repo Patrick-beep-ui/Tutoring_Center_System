@@ -167,6 +167,7 @@ function SessionDetails() {
         ))}
       </div>
 
+      {(user.user_id === session[0].tutor_id || user.role === 'admin' || user.role === 'dev') && (
         <div className="session-comments">
           <div className="comment">
             {comment.map(c => {
@@ -260,6 +261,7 @@ function SessionDetails() {
           </Popup>
 
         </div>
+      )}
       </section>
     </>
   )
