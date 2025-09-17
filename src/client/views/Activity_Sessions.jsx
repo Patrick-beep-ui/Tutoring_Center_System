@@ -1,4 +1,4 @@
-import { useState, useEffect, memo } from "react";
+import { useState, useEffect, memo, useCallback } from "react";
 import SessionCard from "../components/SessionCard.jsx";
 import api from "../axiosService.js";
 
@@ -20,11 +20,18 @@ const Activity_Sessions = () => {
         fetchSessions();
     }, []);
 
+    const removeSessionFromState = useCallback(
+        (sessionId) => {
+          setSessions((prev) => prev.filter((s) => s.session_id !== sessionId));
+        },
+        [setSessions]
+      );
+
     return (
         <>
                 <div className="sessions-grid">
                     {sessions.map((session) => (
-                        <SessionCard key={session.session_id} session={session} />
+                        <SessionCard key={session.session_id} session={session} onDelete={removeSessionFromState}/>
                     ))}
                 </div>
         </>

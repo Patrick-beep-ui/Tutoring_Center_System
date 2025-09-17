@@ -9,7 +9,8 @@ import {
     getScheduledSessionsItems,
     addSession, 
     editSession,
-    cancelSession } from "../controllers/sessionsController.js";
+    cancelSession, 
+    deleteSession } from "../controllers/sessionsController.js";
 import passport from "passport";
 
 const SessionsRouter = express.Router();
@@ -19,7 +20,8 @@ SessionsRouter.route("/:tutor_id").get(getSessionsByTutor);
 SessionsRouter.route("/session/:session_id") // This is for session details on the Tutor Sessions part
 .get(getTutorSessionById)
 .put(editSession)
-.patch(cancelSession);
+.patch(cancelSession)
+.delete(deleteSession);
 //Future .delete for session deletion
 
 SessionsRouter.route("/session_details/:session_id") // This is for session details on sessions screen

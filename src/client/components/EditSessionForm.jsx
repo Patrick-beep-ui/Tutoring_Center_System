@@ -9,6 +9,7 @@ const EditSessionForm = ({ session, session_id, tutor_id, navigate, source }) =>
     const { register, handleSubmit, formState: { errors } } = useForm({ mode: "onChange" });
     const [isloading, setIsloading] = useState(false);
     const [showAlert, setShowAlert] = useState(false);
+    const [cancelMessage, setCancelMessage] = useState('');
    
     const processData = async (formData) => {
         setIsloading(true);
@@ -41,9 +42,10 @@ const EditSessionForm = ({ session, session_id, tutor_id, navigate, source }) =>
     }
 
     const cancelSession = useCallback(async () => {
+        setIsloading(true);
         try {
             const url = `/api/sessions/session/${session_id}`
-            await axios.patch(url)
+            await axios.patch(url, { message: cancelMessage });
 
             toast.success('Session canceled successfully!', {
                 duration: 3000
@@ -55,12 +57,15 @@ const EditSessionForm = ({ session, session_id, tutor_id, navigate, source }) =>
         catch(e) {
             console.error(e);
         }
-    }, [session_id, tutor_id, navigate])
+        finally {
+            setIsloading(false);
+        }
+    }, [session_id, tutor_id, navigate, cancelMessage]);
 
     const handleCancelClick = useCallback(() => setShowAlert(true), []);
     const handleConfirmCancel = useCallback(async () => {
-        setShowAlert(false);
         await cancelSession();
+        setShowAlert(false);
     }, [cancelSession]);
 
     const handleCancelAlert = useCallback(() => setShowAlert(false), []);
@@ -122,6 +127,15 @@ const EditSessionForm = ({ session, session_id, tutor_id, navigate, source }) =>
               message="Are you sure you want to cancel the session?"
               onConfirm={handleConfirmCancel}
               onCancel={handleCancelAlert}
+              alert={isloading ? <LoadingSpinner/> : 'Leave a message for the student when canceling the session.'}
+              service={<textarea 
+                cols="30" 
+                rows="5" 
+                placeholder="Message for the student (optional)"
+                style={{padding: '10px',}}
+                value={cancelMessage}
+                onChange={(e) => setCancelMessage(e.target.value)}
+                ></textarea>}
       />
       </>
     );

@@ -3,10 +3,13 @@ import User from "../models/User.js";
 import Course from "../models/Course.js";
 import SessionDetail from "../models/SessionDetail.js";
 import Semester from "../models/Semester.js";
+import Comment from "../models/Comment.js";
+import SessionFeedback from "../models/SessionFeedback.js";
 import connection from "../connection.js";
-import { sendFeedbackEmail } from "../mail.js";
+import { sendFeedbackEmail, sendSessionCancelationEmail } from "../mail.js";
 import { QueryTypes } from "sequelize";
 import { sanitizeUserInput } from "../utils/sanitize.js";
+import moment from 'moment';
 
 import os from 'os';
 
@@ -412,6 +415,7 @@ export const editSession = async (req, res) => {
 export const cancelSession = async (req, res) => {
     try {
         const session_id = req.params.session_id;
+        const { message } = req.body;
 
         const session_detail = await SessionDetail.findOne({
             where: {
@@ -419,9 +423,49 @@ export const cancelSession = async (req, res) => {
             }
         });
 
+        const session = await TutorSession.findOne({
+            where: {
+                session_id: session_id
+            }
+        })
+
+        const student = await User.findOne({
+            where: {
+                ku_id: session.student_id
+            }
+        })
+
         if(session_detail) {
             await session_detail.update({
                 session_status: 'canceled',
+            })
+        }
+
+        if(message && message.trim().length > 0 && student) {
+
+            const course = await Course.findOne({
+                where: {
+                    course_id: session.course_id
+                }
+            })
+
+            const tutor = await User.findOne({
+                where: {
+                    user_id: session.tutor_id
+                }
+            })
+
+            const formatedDate = moment(session.session_date).format('MMMM D, YYYY');
+            const formatedTime = moment(session_detail.session_time, 'HH:mm:ss').format('h:mm A');
+
+            await sendSessionCancelationEmail(student.email, {
+                tutorName: `${tutor.first_name} ${tutor.last_name}`,
+                studentName: `${student.first_name} ${student.last_name}`,
+                courseName: course.course_name,
+                //date: new Date(session.session_date).toLocaleDateString('en-US', { timeZone: 'UTC' }),
+                date: formatedDate,
+                time: formatedTime,
+                cancellationNote: message
             })
         }
 
@@ -435,3 +479,50 @@ export const cancelSession = async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error '})
     }
 }
+
+export const deleteSession = async (req, res) => {
+    const session_id = req.params.session_id;
+  
+    const t = await connection.transaction(); // start transaction
+  
+    try {
+      const detailsDeleted = await SessionDetail.destroy({
+        where: { session_id },
+        transaction: t
+      });
+  
+      await Comment.destroy({
+        where: { session_id },
+        transaction: t
+      });
+  
+      await SessionFeedback.destroy({
+        where: { session_id },
+        transaction: t
+      });
+  
+      // Delete the main session
+      const sessionDeleted = await TutorSession.destroy({
+        where: { session_id },
+        transaction: t
+      });
+  
+      if (!sessionDeleted) {
+        await t.rollback(); 
+        return res.status(404).json({ error: 'Session not found' });
+      }
+  
+      await t.commit(); 
+  
+      return res.status(200).json({
+        message: 'Session deleted successfully',
+        detailsDeleted
+      });
+  
+    } catch (error) {
+      await t.rollback(); // rollback transaction on error
+      console.error(error);
+      return res.status(500).json({ error: 'Internal Server Error' });
+    }
+  };
+  

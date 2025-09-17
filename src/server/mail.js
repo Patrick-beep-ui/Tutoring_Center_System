@@ -121,3 +121,40 @@ export async function sendFeedbackEmail(to, data) {
     throw e;
   }
 }
+
+export async function sendSessionCancelationEmail(to, data) {
+  try {
+    const templatePath = path.resolve(__dirname, './emails/cancelSession.hbs');
+
+    const source = await fs.readFile(templatePath, 'utf8');
+    const template = handlebars.compile(source);
+    const html = template(data);
+  
+    const subject = 'Session Canceled';
+    const text = `Hello ${data.studentName}, your session for ${data.courseName} on ${data.date} at ${data.time} has been canceled.`;
+  
+    const mailOptions = {
+      from: 'tutoring.center@keiseruniversity.edu.ni',
+      to,
+      subject,
+      text,
+      html,
+      attachments: [
+        {
+          filename: 'CAE.jpg',
+          path: './public/img/CAE.jpg',
+          cid: 'logo'  
+        }
+      ]
+    };
+
+    const info = await transporter.sendMail(mailOptions);
+    console.log('Email sent: ' + info.response);
+    return info;
+    
+  }
+  catch(e) {
+    console.error('Error sending email:', e.message, e.stack);
+    throw e;
+  }
+}

@@ -2935,6 +2935,10 @@ nav ul li :hover li {
   background-color: orange;
 }
 
+.status-tag.canceled {
+  background-color: #ff0000;
+}
+
 .session-time {
   color: #555;
   font-size: 13px;
