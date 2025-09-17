@@ -3705,6 +3705,7 @@ der { background-color: lightblue; }
 }
 
 
+/* ---------------- EDIT FORM ---------------- */
 .edit-section-container {
   display: flex;
   justify-content: center;
@@ -3775,4 +3776,131 @@ der { background-color: lightblue; }
 .edit-card-content button:hover {
   background: var(--yellow);
   color: var(--black);
+}
+
+
+/* ---------------- ADD SESSIONS ---------------- */
+/* ---------------- ADD FORM ---------------- */
+.add-session-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 80px; /* same offset as edit card */
+}
+
+.add-session-form-container {
+  background: var(--white);
+  max-width: 600px; /* same width as edit card */
+  border: 1px solid var(--gray);
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  padding: 2px 9%; /* same padding ratio as edit card */
+  align-items: center;
+}
+
+.add-session-form-container:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+}
+
+.add-session-form h1 {
+  font-size: 1.4rem;
+  font-weight: 600; /* matches edit card title */
+  color: var(--blue);
+  border-bottom: 2px solid var(--yellow);
+  display: inline-block;
+}
+
+/* compact form styling */
+.add-session-form section {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 12px;
+}
+
+.add-session-form label {
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: var(--black);
+}
+
+.add-session-form input,
+.add-session-form select,
+.add-session-form textarea {
+  border: 1px solid var(--gray);
+  border-radius: 8px;
+  font-size: 0.95rem;
+  background: #fff;
+  transition: border-color 0.2s;
+  padding: 6px 10px;
+}
+
+.add-session-form input:focus,
+.add-session-form select:focus,
+.add-session-form textarea:focus {
+  border-color: var(--blue);
+  outline: none;
+}
+
+/* date + time row */
+.datetime-data {
+  display: flex;
+  gap: 20px;
+}
+
+.datetime-data section {
+  flex: 1;
+}
+
+/* error messages */
+.add-session-form span {
+  font-size: 0.85rem;
+  color: red;
+  margin-top: 2px;
+}
+
+/* buttons */
+.add-session-btns {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.add-session-btns button {
+  border: none;
+  border-radius: 8px;
+  padding: 8px 18px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  font-weight: 600; /* match edit card button */
+  transition: background 0.2s ease;
+}
+
+.add-session-btns .cancel-btn {
+  background: #f5f5f5;
+  color: var(--dark-gray);
+}
+
+.add-session-btns .cancel-btn:hover {
+  background: var(--gray);
+  color: var(--white);
+}
+
+.add-session-btns button[type="submit"] {
+  background: var(--blue);
+  color: var(--white);
+}
+
+.add-session-btns button[type="submit"]:hover {
+  background: var(--yellow);
+  color: var(--black);
+}
+
+/* responsive: stack date/time on small screens */
+@media (max-width: 768px) {
+  .datetime-data {
+    flex-direction: column;
+    gap: 12px;
+  }
 }
