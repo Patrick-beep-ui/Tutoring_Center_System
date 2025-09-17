@@ -5,7 +5,9 @@ const ConfirmAlert = ({
     message = "Are you sure?", 
     onConfirm, 
     onCancel, 
-    visible 
+    visible ,
+    alert = null,
+    service = null
 }) => {
     const handleConfirm = useCallback(() => {
         onConfirm && onConfirm();
@@ -21,6 +23,8 @@ const ConfirmAlert = ({
         <div style={styles.overlay}>
             <div style={styles.alertBox}>
                 <p style={styles.message}>{message}</p>
+                <span style={styles.alertDialog}>{alert}</span>
+                {service && <div style={{ marginBottom: '15px' }}>{service}</div>}
                 <div style={styles.buttons}>
                     <button style={{ ...styles.button, ...styles.cancel }} onClick={handleCancel}>
                         Cancel
@@ -62,6 +66,12 @@ const styles = {
     message: {
         fontSize: "16px",
         marginBottom: "20px"
+    },
+    alertDialog: {
+        display: "block",
+        fontSize: "12px",
+        color: "gray",
+        marginBottom: "20px",
     },
     buttons: {
         display: "flex",
