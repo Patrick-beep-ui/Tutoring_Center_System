@@ -181,7 +181,7 @@ export const getSessionDetails = async (req, res) => {
 
         if(session_id) {
             const session = await connection.query(`SELECT CONCAT(u.first_name, ' ', u.last_name) as 'tutor_name', c.course_name as 'course_name', s.session_date as 'session_date', s.student_id as 'student_id', FORMAT(s.session_totalhours, 0) as 'session_hours', 
-            s.feedback as 'session_feedback', sd.session_time as 'session_time', su.user_id AS 'student_user_id',
+            s.feedback as 'session_feedback', sd.session_time as 'session_time', su.user_id AS 'student_user_id', u.user_id as 'tutor_id',
             CONCAT(su.first_name, ' ', su.last_name) AS 'student_name', s.topics as 'session_topics'
             FROM sessions s LEFT JOIN session_details sd ON s.session_id = sd.session_id
             JOIN courses c ON s.course_id = c.course_id
@@ -189,7 +189,7 @@ export const getSessionDetails = async (req, res) => {
             JOIN users u ON u.user_id = t.user_id
             LEFT JOIN users su ON su.ku_id = s.student_id
             WHERE s.session_id = :session_id
-            GROUP BY tutor_name, course_name, session_date, student_id, session_hours, session_time, student_user_id, student_name, session_status, session_topics;`, 
+            GROUP BY tutor_name, course_name, session_date, student_id, session_hours, session_time, student_user_id, student_name, session_status, session_topics, tutor_id;`, 
             {
                 type: QueryTypes.SELECT,
                 replacements: { session_id: sanitizedSessionId }
