@@ -151,7 +151,7 @@ details[open] summary::after {
   align-items: center;
   justify-content: center; /* <-- centra horizontal */
   gap: 30px;               /* <-- agrega espacio entre cajas */
-  padding: 20px;
+  padding: 36px 36px 20px 36px;
 }
 
 
@@ -162,6 +162,7 @@ details[open] summary::after {
 }
 
 .navigation-item-label {
+  text-align: left;
   margin-bottom: 5px;
   display: block;
 }
@@ -3916,5 +3917,260 @@ der { background-color: lightblue; }
   .datetime-data {
     flex-direction: column;
     gap: 12px;
+  }
+}
+
+/* ---------------- CELL POPUP (ADD SESSION) - BOX SIZED ---------------- */
+.custom-popup-content.schedule-session-popup-content {
+  background: var(--white);
+  border-radius: 16px;
+  border: 1px solid var(--gray);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  width: 600px;
+  max-width: 90vw;
+  max-height: 80vh;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.custom-popup-content.schedule-session-popup-content:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+}
+
+/* Make popup-cell-msg fill the popup box */
+.popup-cell-msg {
+  background: transparent;
+  padding: 32px 36px;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  max-height: 80vh;
+}
+
+.popup-cell-msg:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+/* Header text styling */
+.popup-cell-msg strong {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--blue);
+  display: block;
+  margin-bottom: 20px;
+  border-bottom: 2px solid var(--yellow);
+  padding-bottom: 10px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+/* Existing sessions list */
+.popup-cell-msg ul {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 24px 0;
+  max-height: 160px;
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+
+.popup-cell-msg ul li {
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-left: 4px solid var(--blue);
+  border-radius: 8px;
+  padding: 14px 18px;
+  margin-bottom: 10px;
+  font-size: 0.9rem;
+  transition: background 0.2s ease;
+}
+
+.popup-cell-msg ul li:hover {
+  background: #e9ecef;
+}
+
+.popup-cell-msg ul li p {
+  margin: 5px 0 0 0;
+  color: var(--dark-gray);
+  font-weight: 500;
+  font-size: 0.85rem;
+}
+
+/* Schedule session container */
+.schedule-session-container {
+  border-top: 1px solid #e9ecef;
+  padding-top: 20px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+/* Form styling within popup */
+.schedule-session-container h2,
+.schedule-session-container h3,
+.schedule-session-container .form-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--blue);
+  margin-bottom: 16px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.schedule-session-container .form-group,
+.schedule-session-container section {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 16px;
+  flex-shrink: 0;
+}
+
+.schedule-session-container label {
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: var(--black);
+  font-size: 0.9rem;
+}
+
+.schedule-session-container input,
+.schedule-session-container select,
+.schedule-session-container textarea {
+  border: 1px solid var(--gray);
+  border-radius: 8px;
+  font-size: 0.95rem;
+  background: #fff;
+  transition: border-color 0.2s;
+  padding: 10px 14px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.schedule-session-container input:focus,
+.schedule-session-container select:focus,
+.schedule-session-container textarea:focus {
+  border-color: var(--blue);
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(var(--blue-rgb), 0.1);
+}
+
+/* Date/time row */
+.schedule-session-container .datetime-row,
+.schedule-session-container .datetime-data {
+  display: flex;
+  gap: 16px;
+}
+
+.schedule-session-container .datetime-row > *,
+.schedule-session-container .datetime-data > * {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Error messages */
+.schedule-session-container .error-message,
+.schedule-session-container span[style*="color: red"] {
+  font-size: 0.8rem;
+  color: #dc3545;
+  margin-top: 4px;
+  display: block;
+}
+
+/* Button container */
+.schedule-session-container .button-group,
+.schedule-session-container .form-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px solid #f0f0f0;
+  flex-shrink: 0;
+}
+
+.schedule-session-container button {
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  min-width: 100px;
+}
+
+.schedule-session-container .cancel-btn,
+.schedule-session-container .btn-secondary {
+  background: #f5f5f5;
+  color: var(--dark-gray);
+}
+
+.schedule-session-container .cancel-btn:hover,
+.schedule-session-container .btn-secondary:hover {
+  background: var(--gray);
+  color: var(--white);
+}
+
+.schedule-session-container .submit-btn,
+.schedule-session-container .btn-primary,
+.schedule-session-container button[type="submit"] {
+  background: var(--blue);
+  color: var(--white);
+}
+
+.schedule-session-container .submit-btn:hover,
+.schedule-session-container .btn-primary:hover,
+.schedule-session-container button[type="submit"]:hover {
+  background: var(--yellow);
+  color: var(--black);
+  transform: translateY(-1px);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .custom-popup-content.schedule-session-popup-content {
+    width: 500px;
+  }
+  
+  .popup-cell-msg {
+    padding: 24px 28px;
+  }
+  
+  .schedule-session-container .datetime-row,
+  .schedule-session-container .datetime-data {
+    flex-direction: column;
+    gap: 12px;
+  }
+}
+
+@media (max-width: 580px) {
+  .custom-popup-content.schedule-session-popup-content {
+    width: 90vw;
+    max-width: 450px;
+  }
+  
+  .popup-cell-msg {
+    padding: 20px 24px;
+  }
+  
+  .schedule-session-container .button-group,
+  .schedule-session-container .form-buttons {
+    flex-direction: column-reverse;
+    gap: 10px;
+  }
+  
+  .schedule-session-container button {
+    width: 100%;
+    min-width: auto;
   }
 }
