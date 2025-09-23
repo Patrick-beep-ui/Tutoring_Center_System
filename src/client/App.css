@@ -1746,16 +1746,6 @@ canvas {
 
 
 /*Comment*/
-
-.session-comments .comment {
-  display: flex;
-    flex-wrap: wrap;
-    align-content: center;
-    justify-content: flex-start;
-    gap: 20px;
-    margin-bottom: 30px;
-}
-
 .comment .card {
   width: 450px;
   height: fit-content;
@@ -2422,7 +2412,7 @@ canvas {
   justify-content: flex-start;
   gap: 24px;
   padding: 32px;
-  background-color: #f3f4f6; /* Optional light background */
+  background-color: #f3f4f6; 
 }
 
 
@@ -2457,11 +2447,14 @@ canvas {
   background-color: #fff;
   border: 1px solid #e5e7eb;
   border-radius: 16px;
-  width: 300px;
+  width: 290px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
   display: flex;
+  gap: 12px;
   flex-direction: column;
   transition: transform 0.2s ease;
+  margin-left: 13px;
+
 }
 
 
@@ -2571,6 +2564,7 @@ canvas {
   cursor: not-allowed;
   opacity: 0.5;
 }
+
 
 .arrow.right {
   right: 15px;
@@ -2944,10 +2938,6 @@ nav ul li :hover li {
 
 .status-tag.pending {
   background-color: orange;
-}
-
-.status-tag.canceled {
-  background-color: #ff0000;
 }
 
 .session-time {
@@ -4172,5 +4162,97 @@ der { background-color: lightblue; }
   .schedule-session-container button {
     width: 100%;
     min-width: auto;
+  }
+}
+/* --------- Fix a selector roto que causaba efectos raros --------- */
+nav ul li:hover a {
+  border-radius: 3px;
+  padding: 4px 20px;
+  background-color: snow;
+  color: black;
+}
+/* El que tenías: "nav ul li :hover li" es inválido y rompe el hover */
+
+/* ====================== MOBILE ≤ 991.98px ====================== */
+@media (max-width: 991.98px) {
+
+  /* Sidebar como drawer off-canvas (oculto por defecto) */
+  .sidebar {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 280px;              /* ajusta si tu sidebar es más angosto */
+    transform: translateX(-100%);
+    transition: transform .25s ease-in-out;
+    z-index: 3000;             /* por encima del contenido */
+    box-shadow: 0 6px 28px rgba(0,0,0,.25);
+    /* Si tu sidebar dependía de margin del layout, al ser fixed ya no empuja el contenido */
+  }
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  /* Backdrop que oscurece el contenido */
+  .mobile-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.35);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .2s ease;
+    z-index: 2990;
+  }
+  .mobile-backdrop.show {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* Botón hamburguesa flotante */
+  .hamburger-btn {
+    position: fixed;
+    left: 12px;
+    top: 12px;
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    border: 1px solid #e5e5e5;
+    background: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 3100;
+    cursor: pointer;
+  }
+  .hamburger-btn .bar,
+  .hamburger-btn .bar::before,
+  .hamburger-btn .bar::after {
+    content: "";
+    display: block;
+    width: 22px;
+    height: 2px;
+    background: #222;
+    position: relative;
+    transition: transform .2s ease, opacity .2s ease, top .2s ease;
+  }
+  .hamburger-btn .bar::before { top: -6px; position: relative; }
+  .hamburger-btn .bar::after  { top:  4px; position: relative; }
+  .hamburger-btn.is-open .bar { transform: rotate(45deg); }
+  .hamburger-btn.is-open .bar::before { transform: rotate(90deg); top: 0; }
+  .hamburger-btn.is-open .bar::after { opacity: 0; transform: translateY(-4px); }
+
+  /* Evita superposiciones del navbar de arriba con popovers/filtros */
+  .date-box { display: none !important; }  /* o reubícala si la necesitas */
+
+  /* Tu nav horizontal en móvil apílalo si aparece */
+  nav { padding: 9px 12px !important; }
+  nav ul { gap: 0 !important; float: none !important; flex-direction: column !important; }
+  nav ul li, nav ul li a { width: 100%; padding: 10px 12px !important; }
+
+  /* Si tu contenido tenía margen por el sidebar, elimínalo en móvil */
+  .content,
+  .main,
+  .page-content {
+    margin-left: 0 !important;
   }
 }
