@@ -63,7 +63,10 @@ function Session() {
                     <div>Web version layout</div>
                 )}
     
-            <Link to={`/sessions/add/${tutor_id}/${course_id}`}>Add Session</Link>
+            <Link 
+            to={`/sessions/add/${tutor_id}/${course_id}`}
+            state = {{ source: role }}
+            >Add Session</Link>
 
         </section>
         </>

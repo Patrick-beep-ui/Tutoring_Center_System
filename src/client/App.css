@@ -65,6 +65,14 @@ body {
   overflow-y: scroll;
 }
 
+@media screen and (max-width: 600px) {
+  .section {
+    padding-left: 30px;
+    padding-right: 30px;
+    padding-top: 100px;
+  }
+}
+
 h1 {
   text-align: center;
   font-size: 2rem;
@@ -376,7 +384,7 @@ details[open] summary::after {
   margin-bottom: 0.4rem;
 }
 
-.add-class-page .form-container input {
+.add-class-page .form-container input, .add-class-page .form-container select {
   width: 100%;
   padding: 0.8rem;
   border: none;
@@ -2915,11 +2923,16 @@ nav ul li :hover li {
   justify-content: space-between;
   align-items: center;
 }
+
 .session-title{
   font-size: 17px;
   margin-bottom: 0;
   text-align: left;
-
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+  max-width: 100%;
 }
 
 .status-tag {

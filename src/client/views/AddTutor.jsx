@@ -176,7 +176,7 @@ function AddTutor() {
 
 
             <section>
-                <label>Major:</label>
+                <label>Tutor Major:</label>
                 <select {...register("major")}>
                     {major.map((major, index) => (
                         <option value={major.major_id} key={index}>
@@ -185,6 +185,7 @@ function AddTutor() {
                     ))}
                 </select>
             </section>
+            <label>Tutor Courses:</label>
             <section className="classes">
             {className.map(classObj => (
                 <div key={classObj.course_id}>

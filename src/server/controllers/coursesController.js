@@ -2,7 +2,7 @@ import Course from "../models/Course.js";
 import Major from "../models/Major.js";
 import TutorCourse from "../models/TutorCourse.js";
 import connection from "../connection.js";
-import {QueryTypes, Sequelize} from "sequelize";
+import {QueryTypes, Sequelize, Transaction} from "sequelize";
 import {sanitizeUserInput} from "../utils/sanitize.js";
 
 export const getCourses = async (req, res) => {
@@ -96,22 +96,39 @@ export const getCoursesByMajor = async (req, res) => {
 }
 
 export const addCourse = async (req, res) => {
+    const t = await connection.transaction();
     try {
-        const course = new Course({
-        course_name: req.body.class_name,
-        course_code: req.body.course_code
-        })
+        const { class_name, course_code, course_credits, major_id } = req.body;
 
-        await course.save();
-        const courses = await Course.findAll();
+        const existingCourse = await Course.findOne({ 
+            where: { course_code },
+            transaction: t
+         });
+        if (existingCourse) {
+          return res.status(409).json({ msg: 'Course already exists with that code' });
+        }
+
+        const course = await Course.create(
+            {
+              course_name: class_name,
+              course_code,
+              credits: course_credits,
+              major_id
+            },
+            { transaction: t }
+          );
+
+        await t.commit();
+        //const courses = await Course.findAll();
 
         res.status(201).json({
-            msg: 'Tutor added successfully',
-            courses
+            msg: 'Course added successfully',
+            course
         });
     }
     catch(e) {
-
+        await t.rollback();
+        res.status(500).json({ msg: 'Internal server error' });
     }
 }
 
