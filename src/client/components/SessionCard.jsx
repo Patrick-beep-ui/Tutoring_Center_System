@@ -100,7 +100,8 @@ const Box = ({ session, onDelete }) => {
                         onClick={(e) => {
                             e.preventDefault();
                             e.stopPropagation(); 
-                            navigate(`/session/edit/${session.session_id}/${session.tutor_id}`, {state: { source: 'profile' }});
+                            navigate(`/session/edit/${session.session_id}/${session.tutor_id}`, {state: { source: 'profile' },
+                                state: { source: 'activity' }});
                             
                           }}
                           ></i> 

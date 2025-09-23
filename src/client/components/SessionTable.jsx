@@ -2,7 +2,7 @@ import {v4 as uuid} from "uuid";
 import { Link } from "react-router-dom";
 
 
-const SessionTable = ({ session, isEditable, tutorId, source }) => {
+const SessionTable = ({ session, isEditable, tutorId, source, role }) => {
 
     return(
         <div className="table-container" style={{marginBottom: '10px'}}>
@@ -29,7 +29,7 @@ const SessionTable = ({ session, isEditable, tutorId, source }) => {
                         <>
                         <td><Link 
                         to={`/session/edit/${s.session_id}/${tutorId}`}
-                        state={{ source: source }}
+                        state={{ source: source, role: role }}
                         >
                             <i className='bx bx-pencil edit'></i>
                         </Link></td>

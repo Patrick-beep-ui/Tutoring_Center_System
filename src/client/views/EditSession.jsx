@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useForm } from "react-hook-form"
 import { Link, useNavigate, useParams, useLocation } from "react-router-dom";
 import { Toaster, toast } from 'sonner';
@@ -12,6 +12,7 @@ function EditSession() {
     const navigate = useNavigate();
     const location = useLocation();
     const source = location.state?.source || "completed";
+    const role = location.state?.role || "tutor";
 
     useEffect(() => {
         const getSession = async () => {
@@ -19,6 +20,7 @@ function EditSession() {
                 const response = await axios.get(`/api/sessions/session/${session_id}`);
                 const { data } = response;
                 setSession(data.session);
+                console.log(data.session);
             }
             catch(e) {
                 console.error(e);
@@ -27,6 +29,17 @@ function EditSession() {
 
         getSession();
     }, [session_id])
+
+    const navigateTo = useCallback(() => {
+        if (source === 'scheduled') {
+          navigate(`/scheduled-sessions/tutor/${tutor_id}`);
+        } else if (source === 'activity') {
+          navigate('/activity');
+        } else {
+          navigate(`/sessions/${role}/${tutor_id}/${session[0]?.course_id}`);
+        }
+      }, [navigate, source, tutor_id, session]);
+      
 
 return(
    <>
@@ -46,7 +59,9 @@ return(
                 fontWeight: 700,
                 color: '#fff',
                 backgroundColor: '#949494',
-              }}>Go Back</button>
+              }}
+              onClick={navigateTo}
+              >Go Back</button>
             <h1 className="edit-card-title">{source == 'scheduled' ? 'Complete Session' : 'Edit Session'}</h1>
             <div className="edit-card-content">
                 <EditSessionForm 

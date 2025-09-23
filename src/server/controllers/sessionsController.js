@@ -146,13 +146,13 @@ export const getTutorSessionById = async (req, res) => {
             return res.status(400).json({ error: 'Invalid session ID' });
         }
 
-        const session = await connection.query(`SELECT s.session_id as 'session_id', c.course_name as 'course_name', CONCAT(u.first_name, ' ', u.last_name) as 'scheduled_by', sd.session_time as 'session_time', FORMAT(s.session_totalhours, 0) as 'session_durarion' ,s.session_date as 'session_date', sd.session_status as 'session_status', s.topics as 'session_topics', s.feedback as 'session_feedback'
+        const session = await connection.query(`SELECT s.session_id as 'session_id', c.course_name as 'course_name', c.course_id as 'course_id', CONCAT(u.first_name, ' ', u.last_name) as 'scheduled_by', sd.session_time as 'session_time', FORMAT(s.session_totalhours, 0) as 'session_durarion' ,s.session_date as 'session_date', sd.session_status as 'session_status', s.topics as 'session_topics', s.feedback as 'session_feedback'
             FROM sessions s JOIN tutors t on s.tutor_id = t.tutor_id
             JOIN courses c ON s.course_id = c.course_id
             JOIN session_details sd ON s.session_id = sd.session_id
             JOIN users u ON u.user_id = sd.createdBy
             WHERE s.session_id = :session_id
-            GROUP BY session_id, course_name, scheduled_by, session_time, session_date, session_status, session_topics;`, {
+            GROUP BY session_id, course_name, scheduled_by, session_time, session_date, session_status, session_topics, course_id;`, {
                 type: QueryTypes.SELECT,
                 replacements: { session_id: sanitizedSessionId }
             })
@@ -293,7 +293,8 @@ export const addSession = async (req, res) => {
             semester_id: current_semester.semester_id,
             session_date: req.body.session_date,
             session_totalhours: req.body.session_hours,
-            feedback: req.body.feedback
+            feedback: req.body.feedback,
+            topics: req.body.session_topics
         })
     
         await session.save();

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form"
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams, useLocation } from "react-router-dom";
 import { toast } from 'sonner';
 import Header from "../components/Header";
 import LoadingSpinner from "../components/ui-snippets/LoadingSpinner";
@@ -12,6 +12,8 @@ function AddSession() {
     const navigate = useNavigate();
     const { tutor_id, course_id } = useParams();
     const [isloading, setIsloading] = useState(false);
+    const location = useLocation();
+    const source = location.state?.source || "tutor";
 
     const processData = async (formData) => {
         setIsloading(true);
@@ -75,8 +77,13 @@ function AddSession() {
                         </section>
                     </div>
                     <section>
-                        <label>Session Hours:</label>
+                        <label>Session Duration in Hours:</label>
                         <input type="number" {...register("session_hours", {required: true})}/>
+                        {errors.code && <span>This field is required</span>}
+                    </section>
+                    <section>
+                        <label>Session Topics</label>
+                        <textarea cols="30" rows="2" {...register("session_topics", {required: true})}></textarea>
                         {errors.code && <span>This field is required</span>}
                     </section>
                 </div>
@@ -90,7 +97,9 @@ function AddSession() {
                     </div>
 
                     <div className="add-session-btns">
-                        <button className="btn btn-danger cancel-btn">Cancel</button>
+                        <Link to={`/sessions/${source}/${tutor_id}/${course_id}`}>
+                            <button className="btn btn-danger cancel-btn">Cancel</button>
+                        </Link>
                         <button type="submit">
                             {isloading ? <LoadingSpinner /> : 'Save Session'}
                         </button> 

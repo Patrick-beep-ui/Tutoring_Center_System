@@ -16,7 +16,8 @@ const Course = connection.define('Course', {
     }, 
     course_code: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
+        unique: true
     },
     major_id: {
         type: DataTypes.INTEGER,
