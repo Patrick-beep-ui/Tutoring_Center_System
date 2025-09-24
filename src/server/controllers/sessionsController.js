@@ -146,6 +146,15 @@ export const getTutorSessionById = async (req, res) => {
             return res.status(400).json({ error: 'Invalid session ID' });
         }
 
+        //Check if user exists
+        const sessionElement = await TutorSession.findOne({
+            where: { session_id: sanitizedSessionId }
+        })
+
+        const student = await User.findOne({
+            where: { ku_id: sessionElement.student_id }
+        })
+
         const session = await connection.query(`SELECT s.session_id as 'session_id', c.course_name as 'course_name', c.course_id as 'course_id', CONCAT(u.first_name, ' ', u.last_name) as 'scheduled_by', sd.session_time as 'session_time', FORMAT(s.session_totalhours, 0) as 'session_durarion' ,s.session_date as 'session_date', sd.session_status as 'session_status', s.topics as 'session_topics', s.feedback as 'session_feedback'
             FROM sessions s JOIN tutors t on s.tutor_id = t.tutor_id
             JOIN courses c ON s.course_id = c.course_id
@@ -157,7 +166,22 @@ export const getTutorSessionById = async (req, res) => {
                 replacements: { session_id: sanitizedSessionId }
             })
 
-            res.status(200).json({ session });
+            let studentInfo;
+            if (student) {
+              studentInfo = {
+                student_name: `${student.first_name} ${student.last_name}`,
+                student_ku_id: student.ku_id
+              };
+            } else {
+              studentInfo = {
+                student_ku_id: sessionElement.student_id
+              };
+            }
+
+            res.status(200).json({ 
+                session,
+                studentInfo
+            });
 
     }
     catch (e) {

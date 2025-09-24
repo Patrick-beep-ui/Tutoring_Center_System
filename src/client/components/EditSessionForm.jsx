@@ -10,7 +10,7 @@ const EditSessionForm = ({ session, session_id, tutor_id, navigate, source }) =>
     const [isloading, setIsloading] = useState(false);
     const [showAlert, setShowAlert] = useState(false);
     const [cancelMessage, setCancelMessage] = useState('');
-   
+
     const processData = async (formData) => {
         setIsloading(true);
         try {
@@ -80,33 +80,40 @@ const EditSessionForm = ({ session, session_id, tutor_id, navigate, source }) =>
         <form onSubmit={handleSubmit(processData)} className="form-container edit-session-form">
             <section>
                 <label>Course: </label>
-                <p>{session[0].course_name}</p>
+                <p>{session.course_name}</p>
             </section>
-            <section>
-                <label>Scheduled By: </label>
-                <p>{session[0].scheduled_by}</p>
+            <section style={{display: 'flex', gap: '110px'}}>
+                <div>
+                    <label>Scheduled By: </label>
+                    <p>{session.scheduled_by}</p>
+                </div>
+                <div>
+                    <label>Student: </label>
+                    <p>{session.student_name ? session.student_name : session.student_ku_id}</p>
+                </div>
+
             </section>
             <div className="datetime-data">
                 <section>
                     <label>Date: </label>
-                    <input type="date" {...register("session_date")} defaultValue={session[0].session_date} />
+                    <input type="date" {...register("session_date")} defaultValue={session.session_date} />
                 </section>
                 <section>
                     <label>Start Time: </label>
-                    <input type="time" {...register("session_time")} defaultValue={session[0].session_time} />
+                    <input type="time" {...register("session_time")} defaultValue={session.session_time} />
                 </section>
             </div>
             <section>
                 <label>Duration: </label>
-                <input type="number" {...register("session_hours")} defaultValue={session[0].session_durarion} />
+                <input type="number" {...register("session_hours")} defaultValue={session.session_durarion} />
             </section>
             <section className="session-topics-container">
                 <label>Topics: </label>
-                <textarea cols="30" rows="10" {...register("topics")} defaultValue={session[0].session_topics}></textarea>
+                <textarea cols="30" rows="10" {...register("topics")} defaultValue={session.session_topics}></textarea>
             </section>
             <section className="session-feedback-container">
                 <label>Feedback: </label>
-                <textarea cols="30" rows="10" {...register("feedback")}>{session[0].session_feedback}</textarea>
+                <textarea cols="30" rows="10" {...register("feedback")}>{session.session_feedback}</textarea>
             </section>
             <section className="edit-session-btn-container">
                 <button type="submit">
