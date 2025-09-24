@@ -19,7 +19,10 @@ function EditSession() {
             try {
                 const response = await axios.get(`/api/sessions/session/${session_id}`);
                 const { data } = response;
-                setSession(data.session);
+                setSession({
+                  ...data.session[0],  
+                  ...data.studentInfo  
+                });
                 console.log(data.session);
             }
             catch(e) {
@@ -36,7 +39,7 @@ function EditSession() {
         } else if (source === 'activity') {
           navigate('/activity');
         } else {
-          navigate(`/sessions/${role}/${tutor_id}/${session[0]?.course_id}`);
+          navigate(`/sessions/${role}/${tutor_id}/${session?.course_id}`);
         }
       }, [navigate, source, tutor_id, session]);
       
@@ -57,11 +60,13 @@ return(
                 borderRadius: '20px',
                 fontSize: '12px',
                 fontWeight: 700,
-                color: '#fff',
-                backgroundColor: '#949494',
+                color: '#000',
+                
               }}
               onClick={navigateTo}
-              >Go Back</button>
+              >
+                <i className="bx bx-left-arrow-alt" style={{fontSize: '22px'}}></i>
+              </button>
             <h1 className="edit-card-title">{source == 'scheduled' ? 'Complete Session' : 'Edit Session'}</h1>
             <div className="edit-card-content">
                 <EditSessionForm 

@@ -62,6 +62,9 @@ import { SemesterProvider } from './context/currentSemester';
 import EmailForm from "./components/Email.jsx";
 import Activity_Feedback from "./views/Activity_Feedback.jsx";
 
+// Server Responses
+import NotFound from "./views/server_responses/NotFound.jsx";
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -270,6 +273,10 @@ const router = createBrowserRouter([
   {
     path: "/email-testing",
     element: <EmailForm />
+  },
+  {
+    path: "*",
+    element: <NotFound />
   }
 
 
