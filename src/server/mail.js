@@ -3,19 +3,20 @@ import handlebars from 'handlebars';
 import fs from 'fs/promises';
 import path, { dirname } from 'path';
 import { fileURLToPath } from 'url';
+import dotenv from 'dotenv';
 
 // ES Module __dirname workaround
 const __dirname = dirname(fileURLToPath(import.meta.url));
-
+dotenv.config();
 
 // Create transporter
 const transporter = nodemailer.createTransport({
-  host: "mail.keiseruniversity.edu.ni",
-  port: 587,
+  host: process.env.MAIL_HOST,
+  port: process.env.MAIL_PORT,
   secure: false,
   auth: {
-    user: "tutoring.center@keiseruniversity.edu.ni",
-    pass: "tYn8C9-+&2i&"
+    user: process.env.MAIL_USER,
+    pass: process.env.MAIL_PASS
 
   }
 });
@@ -32,7 +33,7 @@ transporter.verify((error, success) => {
 // Basic email sender
 export const sendEmail = async (to, subject, text) => {
   const mailOptions = {
-    from: 'tutoring.center@keiseruniversity.edu.ni',
+    from: process.env.MAIL_USER, 
     to,
     subject,
     text,
@@ -62,7 +63,7 @@ export async function sendSessionRequestEmail(to, data) {
     const text = `Hello ${data.tutorName}, you have a new session request from ${data.studentName} for ${data.courseName} on ${data.date} at ${data.time}.`;
 
     const mailOptions = {
-      from: 'tutoring.center@keiseruniversity.edu.ni',
+      from: process.env.MAIL_USER,
       to,
       subject,
       text,
@@ -98,7 +99,7 @@ export async function sendFeedbackEmail(to, data) {
     const text = `Hello ${data.studentName}, Thank you for attending the session. Please provide feedback.`;
   
     const mailOptions = {
-      from: 'tutoring.center@keiseruniversity.edu.ni',
+      from: process.env.MAIL_USER,
       to,
       subject,
       text,
@@ -134,7 +135,7 @@ export async function sendSessionCancelationEmail(to, data) {
     const text = `Hello ${data.studentName}, your session for ${data.courseName} on ${data.date} at ${data.time} has been canceled.`;
   
     const mailOptions = {
-      from: 'tutoring.center@keiseruniversity.edu.ni',
+      from: process.env.MAIL_USER,
       to,
       subject,
       text,
