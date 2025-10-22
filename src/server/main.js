@@ -13,6 +13,8 @@ import dotenv from 'dotenv';
 
 import { generateToken } from "./utils/jwt.js";
 
+const port = process.env.PORT || 3000;
+
 const app = express();
 
 app.use(expressSession({
@@ -224,7 +226,7 @@ app.use((err, req, res, next) => {
 });
 
 
-ViteExpress.listen(app, 3000,() =>
+ViteExpress.listen(app, port,() =>
   console.log("Server is listening on port 3000..."),
 );
 
