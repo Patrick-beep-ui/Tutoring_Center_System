@@ -1,6 +1,7 @@
 import React, { useEffect, useState, memo } from "react";
 import { Outlet, useNavigate, useOutletContext } from "react-router-dom";
 import axios from "axios";
+import auth from "../authService";
 
 const Auth = () => {
     const [isLoading, setIsLoading] = useState(true);
@@ -17,12 +18,12 @@ const Auth = () => {
               console.log("No token found, redirecting to login page");
             }
 
-            const response = await axios.get("/api/auth", {
+            const response = await auth.get("/api/auth", {
               headers: {
                 Authorization: `Bearer ${token}`,
               },
             });
-            console.log("Response:", response);
+            
             if (/*response.statusText=== "OK"*/ response?.status === 200 && response.data?.user) {
 
               setIsAuthenticated(true);
