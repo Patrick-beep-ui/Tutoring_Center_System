@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import axios from "axios";
+import auth from "../authService";
 import CAE from "../assets/CAE.jpg";
 import texts from "../texts/login.json"
 
@@ -28,7 +29,7 @@ export default function Login() {
         }
 
         try {
-            const response = await axios.post('/signup', formData);
+            const response = await auth.post('/signup', formData);
             console.log(response.data);
         } catch (error) {
             console.error(error.response?.data || error.message);
@@ -42,7 +43,7 @@ export default function Login() {
         setLoading(true);
         console.log("datos enviados: " + JSON.stringify(formData))
         try {
-            const response = await axios.post("/login", formData);
+            const response = await auth.post("/login", formData);
             const {token} = response.data;
 
             if (token) {
