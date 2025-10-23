@@ -88,11 +88,18 @@ api.post('/send-email', async (req, res) => {
     }
   });
 
-api.post('/uploadProfilePic/:role?', upload.single('profilePic'), (req, res) => {
-    console.log('File received:', req.file);
-    res.status(200).json({
-        message: 'Profile picture uploaded successfully'
-    });
+api.post('/uploadProfilePic/:role?/:user_id?', 
+  upload.single('profilePic'), (req, res) => {
+    try {
+      console.log('File received:', req.file);
+      res.status(200).json({
+          message: 'Profile picture uploaded successfully'
+      });
+    }
+    catch(e) {
+      console.error(e);
+      res.status(500).json({ message: 'Failed to upload profile picture' });
+    }
 });
 
 api.route('/system')
