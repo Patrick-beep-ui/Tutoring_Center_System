@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
 import { useForm } from "react-hook-form"
-import { Link, useNavigate, useParams, useOutletContext } from "react-router-dom";
-import { Toaster, toast } from 'sonner';
-import axios from "axios";
+import { useOutletContext } from "react-router-dom";
+import { toast } from 'sonner';
+import auth from "../authService";
 
 const ScheduleSession = (props) => {
     const {register, handleSubmit, formState: { errors }, setValue } = useForm({model: "onChange"});
@@ -16,7 +16,7 @@ const ScheduleSession = (props) => {
     useEffect(() => {
         const getCourses = async () => {
             try {
-                const response = await axios.get(`/api/courses/${tutor_id}`)
+                const response = await auth.get(`/api/courses/${tutor_id}`)
                 const {data} = response
                 setCourse(data.tutor_classes)
 
@@ -35,21 +35,18 @@ const ScheduleSession = (props) => {
 
     const processData = useCallback(async (formData) => {
         try {
-            //alert(JSON.stringify(formData));
-            const request = await fetch(`/api/calendar-session/${tutor_id}`, {
-                method: 'POST',
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(formData)
-            });
-    
-            const { sessions } = await request.json();
-            console.log(sessions);
+
+            const response = await auth.post(`/api/calendar-session/${tutor_id}`, formData);
+            const { sessions } = response.data;
     
             if (onSubmit) {
                 onSubmit();
             }
+
+            console.log('Scheduled session:', sessions);
+            toast.success('Session scheduled successfully!', {
+                duration: 3000
+              });
     
         } catch (e) {
             console.error(e);

@@ -8,6 +8,7 @@ import 'reactjs-popup/dist/index.css';
 import ScheduleSession from './ScheduleSession';
 import { ics } from 'ics';
 import { createEvent } from 'ics';
+import auth from '../authService';
 
 const localizer = momentLocalizer(moment);
 
@@ -25,8 +26,8 @@ const MyCalendar = () => {
     useEffect(() => {
         async function fetchEvents() {
             try {
-                const response = await fetch(`/api/calendar-session/${tutor_id}`);
-                const data = await response.json();
+                const response = await auth.get(`/api/calendar-session/${tutor_id}`);
+                const {data} = response;
                 console.log(data.sessions)
 
                 setSessions(data.sessions.map(s => {

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback, memo, useMemo } from "react";
-import axios from "axios";
+import auth from "../authService";
 import { Link } from "react-router-dom";
 import Header from "../components/Header";
 import { v4 as uuid } from "uuid";
@@ -28,7 +28,7 @@ function ClassName() {
     useEffect(() => {
         const fetchMajors = async () => {
             try {
-                const res = await axios.get("/api/majors");
+                const res = await auth.get("/api/majors");
                 setMajors(res.data.majors);
             } catch (e) {
                 console.error(e);
@@ -36,7 +36,7 @@ function ClassName() {
         };
         const fetchCourses = async () => {
             try {
-                const res = await axios.get("/api/courses");
+                const res = await auth.get("/api/courses");
                 setCourses(res.data.courses);
             } catch (e) {
                 console.error(e);
@@ -44,7 +44,7 @@ function ClassName() {
         };
         const fetchStudents = async () => {
             try {
-                const res = await axios.get("/api/students");
+                const res = await auth.get("/api/students");
                 setStudents(res.data.students);
             } catch (e) {
                 console.error(e);

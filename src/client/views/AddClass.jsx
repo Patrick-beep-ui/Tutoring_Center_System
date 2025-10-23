@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { toast } from 'sonner';
 import { useState, memo, useEffect } from "react";
 import LoadingSpinner from "../components/ui-snippets/LoadingSpinner";
+import auth from "../authService";
 
 function AddClass() {
     const { register, handleSubmit, formState: {errors}} = useForm({mode: "onChange"});
@@ -14,37 +15,27 @@ function AddClass() {
     const processData = async (formData) => {
         setIsloading(true);
         try {
-            const request = await fetch("/api/courses", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(formData)
-            });
 
-            if (request.status === 409) {
-              const { msg } = await request.json();
-              toast.error(msg, { duration: 3000 });
-              return; 
-            }
+            const response = await auth.post("/api/courses", formData);
+            toast.success("Course added successfully!", { duration: 3000 });
 
-            if (!request.ok) throw new Error('Failed to add course');
-
-            toast.success('Course added successfully!', {
-              duration: 3000
-            });  
             setTimeout(() => {
-              navigate(`/classes`);
+              navigate("/classes");
             }, 1000);
 
-            const {classes} = await request.json();
+            const { classes } = response.data;
             console.log(classes);
         }
-        catch(e) {
+        catch (e) {
+          // Axios automatically puts response info in e.response
+          if (e.response && e.response.status === 409) {
+            toast.error(e.response.data.msg, { duration: 3000 });
+          } else {
+            toast.error("An error occurred", { duration: 3000 });
             console.error(e);
-            toast.error('An error occurred', { duration: 3000 });
+          }
         } finally {
-            setIsloading(false);
+          setIsloading(false);
         }
     }
 

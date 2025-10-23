@@ -1,11 +1,10 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 import { useParams } from "react-router-dom";
-import {v4 as uuid} from "uuid";
 import { Link, useOutletContext} from "react-router-dom";
 import SessionTable from "../components/SessionTable";
 import Header from "../components/Header";
 import { useLayout } from "../context/Layout.jsx";
+import auth from "../authService.js";
 
 // You can use this to conditionally render different layouts
 //const isElectron = typeof window !== "undefined" && window.platform && window.platform.isElectron;
@@ -24,7 +23,7 @@ function Session() {
     useEffect(() => {
         const getSessions = async () => {
             try {
-                const response = await axios.get(`/api/sessions/${tutor_id}/${course_id}`)
+                const response = await auth.get(`/api/sessions/${tutor_id}/${course_id}`)
                 const {data} = response;
                 console.log(data.sessions)
                 setSession(data.sessions)

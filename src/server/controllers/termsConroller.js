@@ -29,6 +29,9 @@ export const addSemester = async (req, res) => {
         });
     }
     catch(e) {
+        if (e.name === 'SequelizeUniqueConstraintError') {
+            return res.status(409).json({ msg: 'This semester already exists' });
+        }
         console.error(e)
     }
 }

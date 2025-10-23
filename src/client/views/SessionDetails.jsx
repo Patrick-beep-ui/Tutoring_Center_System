@@ -1,11 +1,11 @@
-import { useState, useEffect } from "react";
-import axios from "axios";
-import { v4 as uuid } from "uuid";
+import { useState, useEffect, useCallback } from "react";
 import { useParams, useOutletContext, Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import Header from "../components/Header";
 import Popup from "reactjs-popup";
 import "../App.css";
+import auth from "../authService";
+import { toast } from "sonner";
 
 function SessionDetails() {
   const { register, handleSubmit, formState: { errors } } = useForm({ mode: "onChange" });
@@ -23,7 +23,7 @@ function SessionDetails() {
   useEffect(() => {
     const fetchSessionData = async () => {
       try {
-        const sessionResponse = await axios.get(`/api/sessions/session_details/${session_id}`);
+        const sessionResponse = await auth.get(`/api/sessions/session_details/${session_id}`);
         const sessionData = sessionResponse.data.session;
   
         console.log("Session: ", sessionData);
@@ -46,7 +46,7 @@ function SessionDetails() {
   useEffect(() => {
     const fetchCommentsData = async () => {
       try {
-        const commentResponse = await axios.get(`/api/comments/${session_id}`);
+        const commentResponse = await auth.get(`/api/comments/${session_id}`);
         const commentsData = commentResponse.data.comments;
   
         console.log("Comments: ", commentsData);
@@ -60,39 +60,40 @@ function SessionDetails() {
   }, []);  
   
 
-  const processData = async (formData) => {
+  const processData = useCallback(async (formData) => {
     try {
-      const response = await fetch(`/api/comments/${session_id}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(formData)
-      });
 
-      const { comments } = await response.json();
+      const request = await auth.post(`/api/comments/${session_id}`, formData);
+      toast.success("Comment added successfully!");
+
+      const { comments } = request.data;
       setComment(comments);
       setIsOpen(false);
     } catch (e) {
       console.error(e);
+      toast.error("Failed to add comment. Please try again.");
     }
-  }
+  }, [session_id, comment, isOpen]);
 
-  const addComment = () => {
+  const addComment = useCallback(() => {
     setIsOpen(true);
-  }
+  }, [isOpen]);
 
-  const removeComment = async () => {
+  const removeComment = useCallback(async () => {
     try {
-      console.log(commentToRemove)
         const url = `/api/comments/${session_id}/${commentToRemove}`
-        axios.delete(url)
+        auth.delete(url)
+
+        setComment(prevComments => prevComments.filter(c => c.comment_id !== commentToRemove));
+
+        toast.success("Comment removed successfully!");
         setIsRemoveOpen(false)
+        setCommentToRemove(null);
     } 
     catch(e) {
         console.error(e);
     }
-  }
+  }, [session_id, commentToRemove, isRemoveOpen]);
 
   if (session.length === 0) {
     return (

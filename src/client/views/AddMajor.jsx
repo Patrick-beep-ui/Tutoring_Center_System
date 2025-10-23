@@ -1,27 +1,34 @@
 import { useForm } from "react-hook-form";
-import { useParams, useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
+import { useCallback } from "react";
+import { toast } from "sonner";
+import auth from "../authService";
 
 function AddClass() {
     const { register, handleSubmit, formState: {errors}} = useForm({mode: "onChange"});
     const navigate = useNavigate();
 
-    const processData = async (formData) => {
+    const processData = useCallback(async (formData) => {
         try {
-            const request = await fetch("/api/majors", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(formData)
-            });
-            const {classes} = await request.json();
-            console.log(classes);
+            const response = await auth.post("/api/majors", formData);
+            toast.success("Major added successfully!", { duration: 3000 });
+
+            setTimeout(() => {
+                navigate("/classes");
+              }, 1000);
+
+            console.log("Added major:", response.data);
         }
-        catch(e) {
-            console.error(e);
-        }
-    }
+        catch (e) {
+            if (e.response && e.response.status === 409) {
+              // Duplicate entry error
+              toast.error(e.response.data.msg || "This major already exists", { duration: 3000 });
+            } else {
+              toast.error(`An error occurred while adding the major: ${e.message}`, { duration: 3000 });
+              console.error(e);
+            }
+          }
+    }, [navigate]);
 
     return( <div className="add-class-page">
         <h1>Add Class</h1>

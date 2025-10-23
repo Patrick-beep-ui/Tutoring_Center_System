@@ -2,7 +2,7 @@
 
 // EmailForm.jsx Testing Component
 import { useState } from 'react';
-import axios from 'axios';
+import auth from '../authService';
 
 const EmailForm = () => {
   const [to, setTo] = useState('');
@@ -13,7 +13,7 @@ const EmailForm = () => {
     e.preventDefault();
     
     try {
-      const response = await axios.post('/api/send-email', { to, subject, text });
+      const response = await auth.post('/api/send-email', { to, subject, text });
       if (response.status === 200) {
         alert('Email sent successfully');
       }

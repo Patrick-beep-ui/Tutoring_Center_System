@@ -2,6 +2,7 @@ import React, { useState, useCallback, memo, useEffect } from 'react';
 import { Navbar, Nav } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from "axios";
+import auth from '../authService';
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import texts from "../texts/layout.json";
 
@@ -42,7 +43,7 @@ function SideBar({ user }) {
 
   const logout = useCallback(async () => {
     try {
-      await axios.post("/logout");
+      await auth.post("/logout");
     } catch (e) {
       console.error("Logout error:", e);
     } finally {

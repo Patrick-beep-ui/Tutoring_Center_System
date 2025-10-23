@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import axios from "axios";
+import auth from "../authService";
 
 function CourseSelector({ majorId, register, errors, getValues, setValue }) {
   const [courses, setCourses] = useState([]);
@@ -8,7 +8,7 @@ function CourseSelector({ majorId, register, errors, getValues, setValue }) {
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        const res = await axios.get(`/api/courses/major/${majorId}`);
+        const res = await auth.get(`/api/courses/major/${majorId}`);
         setCourses(res.data.courses); 
       } catch (err) {
         console.error("Error fetching courses:", err);

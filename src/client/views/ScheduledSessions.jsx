@@ -1,10 +1,9 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 import { useParams } from "react-router-dom";
-import {v4 as uuid} from "uuid";
 import { Link } from "react-router-dom";
 import SessionTable from "../components/SessionTable";
 import Header from "../components/Header";
+import auth from "../authService";
 
 
 function ScheduledSessions() {
@@ -14,7 +13,7 @@ function ScheduledSessions() {
     useEffect(() => {
         const getSessions = async () => {
             try {
-                const response = await axios.get(`/api/sessions/session_status/${tutor_id}/${true}`)
+                const response = await auth.get(`/api/sessions/session_status/${tutor_id}/${true}`)
                 const {data} = response;
                 console.log(data.scheduled_sessions)
                 setSession(data.scheduled_sessions)
