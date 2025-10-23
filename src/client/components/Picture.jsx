@@ -74,7 +74,7 @@ const Profile = ({ tutorId, onImageUpload, role }) => {
         }
 
         try {
-            const response = await auth.post(`/api/uploadProfilePic/${role}`, formData, {
+            const response = await auth.post(`/api/uploadProfilePic/${role}/${tutorId}`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
