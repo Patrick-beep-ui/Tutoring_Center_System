@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, Link, useOutletContext, Outlet } from "react-router-dom";
-import axios from "axios";
-import {v4 as uuid} from "uuid";
 import Header from "../components/Header";
 import Graph from "../components/Chart";
 import ReportCard from "../components/ReportCard";
 import PieChart from "../components/PieChart";
+import auth from "../authService";
 
 function Report() {
     const [report, setReport] = useState([
@@ -15,7 +13,7 @@ function Report() {
     useEffect(() => {
         const getReport = async () => {
             try {
-                const response = await axios.get("/api/report")
+                const response = await auth.get("/api/report")
                 const {data} = response;
                 console.log(data.report);
                 setReport(data.report);
@@ -30,7 +28,7 @@ function Report() {
     useEffect(() => {
         const getSessions = async () => {
              try {
-                 const response = await axios.get('/api/report/major-sessions');
+                 const response = await auth.get('/api/report/major-sessions');
                  const { data } = response;
                  setSessions(data.sessions);
                  console.log(data.sessions)

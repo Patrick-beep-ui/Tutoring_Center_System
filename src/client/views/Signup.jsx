@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import axios from "axios";
+import auth from "../authService";
 import CAE from "../assets/CAE.jpg";
 import texts from "../texts/login.json"
 import CourseSelector from "../components/UserCoursesSelector";
@@ -27,7 +27,7 @@ function Signup() {
         }
 
         try {
-            const response = await axios.post('/signup', formData);
+            const response = await auth.post('/signup', formData);
             console.log(response.data);
             navigate('/login');
 
@@ -42,7 +42,7 @@ function Signup() {
     useEffect(() => {
         const getMajors = async () => {
             try {
-                const response = await axios.get('/api/majors');
+                const response = await auth.get('/api/majors');
                 const {data} = response;
                 setMajors(data.majors);
                 console.log(data.majors);

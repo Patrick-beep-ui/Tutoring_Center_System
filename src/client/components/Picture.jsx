@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useRef  } from 'react';
 import Cropper from 'react-easy-crop';
 import { Button, Slider, Typography } from '@mui/material';
-import axios from 'axios';
+import auth from '../authService';
 import '.././App.css';
 import texts from "../texts/tutorProfile.json";
 
@@ -74,7 +74,7 @@ const Profile = ({ tutorId, onImageUpload, role }) => {
         }
 
         try {
-            const response = await axios.post(`/api/uploadProfilePic/${role}`, formData, {
+            const response = await auth.post(`/api/uploadProfilePic/${role}`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }

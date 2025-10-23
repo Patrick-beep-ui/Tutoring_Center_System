@@ -1,8 +1,9 @@
 import UserNavigators from "./UsersNavigators";
 import { useState, useEffect, useCallback, memo } from "react";
-import axios from "axios";
+import auth from "../authService";
 import UserNavigationTable from "./UsersNavigationTable";
 import {exportToCSV} from "../services/exportCSV";
+
 
 const TutorsListComponent = ({majors, userCourses}) => {
     const [tutors, setTutors] = useState([]);
@@ -17,7 +18,7 @@ const TutorsListComponent = ({majors, userCourses}) => {
     useEffect(() => {
         const getTutors = async () => {
             try {
-                const response = await axios.get("/api/tutors");
+                const response = await auth.get("/api/tutors");
                 const {data} = response;
                 console.log(data.tutors)
                 setTutors(data.tutors)

@@ -19,13 +19,18 @@ export const addMajor = async (req, res) => {
         })
 
         await major.save()
-        const majors = await major.findAll()
 
         res.status(201).json({
             msg: 'Major added successfully',
-            majors
+            major
         });
-    } catch(e) {
-
+        
+    } catch (e) {
+        if (e.name === 'SequelizeUniqueConstraintError') {
+            return res.status(409).json({ msg: 'This major already exists' });
+        }
+        console.error(e);
+        res.status(500).json({ msg: 'An error occurred while adding the major' });
     }
+    
 }

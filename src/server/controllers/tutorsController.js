@@ -81,7 +81,7 @@ export const addTutor = async (req, res) => {
     try {
         console.log(req.body);
 
-        const classIDs = req.body['class-option'];
+        const classIDs = req.body['class_option'];
         const schedules = req.body.schedule;
         
         const user = new User({
@@ -146,9 +146,23 @@ export const addTutor = async (req, res) => {
             tutors
         });
     }
-    catch(e) {
+    catch (e) {
         console.error(e);
-        res.status(500).json({ error: 'Internal Server Error' });
+    
+        if (e.name === "SequelizeUniqueConstraintError") {
+            
+            const field = e.errors[0].path;       // e.g., 'email'
+            const value = e.errors[0].value;      // e.g., 'auth@keiseruniversity.edu'
+            return res.status(400).json({
+                error: "Duplicate entry",
+                message: `The value "${value}" already exists.`
+            });
+        }
+    
+        res.status(500).json({ 
+            error: 'Internal Server Error', 
+            message: e.message 
+        });
     }
 }
 

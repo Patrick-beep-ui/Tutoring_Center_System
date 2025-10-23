@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import axios from 'axios';
+import auth from '../authService';
 import { useNavigate } from 'react-router-dom';
 
 const FeedbackForm = ({sessionId, userId}) => {
@@ -18,7 +18,7 @@ const FeedbackForm = ({sessionId, userId}) => {
 
   const onSubmit = async (data) => {
     try {
-      const response = await axios.post('/api/feedback', {
+      const response = await auth.post('/api/feedback', {
         sessionId: sessionId,
         user_id: userId,
         rating: data.rating,

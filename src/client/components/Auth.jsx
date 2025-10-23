@@ -1,6 +1,5 @@
 import React, { useEffect, useState, memo } from "react";
 import { Outlet, useNavigate, useOutletContext } from "react-router-dom";
-import axios from "axios";
 import auth from "../authService";
 
 const Auth = () => {

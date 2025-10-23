@@ -1,10 +1,10 @@
 import { useState, useEffect, useCallback, memo } from "react";
-import axios from "axios";
 import { useParams, useOutletContext } from "react-router-dom";
 import { Link } from "react-router-dom";
 import Header from "../components/Header";
 import Profile from "../components/Picture";
 import texts from "../texts/tutorProfile.json"
+import auth from "../authService";
 
 
 function TutorProfile() {
@@ -23,10 +23,10 @@ function TutorProfile() {
     const fetchTutorData = useCallback(async () => {
         try {
             const [TutorResponse, coursesResponse, sessionResponse, schedulesResponse] = await Promise.all([
-                axios.get(`/api/tutors/${tutor_id}`),
-                axios.get(`/api/courses/${tutor_id}`),
-                axios.get(`/api/sessions/session_status/${tutor_id}`),
-                axios.get(`/api/schedules/${tutor_id}`)
+                auth.get(`/api/tutors/${tutor_id}`),
+                auth.get(`/api/courses/${tutor_id}`),
+                auth.get(`/api/sessions/session_status/${tutor_id}`),
+                auth.get(`/api/schedules/${tutor_id}`)
             ]);
 
             const tutorData = TutorResponse.data.tutor_info;
@@ -57,12 +57,12 @@ function TutorProfile() {
 
     const fecthStudentData = useCallback(async () => {
         try {
-            const response = await axios.get(`/api/users/${tutor_id}`);
+            const response = await auth.get(`/api/users/${tutor_id}`);
             const {user} = response.data;
             console.log(user);
             setUser([user]);
 
-            const coursesResponse = await axios.get(`/api/users/${tutor_id}/${user.ku_id}`);
+            const coursesResponse = await auth.get(`/api/users/${tutor_id}/${user.ku_id}`);
             const {data} = coursesResponse;
             console.log(data.userCourses);
             setCourse(data.userCourses);

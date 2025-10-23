@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import auth from "../authService";
 import { useParams } from "react-router-dom";
 import {v4 as uuid} from "uuid";
 import { Link } from "react-router-dom";
@@ -10,7 +10,7 @@ function Major() {
     useEffect(() => {
         const getClasses = async () => {
             try {
-                const response = await axios.get("/api/majors")
+                const response = await auth.get("/api/majors")
                 const {data} = response;
                 console.log(data.majors)
                 setCourse(data.majors)

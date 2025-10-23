@@ -1,27 +1,33 @@
 import { useForm } from "react-hook-form";
-import { useParams, useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
+import { useCallback } from "react";
+import { toast } from "sonner";
+import auth from "../authService";
 
 function AddSemester() {
     const { register, handleSubmit, formState: {errors}} = useForm({mode: "onChange"});
     const navigate = useNavigate();
 
-    const processData = async (formData) => {
+    const processData = useCallback(async (formData) => {
         try {
-            const request = await fetch("/api/terms", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(formData)
-            });
-            const {classes} = await request.json();
-            console.log(classes);
+            const response = await auth.post("/api/terms", formData);
+            toast.success("Semester added successfully!", { duration: 3000 });
+
+            setTimeout(() => {
+                navigate("/semesters");
+              }, 1000);
+
+            console.log("Added semester:", response.data);
         }
-        catch(e) {
-            console.error(e);
-        }
-    }
+        catch (e) {
+            if (e.response && e.response.status === 409) {
+              toast.error(e.response.data.msg || "This semester already exists", { duration: 3000 });
+            } else {
+              toast.error(`An error occurred: ${e.message}`, { duration: 3000 });
+              console.error(e);
+            }
+          }
+    }, [navigate]);
 
     return(<div className="add-semester-page">
         <h1>Add Semester</h1>

@@ -3,7 +3,7 @@ import {
   PieChart, Pie, Cell,
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from "recharts";
-import axios from "axios";
+import auth from "../authService";
 
 const COLORS = ["#8884d8", "#82ca9d", "#ffc658"];
 
@@ -18,7 +18,7 @@ function SystemResources() {
   });
 
   useEffect(() => {
-    axios.get("/api/system")
+    auth.get("/api/system")
       .then((res) => {
         const data = res.data;
 

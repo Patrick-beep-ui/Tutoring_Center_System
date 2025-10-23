@@ -3,9 +3,8 @@ import { useForm } from "react-hook-form"
 import { Link, useNavigate, useParams, useLocation } from "react-router-dom";
 import { toast } from 'sonner';
 import Header from "../components/Header";
-import LoadingSpinner from "../components/ui-snippets/LoadingSpinner";
-
-import { Card, CardHeader, CardContent } from 'semantic-ui-react'; 
+import LoadingSpinner from "../components/ui-snippets/LoadingSpinner"; 
+import auth from "../authService";
 
 function AddSession() {
     const {register, handleSubmit, formState: { errors }} = useForm({model: "onChange"});
@@ -18,17 +17,9 @@ function AddSession() {
     const processData = async (formData) => {
         setIsloading(true);
         try {
-            const request = await fetch(`/api/sessions/${tutor_id}/${course_id}`, {
-                method: 'POST',
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(formData)
-            });
+            const response = await auth.post(`/api/sessions/${tutor_id}/${course_id}`, formData);
 
-            if (!request.ok) throw new Error('Failed to add session');
-
-            const data = await request.json();
+            const {data} = response;
             console.log(data);
 
             toast.success('Session added successfully!', {
@@ -41,6 +32,7 @@ function AddSession() {
         }
         catch(e) {
             console.error(e);
+            toast.error(`An error occurred while adding the session: ${e.message}`, { duration: 3000 });
         }
         finally {
             setIsloading(false);
@@ -49,7 +41,6 @@ function AddSession() {
 
     return(
         <>
-        {/*<Toaster position="top-right" richColors />*/}
          <Header />
         <section className="add-session-container section">
             <div className="add-session-form-container">
@@ -59,7 +50,7 @@ function AddSession() {
                     <section>
                         <label>Student ID:</label>
                         <input type="text" {...register("student_id", {required: true})}/>
-                        {errors.code && <span>This field is required</span>}
+                        {errors.student_id && <span>{errors.student_id.message}</span>}
                     </section>
 
                     <input type="hidden" {...register("semester_id")} value={1} />
@@ -68,23 +59,23 @@ function AddSession() {
                         <section id="date-form-group">
                             <label>Date:</label>
                             <input type="date" {...register("session_date", {required: true})}/>
-                            {errors.code && <span>This field is required</span>}
+                            {errors.session_date && <span>{errors.session_date.message}</span>}
                         </section>
                         <section id="time-form-group">
                             <label>Start Time: </label>
                             <input type="time" {...register("session_time", {required: true})} />
-                            {errors.code && <span>This field is required</span>}
+                            {errors.session_time && <span>{errors.session_time.message}</span>}
                         </section>
                     </div>
                     <section>
                         <label>Session Duration in Hours:</label>
                         <input type="number" {...register("session_hours", {required: true})}/>
-                        {errors.code && <span>This field is required</span>}
+                        {errors.session_hours && <span>{errors.session_hours.message}</span>}
                     </section>
                     <section>
                         <label>Session Topics</label>
                         <textarea cols="30" rows="2" {...register("session_topics", {required: true})}></textarea>
-                        {errors.code && <span>This field is required</span>}
+                        {errors.session_topics && <span>{errors.session_topics.message}</span>}
                     </section>
                 </div>
 
@@ -92,7 +83,7 @@ function AddSession() {
                         <section>
                             <label>Outcomes:</label>
                             <textarea cols="30" rows="3" {...register("feedback", {required: true})}></textarea>
-                            {errors.code && <span>This field is required</span>}
+                            {errors.feedback && <span>{errors.feedback.message}</span>}
                         </section>
                     </div>
 

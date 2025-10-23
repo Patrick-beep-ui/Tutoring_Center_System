@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback, memo } from "react";
 import StudentsNavigationTable from "./StudentsNavigationTable";
 import UserNavigationTable from "./UsersNavigationTable";
 import { exportToCSV } from "../services/exportCSV";
-import axios from "axios";
+import auth from "../authService";
 
 const StudentsListComponent = ({majors, userCourses}) => {
     const [students, setStudents] = useState([]);
@@ -17,7 +17,7 @@ const StudentsListComponent = ({majors, userCourses}) => {
     useEffect(() => {
         const getStudents = async () => {
             try {
-                const response = await axios.get("/api/students");
+                const response = await auth.get("/api/students");
                 const {data} = response;
                 console.log("students: ",data.students)
                 setStudents(data.students)

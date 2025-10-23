@@ -3,7 +3,7 @@ import { toast } from 'sonner';
 import { useState, useCallback } from "react";
 import LoadingSpinner from "./ui-snippets/LoadingSpinner";
 import ConfirmAlert from "./ui-snippets/ConfirmAlert";
-import axios from "axios";
+import auth from "../authService";
 
 const EditSessionForm = ({ session, session_id, tutor_id, navigate, source }) => {
     const { register, handleSubmit, formState: { errors } } = useForm({ mode: "onChange" });
@@ -13,19 +13,9 @@ const EditSessionForm = ({ session, session_id, tutor_id, navigate, source }) =>
 
     const processData = async (formData) => {
         setIsloading(true);
-        try {
-            const request = await fetch(`/api/sessions/session/${session_id}`, {
-                method: 'PUT',
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ ...formData, source })
-            });
-
-            if (!request.ok) throw new Error('Failed to add session');
-
-            const { session } = await request.json();
-            console.log(session);
+        try {            
+            const response = await auth.put(`/api/sessions/session/${session_id}`, formData);
+            const {session: updatedSession} = response.data;
 
             toast.success('Session updated successfully!', {
                 duration: 3000
@@ -33,6 +23,8 @@ const EditSessionForm = ({ session, session_id, tutor_id, navigate, source }) =>
               setTimeout(() => {
                 navigate(`/profile/tutor/${tutor_id}`);
               }, 1000);
+
+              console.log('Updated session:', updatedSession);
 
         } catch (e) {
             console.error(e);
@@ -45,7 +37,7 @@ const EditSessionForm = ({ session, session_id, tutor_id, navigate, source }) =>
         setIsloading(true);
         try {
             const url = `/api/sessions/session/${session_id}`
-            await axios.patch(url, { message: cancelMessage });
+            await auth.patch(url, { message: cancelMessage });
 
             toast.success('Session canceled successfully!', {
                 duration: 3000

@@ -1,6 +1,6 @@
 import { useEffect, useState, memo } from "react";
 import { useOutletContext } from "react-router-dom";
-import axios from "axios";
+import auth from "../authService";
 
 import Header from "../components/Header";
 import TutorsListComponent from "../components/TutorsListComponent";
@@ -14,7 +14,7 @@ function Users() {
     useEffect(() => {
         const getMajors = async () => {
             try {
-                const response = await axios.get("/api/majors");
+                const response = await auth.get("/api/majors");
                 const { data } = response;
                 setMajors(data.majors);
             } catch (e) {
@@ -24,7 +24,7 @@ function Users() {
 
         const getUserCourses = async () => {
             try {
-                const response = await axios.get(`/api/courses/user/${user.user_id}`);
+                const response = await auth.get(`/api/courses/user/${user.user_id}`);
                 const { data } = response;
                 setCourses(data.courses);
                 console.log("User Courses: ",data.courses);

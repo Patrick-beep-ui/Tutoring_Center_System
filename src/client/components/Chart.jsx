@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import auth from '../authService';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -36,7 +36,7 @@ const Graph = () => {
   useEffect(() => {
     const getSessions = async () => {
       try {
-        const response = await axios.get(`/api/sessions`);
+        const response = await auth.get(`/api/sessions`);
         const { data } = response;
         if (data && data.sessions) {
           // Aggregate data: count sessions per tutor

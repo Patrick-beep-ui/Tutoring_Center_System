@@ -1,10 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
-import { useForm } from "react-hook-form"
-import { Link, useNavigate, useParams, useLocation } from "react-router-dom";
-import { Toaster, toast } from 'sonner';
-import axios from "axios";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import Header from "../components/Header";
 import EditSessionForm from "../components/EditSessionForm";    
+import auth from "../authService";
 
 function EditSession() {
     const {session_id, tutor_id} = useParams();
@@ -17,12 +15,13 @@ function EditSession() {
     useEffect(() => {
         const getSession = async () => {
             try {
-                const response = await axios.get(`/api/sessions/session/${session_id}`);
+                const response = await auth.get(`/api/sessions/session/${session_id}`);
                 const { data } = response;
                 setSession({
                   ...data.session[0],  
                   ...data.studentInfo  
                 });
+                
                 console.log(data.session);
             }
             catch(e) {
