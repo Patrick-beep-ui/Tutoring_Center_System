@@ -3,9 +3,14 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preload" as="image" href="/profile/default.webp" fetchpriority="high">
     <link rel="icon" type="image" href="/img/Picture1.svg" />
     <link rel="stylesheet" href="/App.css">
-    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <!-- Preload Boxicons asynchronously to avoid blocking render -->
+    <link rel="preload" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" as="style" onload="this.rel='stylesheet'">
+    <noscript>
+      <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css">
+    </noscript>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="The official online platform for the Writing Studio & Tutoring Center of Keiser University. Schedule tutoring sessions, improve your writing, and get academic support from expert tutors.">
     <title>Tutoring Center Online</title>
