@@ -3,20 +3,35 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <!-- LCP image preload -->
     <link rel="preload" as="image" href="/profile/default.webp" fetchpriority="high">
-    <link rel="icon" type="image" href="/img/Picture1.svg" />
-    <link rel="stylesheet" href="/App.css">
-    <!-- Preload Boxicons asynchronously to avoid blocking render -->
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/img/Picture1.svg" />
+
+    <!-- App CSS preload async -->
+    <link rel="preload" href="/App.css" as="style" onload="this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/App.css"></noscript>
+
+    <!-- Boxicons async -->
     <link rel="preload" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" as="style" onload="this.rel='stylesheet'">
     <noscript>
       <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css">
     </noscript>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Fonts preload (converted to woff2 and font-display swap recommended) -->
+    <link rel="preload" href="/fonts/Poppins-Regular.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="/fonts/Poppins-Bold.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="/fonts/Poppins-SemiBold.woff2" as="font" type="font/woff2" crossorigin>
+
     <meta name="description" content="The official online platform for the Writing Studio & Tutoring Center of Keiser University. Schedule tutoring sessions, improve your writing, and get academic support from expert tutors.">
     <title>Tutoring Center Online</title>
   </head>
   <body>
     <main id="root"></main>
+    
+    <!-- Main JS bundle -->
     <script type="module" src="/src/client/main.jsx"></script>
   </body>
 </html>
