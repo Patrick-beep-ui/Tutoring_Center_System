@@ -1,7 +1,7 @@
 import express from 'express';
 //import isAuth from './middlewares/auth.js';
 import isAdmin from './middlewares/admin.js';
-import upload from './middlewares/uploadMiddleware.js';
+import upload, {processProfileImage} from './middlewares/uploadMiddleware.js';
 import { sendEmail } from './mail.js';
 import jwtAuth from './middlewares/jwtAuth.js';
 import passport from 'passport';
@@ -89,7 +89,9 @@ api.post('/send-email', async (req, res) => {
   });
 
 api.post('/uploadProfilePic/:role?/:user_id?', 
-  upload.single('profilePic'), (req, res) => {
+  upload.single('profilePic'), 
+  processProfileImage,
+  (req, res) => {
     try {
       console.log('File received:', req.file);
       res.status(200).json({

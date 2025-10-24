@@ -33,9 +33,11 @@ const UserNavigationTable = ({ users, role, coursesRole='tutor' }) => {
                                 <td>
                                     <div className="d-flex align-items-center users-navigation-info">
                                     <Link to={`/profile/${role}/${student.id}`}>
-                                        <img src={`/profile/tutor${student.id}.jpg`} alt={``} 
+                                        <img src={`/profile/${role}${student.id}.webp`} alt={``} 
                                         style={{width: '45px', height: '45px'}}
-                                        className="rounded-circle"/>
+                                        className="rounded-circle"
+                                        onError={(e) => { e.target.onerror = null; e.target.src=`/profile/profile.webp` }}
+                                        />
                                     </Link>
                                         <div className="ms-3 tutor-name-cell">
                                             <p className="mb-1 users-navigation-data">{student[`${role}_name`]}</p>

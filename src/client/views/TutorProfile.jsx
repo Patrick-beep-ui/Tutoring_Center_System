@@ -156,7 +156,16 @@ function TutorProfile() {
                 <section className="profile-info">
                     <div className="user-picture-container">
                         <label htmlFor="image-upload">
-                        <img src={profilePicUrl} alt={texts.profilePictureAlt} className="profile-picture" />
+                        <img 
+                        src={profilePicUrl} 
+                        alt={texts.header.profilePictureAlt} 
+                        className="profile-picture" 
+                        onError={(e) => {
+                            e.target.onerror = null; 
+                            e.target.src = "/profile/profile.webp"; 
+                          }}
+                        fetchpriority="high"
+                        decoding="async" />
                         <i class='bx bx-camera camera-label'></i>
                         </label>
                     </div>
