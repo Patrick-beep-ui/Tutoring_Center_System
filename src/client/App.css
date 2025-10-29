@@ -4192,36 +4192,31 @@ der { background-color: lightblue; }
     min-width: auto;
   }
 }
-/* --------- Fix a selector roto que causaba efectos raros --------- */
 nav ul li:hover a {
   border-radius: 3px;
   padding: 4px 20px;
   background-color: snow;
   color: black;
 }
-/* El que tenías: "nav ul li :hover li" es inválido y rompe el hover */
 
 /* ====================== MOBILE ≤ 991.98px ====================== */
 @media (max-width: 991.98px) {
 
-  /* Sidebar como drawer off-canvas (oculto por defecto) */
   .sidebar {
     position: fixed !important;
     top: 0;
     left: 0;
     height: 100vh;
-    width: 280px;              /* ajusta si tu sidebar es más angosto */
+    width: 280px;             
     transform: translateX(-100%);
     transition: transform .25s ease-in-out;
-    z-index: 3000;             /* por encima del contenido */
+    z-index: 3000;             
     box-shadow: 0 6px 28px rgba(0,0,0,.25);
-    /* Si tu sidebar dependía de margin del layout, al ser fixed ya no empuja el contenido */
   }
   .sidebar.open {
     transform: translateX(0);
   }
 
-  /* Backdrop que oscurece el contenido */
   .mobile-backdrop {
     position: fixed;
     inset: 0;
@@ -4236,7 +4231,6 @@ nav ul li:hover a {
     pointer-events: auto;
   }
 
-  /* Botón hamburguesa flotante */
   .hamburger-btn {
     position: fixed;
     left: 12px;
@@ -4272,15 +4266,14 @@ nav ul li:hover a {
   /* Evita superposiciones del navbar de arriba con popovers/filtros */
   .date-box { display: none !important; }  /* o reubícala si la necesitas */
 
-  /* Tu nav horizontal en móvil apílalo si aparece */
   nav { padding: 9px 12px !important; }
   nav ul { gap: 0 !important; float: none !important; flex-direction: column !important; }
   nav ul li, nav ul li a { width: 100%; padding: 10px 12px !important; }
-
-  /* Si tu contenido tenía margen por el sidebar, elimínalo en móvil */
   .content,
   .main,
   .page-content {
     margin-left: 0 !important;
   }
 }
+
+
