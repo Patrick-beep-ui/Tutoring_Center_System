@@ -64,6 +64,9 @@ import Activity_Feedback from "./views/Activity_Feedback.jsx";
 
 // Server Responses
 import NotFound from "./views/server_responses/NotFound.jsx";
+import ServerError505 from "./views/server_responses/ServerError505.jsx";
+import SessionAccepted from "./views/server_responses/SessionAccepted.jsx";
+import SessionDeclined from "./views/server_responses/SessionDeclined.jsx";
 
 const router = createBrowserRouter([
   {
@@ -277,9 +280,19 @@ const router = createBrowserRouter([
   {
     path: "*",
     element: <NotFound />
+  },
+  {
+    path: "/server-error-505",
+    element: <ServerError505 />
+  },
+  {
+    path: "/session-accepted",
+    element: <SessionAccepted />
+  },
+  {
+    path: "/session-declined",
+    element: <SessionDeclined />
   }
-
-
 ], { basename: "/" });
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
