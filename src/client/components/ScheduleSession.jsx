@@ -10,6 +10,7 @@ const ScheduleSession = (props) => {
     const [selectedCourse, setSelectedCourse] = useState('');
     const { user } = useOutletContext();
     const {tutor_id, selectedDate, onSubmit} = props;
+    const [isLoading, setIsLoading] = useState(false);
 
     console.log(user.user_id)
 
@@ -34,6 +35,7 @@ const ScheduleSession = (props) => {
     //Comentario para hacer pull request
 
     const processData = useCallback(async (formData) => {
+        setIsLoading(true);
         try {
 
             const response = await auth.post(`/api/calendar-session/${tutor_id}`, formData);
@@ -50,6 +52,9 @@ const ScheduleSession = (props) => {
     
         } catch (e) {
             console.error(e);
+        }
+        finally {
+            setIsLoading(false);
         }
     }, [tutor_id, onSubmit]); 
     
@@ -89,7 +94,7 @@ const ScheduleSession = (props) => {
             </section>
 
             <section>
-                <button type="submit">Submit</button>
+                <button type="submit">{isLoading ? "Sending..." : "Submit"}</button>
             </section>
 
         </form>

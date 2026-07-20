@@ -3,7 +3,8 @@ import {
     getSessionsByTutor,
     createSession,
     acceptSession,
-    declineSession
+    declineSession,
+    sendDeclineJustification
 } from "../controllers/calendarSessionsController.js";
 
 const CalendarSessionsRouter = express.Router();
@@ -14,5 +15,6 @@ CalendarSessionsRouter.route("/:tutor_id?")
 
 CalendarSessionsRouter.get("/accept/:session_id", acceptSession);
 CalendarSessionsRouter.get("/decline/:session_id", declineSession);
+CalendarSessionsRouter.post("/decline/justification/:session_id", sendDeclineJustification);
 
 export default CalendarSessionsRouter;

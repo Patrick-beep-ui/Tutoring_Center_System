@@ -8,6 +8,10 @@ import Course from "../models/Course.js";
 import Semester from "../models/Semester.js";
 import { sendEmail, sendSessionRequestEmail } from "../mail.js";
 import { sanitizeUserInput } from "../utils/sanitize.js";
+import { sendSessionCancelationEmail } from "../mail.js";
+
+import jwt from "jsonwebtoken";
+import { tokenStore } from "../utils/tokenStore.js";
 
 export const getSessionsByTutor = async (req, res) => {
     try {
@@ -118,6 +122,16 @@ export const createSession = async (req, res) => {
         console.log("Session has been created");
         console.log("Waiting for sending email...")
 
+        // Generate a one-time-use JWT token
+        const token = jwt.sign(
+            { sid: session.session_id, tutor_id: tutor.tutor_id },
+            process.env.SESSION_SECRET,
+            { expiresIn: "7d" } // valid for a week
+        );
+    
+        // Store token for one-time validation
+        tokenStore.add(token);
+
         await sendSessionRequestEmail(tutor_user.email, {
             tutorName: `${tutor_user.first_name} ${tutor_user.last_name}`,
             studentName: `${student.first_name} ${student.last_name}`,
@@ -126,8 +140,8 @@ export const createSession = async (req, res) => {
             time: req.body.session_time,
             hours: req.body.session_hours, 
             topics: req.body.session_topics,
-            acceptUrl: `http://localhost:3000/api/calendar-session/accept/${session.session_id}`,
-            declineUrl: `http://localhost:3000/api/calendar-session/decline/${session.session_id}`
+            acceptUrl: `http://localhost:3000/api/calendar-session/accept/${session.session_id}?token=${token}`,
+            declineUrl: `http://localhost:3000/api/calendar-session/decline/${session.session_id}?token=${token}`
         });
 
         console.log("Email sent to tutor:", tutor_user.email);
@@ -146,6 +160,24 @@ export const createSession = async (req, res) => {
 export const acceptSession = async (req, res) => {
     try {
         const session_id = req.params.session_id;
+        const { token } = req.query;
+
+        if (!token) {
+            return res.status(400).json({ msg: "Missing token" });
+        }
+
+        if (!tokenStore.has(token)) {
+            return res.status(403).json({ msg: "Token already used or invalid" });
+        }
+
+        const decoded = jwt.verify(token, process.env.SESSION_SECRET);
+
+        
+        if (decoded.sid !== parseInt(session_id)) {
+            return res.status(403).json({ msg: "Token does not match session" });
+          }
+      
+        tokenStore.delete(token);
 
         const session = await SessionDetail.findByPk(session_id);
 
@@ -157,16 +189,35 @@ export const acceptSession = async (req, res) => {
             session_status: "scheduled"
         });
 
-        res.json({ msg: "Session accepted successfully" });
+        //res.json({ msg: "Session accepted successfully" });
+        return res.redirect('http://localhost:3000/session-accepted');
+
     } catch (e) {
         console.error(e);
-        res.status(500).json({ msg: "Error accepting the session" });
+        return res.redirect('http://localhost:3000/server-error-505');
     }
 };
 
 export const declineSession = async (req, res) => {
     try {
         const session_id = req.params.session_id;
+        const { token } = req.query;
+
+        if (!token) {
+            return res.status(400).json({ msg: "Missing token" });
+          }
+
+          if (!tokenStore.has(token)) {
+            return res.status(403).json({ msg: "Token already used or invalid" });
+          }
+        
+          const decoded = jwt.verify(token, process.env.SESSION_SECRET);
+
+          if (decoded.sid !== parseInt(session_id)) {
+            return res.status(403).json({ msg: "Token does not match session" });
+          }
+      
+          tokenStore.delete(token);
 
         const session = await TutorSession.findByPk(session_id);
         const session_detail = await SessionDetail.findByPk(session_id);
@@ -175,12 +226,63 @@ export const declineSession = async (req, res) => {
             return res.status(404).json({ msg: "Session not found" });
         }
 
-        session.tutor_id = null;
-        await session.save();
+        const tutor_id = session.tutor_id;
 
-        res.json({ msg: "Session declined successfully" });
+        session.tutor_id = null;
+        session_detail.session_status = "canceled";
+        
+        await session.save();
+        await session_detail.save();
+
+        //res.json({ msg: "Session declined successfully" });
+        return res.redirect(`http://localhost:3000/session-declined?sid=${session_id}&tid=${tutor_id}`);
     } catch (e) {
         console.error(e);
         res.status(500).json({ msg: "Error declining the session" });
     }
 };
+
+export const sendDeclineJustification = async (req, res) => {
+    try {
+      const { session_id } = req.params;
+      const { message, tutorName } = req.body;
+
+      console.log("Received justification message:", message);
+      console.log("For session ID:", session_id);
+  
+      if (!message || message.trim().length === 0) {
+        return res.status(400).json({ msg: "Message cannot be empty." });
+      }
+  
+      const session = await TutorSession.findByPk(session_id);
+      const session_detail = await SessionDetail.findByPk(session_id);
+  
+      if (!session || !session_detail) {
+        return res.status(404).json({ msg: "Session not found." });
+      }
+
+      console.log("Fetched session:", session);
+  
+      const student = await User.findOne({ where: { ku_id: session.student_id } });
+      const course = await Course.findOne({ where: { course_id: session.course_id } });
+
+      console.log("Fetched student:", student);
+        console.log("Fetched course:", course);
+  
+      // Send email
+      await sendSessionCancelationEmail(student.email, {
+        tutorName: `${tutorName}`,
+        studentName: `${student.first_name} ${student.last_name}`,
+        courseName: course.course_name,
+        date: new Date(session.session_date).toLocaleDateString("en-US", { timeZone: "UTC" }),
+        time: session_detail.session_time,
+        cancellationNote: message
+      });
+  
+      res.status(200).json({ msg: "Justification email sent successfully." });
+    } catch (e) {
+      console.error(e);
+      res.status(500).json({ msg: "Internal server error while sending justification." });
+    }
+  };
+  

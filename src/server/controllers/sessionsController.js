@@ -375,6 +375,7 @@ export const editSession = async (req, res) => {
         })
 
         // Change logic based on source status
+        /*
         if (source === 'scheduled') {
             await session_detail.update({
                 session_time,
@@ -383,10 +384,18 @@ export const editSession = async (req, res) => {
             });
         } else {
             await session_detail.update({
+                session_status: 'completed',
                 session_time,
                 updatedAt: new Date()  
             });
         }
+        */
+
+        await session_detail.update({
+            session_status: 'completed',
+            session_time,
+            updatedAt: new Date()  
+        });
 
         const student = await User.findOne({
             where: {
