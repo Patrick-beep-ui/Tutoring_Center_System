@@ -116,10 +116,12 @@ function Home() {
                         <Link to={'/majors'}>See All Majors</Link>
                     </div>
                 </section>
-
+                
+                {/* 
                 <button  className="export-csv sessions-csv">
                     <Link to={'/auth/test'}>See resources</Link>
                 </button>
+                */}
             </section>
         </>
     );

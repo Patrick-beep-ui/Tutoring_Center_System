@@ -9,7 +9,8 @@ const TutorSession = connection.define('TutorSession', {
         autoIncrement: true 
     }, 
     tutor_id: {
-        type: DataTypes.INTEGER
+        type: DataTypes.INTEGER,
+        allowNull: true,
     },
     student_id: {
         type: DataTypes.STRING
