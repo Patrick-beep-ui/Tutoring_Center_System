@@ -1,12 +1,13 @@
 import TutorSession from "../models/TutorSession.js";
 import User from "../models/User.js";
+import Tutor from "../models/Tutor.js";
 import Course from "../models/Course.js";
 import SessionDetail from "../models/SessionDetail.js";
 import Semester from "../models/Semester.js";
 import Comment from "../models/Comment.js";
 import SessionFeedback from "../models/SessionFeedback.js";
 import connection from "../connection.js";
-import { sendFeedbackEmail, sendSessionCancelationEmail } from "../mail.js";
+import { sendFeedbackEmail, sendSessionCancelationEmail, sendSessionReassignedToEmail, sendSessionReassignedFromEmail } from "../mail.js";
 import { QueryTypes } from "sequelize";
 import { sanitizeUserInput } from "../utils/sanitize.js";
 import moment from 'moment';
@@ -350,7 +351,7 @@ export const addSession = async (req, res) => {
 export const editSession = async (req, res) => {
     try {
         const session_id = req.params.session_id
-        const {session_date, session_hours, feedback, session_time, topics, source} = req.body;
+        const {session_date, session_hours, feedback, session_time, topics, source, tutor_id: new_tutor_id, student_id: new_student_id, course_id: new_course_id} = req.body;
         
         const session = await TutorSession.findOne({
             where: {
@@ -358,38 +359,33 @@ export const editSession = async (req, res) => {
             }
         })
 
+        if (!session) {
+            return res.status(404).json({ error: 'Session not found' });
+        }
+
         console.log("Source Status Reached:", source)
 
-        await session.update({
+        const old_tutor_id = session.tutor_id;
+        const tutorChanged = new_tutor_id && Number(new_tutor_id) !== Number(old_tutor_id);
+
+        const updateData = {
             session_date: session_date,
             session_totalhours: session_hours,
             feedback: feedback,
             topics: topics
+        };
 
-        })
+        if (new_tutor_id) updateData.tutor_id = new_tutor_id;
+        if (new_student_id) updateData.student_id = new_student_id;
+        if (new_course_id) updateData.course_id = new_course_id;
+
+        await session.update(updateData);
 
         const session_detail = await SessionDetail.findOne({
             where: {
                 session_id: session_id
             }
         })
-
-        // Change logic based on source status
-        /*
-        if (source === 'scheduled') {
-            await session_detail.update({
-                session_time,
-                session_status: 'completed',
-                updatedAt: new Date()
-            });
-        } else {
-            await session_detail.update({
-                session_status: 'completed',
-                session_time,
-                updatedAt: new Date()  
-            });
-        }
-        */
 
         await session_detail.update({
             session_status: 'completed',
@@ -416,10 +412,6 @@ export const editSession = async (req, res) => {
                 }
             })
 
-            //const protocol = req.protocol;
-            //const host = req.get('host');
-            //const feedbackUrl = `${protocol}://${host}/feedback/${session.session_id}/${student.user_id}`;
-
             const localIP = getLocalIPAddress();
             const feedbackUrl = `http://${localIP}:3000/feedback/${session.session_id}/${student.ku_id}`;
 
@@ -431,9 +423,50 @@ export const editSession = async (req, res) => {
                 date: new Date(session.session_date).toLocaleDateString('en-US', { timeZone: 'UTC' }),
                 time: session_time,
                 duration: session_hours,
-                //feedbackUrl: `http://localhost:3000/feedback/${session.session_id}/${student.user_id}`,
                 feedbackUrl: feedbackUrl,
             })
+        }
+
+        if (tutorChanged) {
+            const oldTutor = await Tutor.findByPk(old_tutor_id);
+            const newTutor = await Tutor.findByPk(new_tutor_id);
+
+            if (oldTutor && newTutor) {
+                const oldUser = await User.findByPk(oldTutor.user_id);
+                const newUser = await User.findByPk(newTutor.user_id);
+                const course = await Course.findByPk(new_course_id || session.course_id);
+
+                const formatedDate = moment(session_date || session.session_date).format('MMMM D, YYYY');
+                const formatedTime = moment(session_time, 'HH:mm:ss').format('h:mm A');
+
+                const studentName = student
+                    ? `${student.first_name} ${student.last_name}`
+                    : session.student_id;
+
+                const emailData = {
+                    courseName: course ? course.course_name : 'N/A',
+                    studentName,
+                    date: formatedDate,
+                    time: formatedTime,
+                    duration: session_hours || session.session_totalhours,
+                    topics: topics || session.topics || 'N/A',
+                };
+
+                if (newUser) {
+                    await sendSessionReassignedToEmail(newUser.email, {
+                        ...emailData,
+                        newTutorName: `${newUser.first_name} ${newUser.last_name}`,
+                    });
+                }
+
+                if (oldUser) {
+                    await sendSessionReassignedFromEmail(oldUser.email, {
+                        ...emailData,
+                        oldTutorName: `${oldUser.first_name} ${oldUser.last_name}`,
+                        newTutorName: newUser ? `${newUser.first_name} ${newUser.last_name}` : 'N/A',
+                    });
+                }
+            }
         }
 
         res.json({
