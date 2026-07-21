@@ -5,6 +5,8 @@ import Header from "../components/Header";
 import Profile from "../components/Picture";
 import texts from "../texts/tutorProfile.json"
 import auth from "../authService";
+import Popup from "reactjs-popup";
+import { toast } from "sonner";
 
 
 function TutorProfile() {
@@ -16,6 +18,9 @@ function TutorProfile() {
     const [error, setError] = useState("");
     const { tutor_id, role } = useParams();
     const [profilePicUrl, setProfilePicUrl] = useState(`/profile/${role}${tutor_id}.webp?${new Date().getTime()}`);
+    const [allCourses, setAllCourses] = useState([]);
+    const [selectedCourseIds, setSelectedCourseIds] = useState([]);
+    const [savingCourses, setSavingCourses] = useState(false);
 
     console.log("User Role:", role);
     console.log("User context tole:", contextUser.role);
@@ -71,6 +76,49 @@ function TutorProfile() {
             console.error(e);
         }
     }, [])
+
+    const fetchAllCourses = useCallback(async () => {
+        try {
+            const response = await auth.get("/api/courses");
+            setAllCourses(response.data.courses || []);
+        } catch (e) {
+            console.error("Error fetching all courses:", e);
+        }
+    }, []);
+
+    const openCoursePopup = useCallback(() => {
+        setSelectedCourseIds(courses.map(c => String(c.course_id)));
+        fetchAllCourses();
+    }, [courses, fetchAllCourses]);
+
+    const handleCourseCheckboxChange = useCallback((courseId) => {
+        setSelectedCourseIds(prev =>
+            prev.includes(courseId)
+                ? prev.filter(id => id !== courseId)
+                : [...prev, courseId]
+        );
+    }, []);
+
+    const saveTutorCourses = useCallback(async (close) => {
+        if (selectedCourseIds.length < 1) {
+            toast.error("Select at least one course");
+            return;
+        }
+        try {
+            setSavingCourses(true);
+            const response = await auth.put(`/api/tutors/${tutor_id}/courses`, {
+                course_ids: selectedCourseIds.map(Number)
+            });
+            setCourse(response.data.courses);
+            toast.success("Courses updated successfully");
+            close();
+        } catch (e) {
+            console.error(e);
+            toast.error(`Error: ${e.response?.data?.error || e.message}`);
+        } finally {
+            setSavingCourses(false);
+        }
+    }, [selectedCourseIds, tutor_id]);
 
     useEffect(() => {
 
@@ -250,11 +298,45 @@ function TutorProfile() {
                 </section>
 
                 <section className="tutor-courses-container">
+                    <div className="tutor-courses-header">
+                        {(contextUser.role === 'admin' || contextUser.role === 'dev') && role === 'tutor' && (
+                            <Popup
+                                trigger={<i className="bx bx-edit" style={{ cursor: 'pointer', fontSize: '20px' }} title="Edit courses"></i>}
+                                modal
+                                onOpen={openCoursePopup}
+                            >
+                                {close => (
+                                    <div className="popup-container">
+                                        <h2>Manage Tutor Courses</h2>
+                                        <div className="classes" style={{ maxHeight: '400px', overflowY: 'auto' }}>
+                                            {allCourses.map(course => (
+                                                <div key={course.course_id}>
+                                                    <input
+                                                        type="checkbox"
+                                                        id={`course-${course.course_id}`}
+                                                        checked={selectedCourseIds.includes(String(course.course_id))}
+                                                        onChange={() => handleCourseCheckboxChange(String(course.course_id))}
+                                                    />
+                                                    <label htmlFor={`course-${course.course_id}`}>{course.course_name} ({course.course_code})</label>
+                                                </div>
+                                            ))}
+                                        </div>
+                                        <div style={{ display: 'flex', gap: '10px', marginTop: '15px' }}>
+                                            <button className="btn btn-primary" onClick={() => saveTutorCourses(close)} disabled={savingCourses}>
+                                                {savingCourses ? 'Saving...' : 'Save'}
+                                            </button>
+                                            <button className="btn" onClick={close}>Cancel</button>
+                                        </div>
+                                    </div>
+                                )}
+                            </Popup>
+                        )}
+                    </div>
 
                     {courses.map(c =>
-                    <div className="tutor-course ">
+                    <div className="tutor-course" key={c.course_id}>
 
-                        <Link to={`/sessions/${role}/${tutor_id}/${c.course_id}`} key={c.course_id}>
+                        <Link to={`/sessions/${role}/${tutor_id}/${c.course_id}`}>
                             <div className="class-box course-container" id={c.course_id}>
                                 <div className="tutor-course-description">
                                     <h3>{c.course_name}</h3>
