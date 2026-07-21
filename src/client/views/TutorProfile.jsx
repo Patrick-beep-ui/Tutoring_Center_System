@@ -5,6 +5,8 @@ import Header from "../components/Header";
 import Profile from "../components/Picture";
 import texts from "../texts/tutorProfile.json"
 import auth from "../authService";
+import Popup from "reactjs-popup";
+import { toast } from "sonner";
 
 
 function TutorProfile() {
@@ -16,6 +18,11 @@ function TutorProfile() {
     const [error, setError] = useState("");
     const { tutor_id, role } = useParams();
     const [profilePicUrl, setProfilePicUrl] = useState(`/profile/${role}${tutor_id}.webp?${new Date().getTime()}`);
+    const [allCourses, setAllCourses] = useState([]);
+    const [selectedCourseIds, setSelectedCourseIds] = useState([]);
+    const [savingCourses, setSavingCourses] = useState(false);
+    const [scheduleBlocks, setScheduleBlocks] = useState([]);
+    const [savingSchedules, setSavingSchedules] = useState(false);
 
     console.log("User Role:", role);
     console.log("User context tole:", contextUser.role);
@@ -71,6 +78,108 @@ function TutorProfile() {
             console.error(e);
         }
     }, [])
+
+    const fetchAllCourses = useCallback(async () => {
+        try {
+            const response = await auth.get("/api/courses");
+            setAllCourses(response.data.courses || []);
+        } catch (e) {
+            console.error("Error fetching all courses:", e);
+        }
+    }, []);
+
+    const openCoursePopup = useCallback(() => {
+        setSelectedCourseIds(courses.map(c => String(c.course_id)));
+        fetchAllCourses();
+    }, [courses, fetchAllCourses]);
+
+    const handleCourseCheckboxChange = useCallback((courseId) => {
+        setSelectedCourseIds(prev =>
+            prev.includes(courseId)
+                ? prev.filter(id => id !== courseId)
+                : [...prev, courseId]
+        );
+    }, []);
+
+    const saveTutorCourses = useCallback(async (close) => {
+        if (selectedCourseIds.length < 1) {
+            toast.error("Select at least one course");
+            return;
+        }
+        try {
+            setSavingCourses(true);
+            const endpoint = role === 'student'
+                ? `/api/users/${tutor_id}/courses`
+                : `/api/tutors/${tutor_id}/courses`;
+            const response = await auth.put(endpoint, {
+                course_ids: selectedCourseIds.map(Number)
+            });
+            setCourse(response.data.courses);
+            toast.success("Courses updated successfully");
+            close();
+        } catch (e) {
+            console.error(e);
+            toast.error(`Error: ${e.response?.data?.error || e.message}`);
+        } finally {
+            setSavingCourses(false);
+        }
+    }, [selectedCourseIds, tutor_id, role]);
+
+    const openSchedulePopup = useCallback(() => {
+        const grouped = {};
+        schedules.forEach(({ day, start_time, end_time }) => {
+            const key = `${start_time.slice(0, 5)}-${end_time.slice(0, 5)}`;
+            if (!grouped[key]) {
+                grouped[key] = { days: [], start_time: start_time.slice(0, 5), end_time: end_time.slice(0, 5) };
+            }
+            grouped[key].days.push(day);
+        });
+        setScheduleBlocks(Object.values(grouped));
+    }, [schedules]);
+
+    const addScheduleBlock = useCallback(() => {
+        setScheduleBlocks(prev => [...prev, { days: [], start_time: "09:00", end_time: "10:00" }]);
+    }, []);
+
+    const removeScheduleBlock = useCallback((index) => {
+        setScheduleBlocks(prev => prev.filter((_, i) => i !== index));
+    }, []);
+
+    const updateScheduleBlock = useCallback((index, field, value) => {
+        setScheduleBlocks(prev => prev.map((block, i) => i === index ? { ...block, [field]: value } : block));
+    }, []);
+
+    const toggleScheduleDay = useCallback((index, day) => {
+        setScheduleBlocks(prev => prev.map((block, i) => {
+            if (i !== index) return block;
+            const days = block.days.includes(day)
+                ? block.days.filter(d => d !== day)
+                : [...block.days, day];
+            return { ...block, days };
+        }));
+    }, []);
+
+    const saveSchedules = useCallback(async (close) => {
+        const hasDays = scheduleBlocks.some(b => b.days.length > 0);
+        if (!hasDays) {
+            toast.error("Add at least one schedule block with a day selected");
+            return;
+        }
+        try {
+            setSavingSchedules(true);
+            const response = await auth.put(`/api/schedules/${tutor_id}`, {
+                schedules: scheduleBlocks.filter(b => b.days.length > 0)
+            });
+            setSchedules(response.data.schedules);
+            toast.success("Schedule updated successfully");
+            close();
+        } catch (e) {
+            console.error(e);
+            toast.error(`Error: ${e.response?.data?.error || e.message}`);
+        } finally {
+            setSavingSchedules(false);
+        }
+    }, [scheduleBlocks, tutor_id]);
 
     useEffect(() => {
 
@@ -195,18 +304,68 @@ function TutorProfile() {
                         
                             {user.map(t => 
                     <div className="tutor-sched" key={t.tutor_id}>
-                        <p id=""> <strong>{ role == 'tutor' ? (texts.profileInfo.scheduleLabel) : null} </strong></p>
+                        <p id=""> <strong>{ role == 'tutor' ? (texts.profileInfo.scheduleLabel) : null} </strong>
+                            {role === 'tutor' && (
+                                <Popup
+                                    trigger={<i className="bx bx-edit" style={{ cursor: 'pointer', fontSize: '16px', marginLeft: '5px' }} title="Edit schedule"></i>}
+                                    modal
+                                    onOpen={openSchedulePopup}
+                                >
+                                    {close => (
+                                        <div className="popup-container">
+                                            <h2>Edit Schedule</h2>
+                                            <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
+                                                {scheduleBlocks.map((block, index) => (
+                                                    <div key={index} style={{ border: '1px solid #ddd', borderRadius: '6px', padding: '10px', marginBottom: '10px' }}>
+                                                        <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap', marginBottom: '8px' }}>
+                                                            {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"].map(day => (
+                                                                <label key={day} style={{ display: 'flex', alignItems: 'center', gap: '3px', fontSize: '13px' }}>
+                                                                    <input
+                                                                        type="checkbox"
+                                                                        checked={block.days.includes(day)}
+                                                                        onChange={() => toggleScheduleDay(index, day)}
+                                                                    />
+                                                                    {day.slice(0, 3)}
+                                                                </label>
+                                                            ))}
+                                                        </div>
+                                                        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                                                            <label style={{ fontSize: '13px' }}>Start:
+                                                                <input type="time" value={block.start_time} onChange={e => updateScheduleBlock(index, 'start_time', e.target.value)} />
+                                                            </label>
+                                                            <label style={{ fontSize: '13px' }}>End:
+                                                                <input type="time" value={block.end_time} onChange={e => updateScheduleBlock(index, 'end_time', e.target.value)} />
+                                                            </label>
+                                                            <button className="btn" onClick={() => removeScheduleBlock(index)} style={{ fontSize: '12px' }}>Remove</button>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                            <button className="btn" onClick={addScheduleBlock} style={{ marginTop: '5px' }}>+ Add Block</button>
+                                            <div style={{ display: 'flex', gap: '10px', marginTop: '15px' }}>
+                                                <button className="btn btn-primary" onClick={() => saveSchedules(close)} disabled={savingSchedules}>
+                                                    {savingSchedules ? 'Saving...' : 'Save'}
+                                                </button>
+                                                <button className="btn" onClick={close}>Cancel</button>
+                                            </div>
+                                        </div>
+                                    )}
+                                </Popup>
+                            )}
+                        </p>
                         <div className="schedules">
-                            {t.tutor_schedule && t.tutor_schedule.trim() !== '' ? (
-                                t.tutor_schedule.split('\n').map((line, index) => (
-                                    <p key={index}>{line}</p>
-                                ))
-                            ) : (
+                            {schedules.length > 0 ? (
                                 <div>
                                     {groupSchedulesByTime([...schedules].sort(
                                         (a, b) => weekdayOrder.indexOf(a.day) - weekdayOrder.indexOf(b.day)
                                     ))}
                                 </div>
+                            ) : t.tutor_schedule && t.tutor_schedule.trim() !== '' ? (
+                                t.tutor_schedule.split('\n').map((line, index) => (
+                                    <p key={index}>{line}</p>
+                                ))
+                            ) : (
+                                <p>No schedule set</p>
                             )}
                         </div>
 
@@ -250,11 +409,45 @@ function TutorProfile() {
                 </section>
 
                 <section className="tutor-courses-container">
+                    <div className="tutor-courses-header">
+                        {(contextUser.role === 'admin' || contextUser.role === 'dev') && (role === 'tutor' || role === 'student') && (
+                            <Popup
+                                trigger={<i className="bx bx-edit" style={{ cursor: 'pointer', fontSize: '20px' }} title="Edit courses"></i>}
+                                modal
+                                onOpen={openCoursePopup}
+                            >
+                                {close => (
+                                    <div className="popup-container">
+                                        <h2>Manage {role === 'student' ? 'Student' : 'Tutor'} Courses</h2>
+                                        <div className="classes" style={{ maxHeight: '400px', overflowY: 'auto' }}>
+                                            {allCourses.map(course => (
+                                                <div key={course.course_id}>
+                                                    <input
+                                                        type="checkbox"
+                                                        id={`course-${course.course_id}`}
+                                                        checked={selectedCourseIds.includes(String(course.course_id))}
+                                                        onChange={() => handleCourseCheckboxChange(String(course.course_id))}
+                                                    />
+                                                    <label htmlFor={`course-${course.course_id}`}>{course.course_name} ({course.course_code})</label>
+                                                </div>
+                                            ))}
+                                        </div>
+                                        <div style={{ display: 'flex', gap: '10px', marginTop: '15px' }}>
+                                            <button className="btn btn-primary" onClick={() => saveTutorCourses(close)} disabled={savingCourses}>
+                                                {savingCourses ? 'Saving...' : 'Save'}
+                                            </button>
+                                            <button className="btn" onClick={close}>Cancel</button>
+                                        </div>
+                                    </div>
+                                )}
+                            </Popup>
+                        )}
+                    </div>
 
                     {courses.map(c =>
-                    <div className="tutor-course ">
+                    <div className="tutor-course" key={c.course_id}>
 
-                        <Link to={`/sessions/${role}/${tutor_id}/${c.course_id}`} key={c.course_id}>
+                        <Link to={`/sessions/${role}/${tutor_id}/${c.course_id}`}>
                             <div className="class-box course-container" id={c.course_id}>
                                 <div className="tutor-course-description">
                                     <h3>{c.course_name}</h3>
