@@ -1,11 +1,12 @@
 import { useState, useEffect, useCallback } from "react";
-import { useNavigate, useParams, useLocation } from "react-router-dom";
+import { useNavigate, useParams, useLocation, useOutletContext } from "react-router-dom";
 import Header from "../components/Header";
 import EditSessionForm from "../components/EditSessionForm";    
 import auth from "../authService";
 
 function EditSession() {
     const {session_id, tutor_id} = useParams();
+    const { user: contextUser } = useOutletContext();
     const [session, setSession] = useState([]);
     const navigate = useNavigate();
     const location = useLocation();
@@ -73,7 +74,8 @@ return(
                 session_id={session_id} 
                 tutor_id={tutor_id} 
                 navigate={navigate}
-                source={source} />
+                source={source}
+                userRole={contextUser?.role} />
             </div>
         </div>
     </section>

@@ -1,15 +1,36 @@
 import { useForm } from "react-hook-form";
 import { toast } from 'sonner';
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import LoadingSpinner from "./ui-snippets/LoadingSpinner";
 import ConfirmAlert from "./ui-snippets/ConfirmAlert";
 import auth from "../authService";
 
-const EditSessionForm = ({ session, session_id, tutor_id, navigate, source }) => {
-    const { register, handleSubmit, formState: { errors } } = useForm({ mode: "onChange" });
+const EditSessionForm = ({ session, session_id, tutor_id, navigate, source, userRole }) => {
+    const { register, handleSubmit, formState: { errors }, watch } = useForm({ mode: "onChange" });
     const [isloading, setIsloading] = useState(false);
     const [showAlert, setShowAlert] = useState(false);
     const [cancelMessage, setCancelMessage] = useState('');
+    const [allTutors, setAllTutors] = useState([]);
+    const [allCourses, setAllCourses] = useState([]);
+
+    const isAdmin = userRole === 'admin' || userRole === 'dev';
+
+    useEffect(() => {
+        if (!isAdmin) return;
+        const fetchData = async () => {
+            try {
+                const [tutorsRes, coursesRes] = await Promise.all([
+                    auth.get("/api/tutors"),
+                    auth.get("/api/courses")
+                ]);
+                setAllTutors(tutorsRes.data.tutors || []);
+                setAllCourses(coursesRes.data.courses || []);
+            } catch (e) {
+                console.error("Error fetching tutors/courses:", e);
+            }
+        };
+        fetchData();
+    }, [isAdmin]);
 
     const processData = async (formData) => {
         setIsloading(true);
@@ -28,6 +49,7 @@ const EditSessionForm = ({ session, session_id, tutor_id, navigate, source }) =>
 
         } catch (e) {
             console.error(e);
+            toast.error(`Error: ${e.response?.data?.error || e.message}`);
         } finally {
             setIsloading(false);
         }
@@ -64,27 +86,53 @@ const EditSessionForm = ({ session, session_id, tutor_id, navigate, source }) =>
 
 
     if (session.length === 0) {
-        return <div>Loading...</div>; // Display a loading message or spinner
+        return <div>Loading...</div>;
     }
 
     return (
         <>
         <form onSubmit={handleSubmit(processData)} className="form-container edit-session-form">
-            <section>
-                <label>Course: </label>
-                <p>{session.course_name}</p>
-            </section>
-            <section style={{display: 'flex', gap: '110px'}}>
-                <div>
-                    <label>Scheduled By: </label>
-                    <p>{session.scheduled_by}</p>
-                </div>
-                <div>
-                    <label>Student: </label>
-                    <p>{session.student_name ? session.student_name : session.student_ku_id}</p>
-                </div>
-
-            </section>
+            {isAdmin ? (
+                <>
+                    <section>
+                        <label>Course: </label>
+                        <select {...register("course_id")} defaultValue={session.course_id || ''}>
+                            {allCourses.map(c => (
+                                <option key={c.course_id} value={c.course_id}>{c.course_name} ({c.course_code})</option>
+                            ))}
+                        </select>
+                    </section>
+                    <section>
+                        <label>Tutor: </label>
+                        <select {...register("tutor_id")} defaultValue={tutor_id || ''}>
+                            {allTutors.map(t => (
+                                <option key={t.id} value={t.id}>{t.tutor_name} ({t.tutor_email})</option>
+                            ))}
+                        </select>
+                    </section>
+                    <section>
+                        <label>Student ID: </label>
+                        <input type="text" {...register("student_id")} defaultValue={session.student_ku_id || session.student_id || ''} />
+                    </section>
+                </>
+            ) : (
+                <>
+                    <section>
+                        <label>Course: </label>
+                        <p>{session.course_name}</p>
+                    </section>
+                    <section style={{display: 'flex', gap: '110px'}}>
+                        <div>
+                            <label>Scheduled By: </label>
+                            <p>{session.scheduled_by}</p>
+                        </div>
+                        <div>
+                            <label>Student: </label>
+                            <p>{session.student_name ? session.student_name : session.student_ku_id}</p>
+                        </div>
+                    </section>
+                </>
+            )}
             <div className="datetime-data">
                 <section>
                     <label>Date: </label>
@@ -109,7 +157,7 @@ const EditSessionForm = ({ session, session_id, tutor_id, navigate, source }) =>
             </section>
             <section className="edit-session-btn-container">
                 <button type="submit">
-                    {isloading ? <LoadingSpinner /> : 'Complete'}
+                    {isloading ? <LoadingSpinner /> : 'Save'}
                 </button>
                 {source == 'scheduled' ? (
                     <button 
