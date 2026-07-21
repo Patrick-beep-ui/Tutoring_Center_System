@@ -415,16 +415,20 @@ export const editSession = async (req, res) => {
             const localIP = getLocalIPAddress();
             const feedbackUrl = `http://${localIP}:3000/feedback/${session.session_id}/${student.ku_id}`;
 
-            await sendFeedbackEmail(student.email, {
-                tutorName: `${tutor.first_name} ${tutor.last_name}`,
-                studentName: `${student.first_name} ${student.last_name}`,
-                courseName: course.course_name,
-                topics: session.topics,
-                date: new Date(session.session_date).toLocaleDateString('en-US', { timeZone: 'UTC' }),
-                time: session_time,
-                duration: session_hours,
-                feedbackUrl: feedbackUrl,
-            })
+            try {
+                await sendFeedbackEmail(student.email, {
+                    tutorName: `${tutor.first_name} ${tutor.last_name}`,
+                    studentName: `${student.first_name} ${student.last_name}`,
+                    courseName: course.course_name,
+                    topics: session.topics,
+                    date: new Date(session.session_date).toLocaleDateString('en-US', { timeZone: 'UTC' }),
+                    time: session_time,
+                    duration: session_hours,
+                    feedbackUrl: feedbackUrl,
+                });
+            } catch (emailErr) {
+                console.error('Feedback email failed (non-blocking):', emailErr.message);
+            }
         }
 
         if (tutorChanged) {
@@ -453,18 +457,26 @@ export const editSession = async (req, res) => {
                 };
 
                 if (newUser) {
-                    await sendSessionReassignedToEmail(newUser.email, {
-                        ...emailData,
-                        newTutorName: `${newUser.first_name} ${newUser.last_name}`,
-                    });
+                    try {
+                        await sendSessionReassignedToEmail(newUser.email, {
+                            ...emailData,
+                            newTutorName: `${newUser.first_name} ${newUser.last_name}`,
+                        });
+                    } catch (emailErr) {
+                        console.error('Reassignment email to new tutor failed (non-blocking):', emailErr.message);
+                    }
                 }
 
                 if (oldUser) {
-                    await sendSessionReassignedFromEmail(oldUser.email, {
-                        ...emailData,
-                        oldTutorName: `${oldUser.first_name} ${oldUser.last_name}`,
-                        newTutorName: newUser ? `${newUser.first_name} ${newUser.last_name}` : 'N/A',
-                    });
+                    try {
+                        await sendSessionReassignedFromEmail(oldUser.email, {
+                            ...emailData,
+                            oldTutorName: `${oldUser.first_name} ${oldUser.last_name}`,
+                            newTutorName: newUser ? `${newUser.first_name} ${newUser.last_name}` : 'N/A',
+                        });
+                    } catch (emailErr) {
+                        console.error('Reassignment email to old tutor failed (non-blocking):', emailErr.message);
+                    }
                 }
             }
         }
@@ -525,15 +537,19 @@ export const cancelSession = async (req, res) => {
             const formatedDate = moment(session.session_date).format('MMMM D, YYYY');
             const formatedTime = moment(session_detail.session_time, 'HH:mm:ss').format('h:mm A');
 
-            await sendSessionCancelationEmail(student.email, {
-                tutorName: `${tutor.first_name} ${tutor.last_name}`,
-                studentName: `${student.first_name} ${student.last_name}`,
-                courseName: course.course_name,
-                //date: new Date(session.session_date).toLocaleDateString('en-US', { timeZone: 'UTC' }),
-                date: formatedDate,
-                time: formatedTime,
-                cancellationNote: message
-            })
+            try {
+                await sendSessionCancelationEmail(student.email, {
+                    tutorName: `${tutor.first_name} ${tutor.last_name}`,
+                    studentName: `${student.first_name} ${student.last_name}`,
+                    courseName: course.course_name,
+                    //date: new Date(session.session_date).toLocaleDateString('en-US', { timeZone: 'UTC' }),
+                    date: formatedDate,
+                    time: formatedTime,
+                    cancellationNote: message
+                });
+            } catch (emailErr) {
+                console.error('Cancellation email failed (non-blocking):', emailErr.message);
+            }
         }
 
         res.status(201).json({
