@@ -29,7 +29,7 @@ import EditSession from "./views/EditSession";
 import SessionDetails from "./views/SessionDetails";
 import Settings  from "./views/Settings";
 import Feedback from "./views/Feedback.jsx";
-import ThanksFeedback from "../server/models/ThanksFeedback.jsx";
+import ThanksFeedback from "./views/ThanksFeedback.jsx";
 
 // Admin Views
 import Users from "./views-admin/User";
