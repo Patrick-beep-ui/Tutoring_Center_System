@@ -187,3 +187,69 @@ export const getTutorById = async (req, res) => {
     }
 }
 
+export const updateTutorCourses = async (req, res) => {
+    try {
+        const tutor_id = sanitizeUserInput(req.params.tutor_id);
+        const { course_ids } = req.body;
+
+        if (!Array.isArray(course_ids)) {
+            return res.status(400).json({ error: 'course_ids must be an array' });
+        }
+
+        const tutor = await Tutor.findByPk(tutor_id);
+        if (!tutor) {
+            return res.status(404).json({ error: 'Tutor not found' });
+        }
+
+        await connection.transaction(async (t) => {
+            await TutorCourse.destroy({
+                where: { user_id: tutor_id, status: 'Given' },
+                transaction: t
+            });
+
+            if (course_ids.length > 0) {
+                const records = course_ids.map((course_id) => ({
+                    course_id,
+                    user_id: tutor_id,
+                    status: 'Given'
+                }));
+                await TutorCourse.bulkCreate(records, { transaction: t });
+            }
+        });
+
+        const updatedCourses = await connection.query(`
+            SELECT 
+                c.course_id,
+                c.course_name,
+                c.course_code,
+                COUNT(CASE WHEN sd.session_status = 'completed' AND sem.is_current = TRUE THEN s.session_id END) AS completed_sessions
+            FROM 
+                user_courses uc
+            JOIN 
+                courses c ON uc.course_id = c.course_id
+            LEFT JOIN 
+                sessions s ON uc.user_id = s.tutor_id AND s.course_id = c.course_id
+            LEFT JOIN 
+                session_details sd ON s.session_id = sd.session_id
+            LEFT JOIN 
+                semester sem ON s.semester_id = sem.semester_id
+            WHERE 
+                uc.user_id = :user_id AND uc.status = 'Given'
+            GROUP BY 
+                c.course_id, c.course_name, c.course_code
+            ORDER BY 
+                c.course_name;`, {
+                replacements: { user_id: tutor_id },
+                type: QueryTypes.SELECT
+            });
+
+        res.status(200).json({ 
+            msg: 'Tutor courses updated successfully',
+            courses: updatedCourses 
+        });
+    } catch (e) {
+        console.error(e);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+}
+
