@@ -21,6 +21,8 @@ function TutorProfile() {
     const [allCourses, setAllCourses] = useState([]);
     const [selectedCourseIds, setSelectedCourseIds] = useState([]);
     const [savingCourses, setSavingCourses] = useState(false);
+    const [scheduleBlocks, setScheduleBlocks] = useState([]);
+    const [savingSchedules, setSavingSchedules] = useState(false);
 
     console.log("User Role:", role);
     console.log("User context tole:", contextUser.role);
@@ -122,6 +124,62 @@ function TutorProfile() {
             setSavingCourses(false);
         }
     }, [selectedCourseIds, tutor_id, role]);
+
+    const openSchedulePopup = useCallback(() => {
+        const grouped = {};
+        schedules.forEach(({ day, start_time, end_time }) => {
+            const key = `${start_time.slice(0, 5)}-${end_time.slice(0, 5)}`;
+            if (!grouped[key]) {
+                grouped[key] = { days: [], start_time: start_time.slice(0, 5), end_time: end_time.slice(0, 5) };
+            }
+            grouped[key].days.push(day);
+        });
+        setScheduleBlocks(Object.values(grouped));
+    }, [schedules]);
+
+    const addScheduleBlock = useCallback(() => {
+        setScheduleBlocks(prev => [...prev, { days: [], start_time: "09:00", end_time: "10:00" }]);
+    }, []);
+
+    const removeScheduleBlock = useCallback((index) => {
+        setScheduleBlocks(prev => prev.filter((_, i) => i !== index));
+    }, []);
+
+    const updateScheduleBlock = useCallback((index, field, value) => {
+        setScheduleBlocks(prev => prev.map((block, i) => i === index ? { ...block, [field]: value } : block));
+    }, []);
+
+    const toggleScheduleDay = useCallback((index, day) => {
+        setScheduleBlocks(prev => prev.map((block, i) => {
+            if (i !== index) return block;
+            const days = block.days.includes(day)
+                ? block.days.filter(d => d !== day)
+                : [...block.days, day];
+            return { ...block, days };
+        }));
+    }, []);
+
+    const saveSchedules = useCallback(async (close) => {
+        const hasDays = scheduleBlocks.some(b => b.days.length > 0);
+        if (!hasDays) {
+            toast.error("Add at least one schedule block with a day selected");
+            return;
+        }
+        try {
+            setSavingSchedules(true);
+            const response = await auth.put(`/api/schedules/${tutor_id}`, {
+                schedules: scheduleBlocks.filter(b => b.days.length > 0)
+            });
+            setSchedules(response.data.schedules);
+            toast.success("Schedule updated successfully");
+            close();
+        } catch (e) {
+            console.error(e);
+            toast.error(`Error: ${e.response?.data?.error || e.message}`);
+        } finally {
+            setSavingSchedules(false);
+        }
+    }, [scheduleBlocks, tutor_id]);
 
     useEffect(() => {
 
@@ -246,18 +304,68 @@ function TutorProfile() {
                         
                             {user.map(t => 
                     <div className="tutor-sched" key={t.tutor_id}>
-                        <p id=""> <strong>{ role == 'tutor' ? (texts.profileInfo.scheduleLabel) : null} </strong></p>
+                        <p id=""> <strong>{ role == 'tutor' ? (texts.profileInfo.scheduleLabel) : null} </strong>
+                            {role === 'tutor' && (
+                                <Popup
+                                    trigger={<i className="bx bx-edit" style={{ cursor: 'pointer', fontSize: '16px', marginLeft: '5px' }} title="Edit schedule"></i>}
+                                    modal
+                                    onOpen={openSchedulePopup}
+                                >
+                                    {close => (
+                                        <div className="popup-container">
+                                            <h2>Edit Schedule</h2>
+                                            <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
+                                                {scheduleBlocks.map((block, index) => (
+                                                    <div key={index} style={{ border: '1px solid #ddd', borderRadius: '6px', padding: '10px', marginBottom: '10px' }}>
+                                                        <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap', marginBottom: '8px' }}>
+                                                            {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"].map(day => (
+                                                                <label key={day} style={{ display: 'flex', alignItems: 'center', gap: '3px', fontSize: '13px' }}>
+                                                                    <input
+                                                                        type="checkbox"
+                                                                        checked={block.days.includes(day)}
+                                                                        onChange={() => toggleScheduleDay(index, day)}
+                                                                    />
+                                                                    {day.slice(0, 3)}
+                                                                </label>
+                                                            ))}
+                                                        </div>
+                                                        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                                                            <label style={{ fontSize: '13px' }}>Start:
+                                                                <input type="time" value={block.start_time} onChange={e => updateScheduleBlock(index, 'start_time', e.target.value)} />
+                                                            </label>
+                                                            <label style={{ fontSize: '13px' }}>End:
+                                                                <input type="time" value={block.end_time} onChange={e => updateScheduleBlock(index, 'end_time', e.target.value)} />
+                                                            </label>
+                                                            <button className="btn" onClick={() => removeScheduleBlock(index)} style={{ fontSize: '12px' }}>Remove</button>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                            <button className="btn" onClick={addScheduleBlock} style={{ marginTop: '5px' }}>+ Add Block</button>
+                                            <div style={{ display: 'flex', gap: '10px', marginTop: '15px' }}>
+                                                <button className="btn btn-primary" onClick={() => saveSchedules(close)} disabled={savingSchedules}>
+                                                    {savingSchedules ? 'Saving...' : 'Save'}
+                                                </button>
+                                                <button className="btn" onClick={close}>Cancel</button>
+                                            </div>
+                                        </div>
+                                    )}
+                                </Popup>
+                            )}
+                        </p>
                         <div className="schedules">
-                            {t.tutor_schedule && t.tutor_schedule.trim() !== '' ? (
-                                t.tutor_schedule.split('\n').map((line, index) => (
-                                    <p key={index}>{line}</p>
-                                ))
-                            ) : (
+                            {schedules.length > 0 ? (
                                 <div>
                                     {groupSchedulesByTime([...schedules].sort(
                                         (a, b) => weekdayOrder.indexOf(a.day) - weekdayOrder.indexOf(b.day)
                                     ))}
                                 </div>
+                            ) : t.tutor_schedule && t.tutor_schedule.trim() !== '' ? (
+                                t.tutor_schedule.split('\n').map((line, index) => (
+                                    <p key={index}>{line}</p>
+                                ))
+                            ) : (
+                                <p>No schedule set</p>
                             )}
                         </div>
 
