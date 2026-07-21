@@ -123,6 +123,74 @@ export async function sendFeedbackEmail(to, data) {
   }
 }
 
+export async function sendSessionReassignedToEmail(to, data) {
+  try {
+    const templatePath = path.resolve(__dirname, './emails/sessionReassignedTo.hbs');
+    const source = await fs.readFile(templatePath, 'utf8');
+    const template = handlebars.compile(source);
+    const html = template(data);
+
+    const subject = 'Session Assigned to You';
+    const text = `Hello ${data.newTutorName}, a session for ${data.courseName} with ${data.studentName} on ${data.date} has been assigned to you.`;
+
+    const mailOptions = {
+      from: process.env.MAIL_USER,
+      to,
+      subject,
+      text,
+      html,
+      attachments: [
+        {
+          filename: 'CAE.jpg',
+          path: './public/img/CAE.jpg',
+          cid: 'logo'
+        }
+      ]
+    };
+
+    const info = await transporter.sendMail(mailOptions);
+    console.log('Email sent: ' + info.response);
+    return info;
+  } catch (e) {
+    console.error('Error sending email:', e.message, e.stack);
+    throw e;
+  }
+}
+
+export async function sendSessionReassignedFromEmail(to, data) {
+  try {
+    const templatePath = path.resolve(__dirname, './emails/sessionReassignedFrom.hbs');
+    const source = await fs.readFile(templatePath, 'utf8');
+    const template = handlebars.compile(source);
+    const html = template(data);
+
+    const subject = 'Session Reassigned';
+    const text = `Hello ${data.oldTutorName}, your session for ${data.courseName} with ${data.studentName} on ${data.date} has been reassigned to ${data.newTutorName}.`;
+
+    const mailOptions = {
+      from: process.env.MAIL_USER,
+      to,
+      subject,
+      text,
+      html,
+      attachments: [
+        {
+          filename: 'CAE.jpg',
+          path: './public/img/CAE.jpg',
+          cid: 'logo'
+        }
+      ]
+    };
+
+    const info = await transporter.sendMail(mailOptions);
+    console.log('Email sent: ' + info.response);
+    return info;
+  } catch (e) {
+    console.error('Error sending email:', e.message, e.stack);
+    throw e;
+  }
+}
+
 export async function sendSessionCancelationEmail(to, data) {
   try {
     const templatePath = path.resolve(__dirname, './emails/cancelSession.hbs');
