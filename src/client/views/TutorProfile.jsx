@@ -106,7 +106,10 @@ function TutorProfile() {
         }
         try {
             setSavingCourses(true);
-            const response = await auth.put(`/api/tutors/${tutor_id}/courses`, {
+            const endpoint = role === 'student'
+                ? `/api/users/${tutor_id}/courses`
+                : `/api/tutors/${tutor_id}/courses`;
+            const response = await auth.put(endpoint, {
                 course_ids: selectedCourseIds.map(Number)
             });
             setCourse(response.data.courses);
@@ -118,7 +121,7 @@ function TutorProfile() {
         } finally {
             setSavingCourses(false);
         }
-    }, [selectedCourseIds, tutor_id]);
+    }, [selectedCourseIds, tutor_id, role]);
 
     useEffect(() => {
 
@@ -299,7 +302,7 @@ function TutorProfile() {
 
                 <section className="tutor-courses-container">
                     <div className="tutor-courses-header">
-                        {(contextUser.role === 'admin' || contextUser.role === 'dev') && role === 'tutor' && (
+                        {(contextUser.role === 'admin' || contextUser.role === 'dev') && (role === 'tutor' || role === 'student') && (
                             <Popup
                                 trigger={<i className="bx bx-edit" style={{ cursor: 'pointer', fontSize: '20px' }} title="Edit courses"></i>}
                                 modal
@@ -307,7 +310,7 @@ function TutorProfile() {
                             >
                                 {close => (
                                     <div className="popup-container">
-                                        <h2>Manage Tutor Courses</h2>
+                                        <h2>Manage {role === 'student' ? 'Student' : 'Tutor'} Courses</h2>
                                         <div className="classes" style={{ maxHeight: '400px', overflowY: 'auto' }}>
                                             {allCourses.map(course => (
                                                 <div key={course.course_id}>

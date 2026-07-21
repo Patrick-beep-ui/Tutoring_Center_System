@@ -1,5 +1,5 @@
 import express from "express";
-import { getUsers, getUser, getUserCourses, editUser } from "../controllers/usersController.js";
+import { getUsers, getUser, getUserCourses, editUser, updateStudentCourses } from "../controllers/usersController.js";
 import passport from "passport";
 
 import userCheck from "../middlewares/userCheck.js";
@@ -8,6 +8,9 @@ const UserRouter = express.Router();
 
 UserRouter.route("/")
 .get(getUsers);
+
+UserRouter.route("/:user_id/courses")
+.put(updateStudentCourses);
 
 UserRouter.route("/:user_id")
   .get(

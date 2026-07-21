@@ -1,6 +1,7 @@
 import User from "../models/User.js";
 import Contact from "../models/Contact.js";
 import Major from "../models/Major.js";
+import TutorCourse from "../models/TutorCourse.js";
 import connection from "../connection.js";
 import {QueryTypes} from "sequelize";
 import {sanitizeUserInput} from "../utils/sanitize.js";
@@ -146,3 +147,65 @@ export const getUserCourses = async (req, res) => {
       res.status(500).json({ error: 'Internal Server Error' });
     }
   };
+
+export const updateStudentCourses = async (req, res) => {
+    try {
+        const user_id = sanitizeUserInput(req.params.user_id);
+        const { course_ids } = req.body;
+
+        if (!Array.isArray(course_ids)) {
+            return res.status(400).json({ error: 'course_ids must be an array' });
+        }
+
+        const user = await User.findByPk(user_id);
+        if (!user) {
+            return res.status(404).json({ error: 'Student not found' });
+        }
+
+        await connection.transaction(async (t) => {
+            await TutorCourse.destroy({
+                where: { user_id: user_id, status: 'Received' },
+                transaction: t
+            });
+
+            if (course_ids.length > 0) {
+                const records = course_ids.map((course_id) => ({
+                    course_id,
+                    user_id: user_id,
+                    status: 'Received'
+                }));
+                await TutorCourse.bulkCreate(records, { transaction: t });
+            }
+        });
+
+        const updatedCourses = await connection.query(`
+            SELECT 
+                c.course_id,
+                c.course_code,
+                c.course_name,
+                COUNT(sd.session_id) AS qtyOfSessions
+            FROM 
+                user_courses uc
+            JOIN 
+                courses c ON uc.course_id = c.course_id
+            LEFT JOIN 
+                sessions s ON s.course_id = c.course_id AND s.student_id = :ku_id
+            LEFT JOIN 
+                session_details sd ON s.session_id = sd.session_id AND sd.session_status = 'completed'
+            WHERE 
+                uc.user_id = :user_id AND uc.status = 'Received'
+            GROUP BY 
+                c.course_id, c.course_code, c.course_name;`, {
+                replacements: { user_id, ku_id: user.ku_id },
+                type: QueryTypes.SELECT
+            });
+
+        res.status(200).json({
+            msg: 'Student courses updated successfully',
+            courses: updatedCourses
+        });
+    } catch (e) {
+        console.error(e);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
