@@ -25,14 +25,6 @@ const Mini_Nav = ({ setSelectedSection, selectedSection }) => {
                     )}
                 </ul>
             </nav>
-
-            <div className="date-box">
-                <select name="" id="select-period">
-                    <option value="">This Week</option>
-                    <option value="">This Month</option>
-                    <option value="">Testing</option>
-                </select>
-            </div>
         </div>
     );
 };

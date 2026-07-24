@@ -2801,6 +2801,175 @@ canvas {
   color: #333;
 }
 
+/* Session Filters */
+.session-filters {
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  padding: 16px 20px;
+  margin: 10px 20px 0;
+}
+
+.filters-row {
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+.filter-search {
+  flex: 1;
+  min-width: 220px;
+  position: relative;
+}
+
+.filter-search i {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #888;
+  font-size: 18px;
+}
+
+.filter-search input {
+  width: 100%;
+  padding: 8px 12px 8px 34px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.filter-search input:focus {
+  border-color: #0a84ff;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.filter-group label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.filter-group select,
+.filter-group input[type="date"] {
+  padding: 8px 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 13px;
+  background: white;
+  outline: none;
+  min-width: 140px;
+  cursor: pointer;
+}
+
+.filter-group select:focus,
+.filter-group input[type="date"]:focus {
+  border-color: #0a84ff;
+}
+
+.clear-filters-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 14px;
+  font-size: 13px;
+  background: #f0f0f0;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s;
+}
+
+.clear-filters-btn:hover {
+  background: #e0e0e0;
+}
+
+.filters-status-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 12px;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.status-pills {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.status-pill {
+  padding: 5px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  border: 2px solid #ddd;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.status-pill.completed { border-color: #00c522; color: #00c522; }
+.status-pill.scheduled { border-color: #009dff; color: #009dff; }
+.status-pill.pending { border-color: orange; color: orange; }
+.status-pill.canceled { border-color: #dc143c; color: #dc143c; }
+
+.status-pill.completed.active { background: #00c522; color: white; }
+.status-pill.scheduled.active { background: #009dff; color: white; }
+.status-pill.pending.active { background: orange; color: white; }
+.status-pill.canceled.active { background: #dc143c; color: white; }
+
+.filter-result-count {
+  font-size: 13px;
+  color: #888;
+  white-space: nowrap;
+}
+
+.no-results {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  gap: 12px;
+  color: #888;
+}
+
+.no-results p {
+  font-size: 16px;
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .session-filters {
+    margin: 10px 10px 0;
+    padding: 12px;
+  }
+  .filters-row {
+    flex-direction: column;
+  }
+  .filter-search {
+    min-width: 100%;
+  }
+  .filter-group select,
+  .filter-group input[type="date"] {
+    min-width: 100%;
+  }
+}
+
 .sessions-grid, .feedbacks-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
@@ -2862,31 +3031,6 @@ canvas {
   color: #fff;
 }
 
-
-.date-box{
-  margin-left: 235px;
-  width: 125px;
-  background-color: white;
-  border-radius: 5px;
-  border:solid 1px;
-  display: flex;
-  align-content: center;
-  justify-content: center;
-}
-
-#select-period{
-  border: #0a84ff;
-
-
-  font-weight: bold;
-}
-
-#select-period input {
-  font-size: 1px;
-  width: 100%;
-
-
-}
 
 .feedback p{
   margin-bottom: 0% !important;
@@ -4277,7 +4421,6 @@ nav ul li:hover a {
   .hamburger-btn.is-open .bar::after { opacity: 0; transform: translateY(-4px); }
 
   /* Evita superposiciones del navbar de arriba con popovers/filtros */
-  .date-box { display: none !important; }  /* o reubícala si la necesitas */
 
   nav { padding: 9px 12px !important; }
   nav ul { gap: 0 !important; float: none !important; flex-direction: column !important; }

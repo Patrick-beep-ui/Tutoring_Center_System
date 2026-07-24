@@ -31,32 +31,33 @@ export const getSessions = async (req, res) => {
         const sessions = await connection.query(`
             SELECT
                 s.session_id AS 'session_id',
-                    CONCAT(tutor.first_name, ' ', tutor.last_name) AS 'tutor_name',
-                    s.student_id AS 'student_id',
-                    CONCAT(student.first_name, ' ', student.last_name) AS 'student_name',
-                    c.course_name AS 'course_name',
-                    s.session_totalhours AS 'total_hours',
-                    t.tutor_id AS 'tutor_id',
-                    CONCAT(
-                        TIME_FORMAT(sd.session_time, '%h:%i %p'),
-                            ' - ',
-                            TIME_FORMAT(ADDTIME(sd.session_time, SEC_TO_TIME(s.session_totalhours * 3600)), '%h:%i %p')
-                        ) AS 'session_duration',
-                    s.session_date AS 'session_date',
-                    sd.session_status AS 'session_status',
-                    WEEK(s.session_date, 1) - WEEK(semester.start_date, 1) + 1 AS 'week_number',
-                    s.topics AS 'session_topics',
-                    s.feedback AS 'session_feedback',
-                    IFNULL(fe.rating, 0) AS 'rating'
+                ANY_VALUE(CONCAT(tutor.first_name, ' ', tutor.last_name)) AS 'tutor_name',
+                ANY_VALUE(s.student_id) AS 'student_id',
+                ANY_VALUE(CONCAT(student.first_name, ' ', student.last_name)) AS 'student_name',
+                ANY_VALUE(c.course_name) AS 'course_name',
+                ANY_VALUE(s.session_totalhours) AS 'total_hours',
+                ANY_VALUE(t.tutor_id) AS 'tutor_id',
+                ANY_VALUE(CONCAT(
+                    TIME_FORMAT(sd.session_time, '%h:%i %p'),
+                    ' - ',
+                    TIME_FORMAT(ADDTIME(sd.session_time, SEC_TO_TIME(s.session_totalhours * 3600)), '%h:%i %p')
+                )) AS 'session_duration',
+                ANY_VALUE(s.session_date) AS 'session_date',
+                ANY_VALUE(sd.session_status) AS 'session_status',
+                ANY_VALUE(WEEK(s.session_date, 1) - WEEK(semester.start_date, 1) + 1) AS 'week_number',
+                ANY_VALUE(s.topics) AS 'session_topics',
+                ANY_VALUE(s.feedback) AS 'session_feedback',
+                IFNULL(MAX(fe.rating), 0) AS 'rating'
             FROM sessions s
                      JOIN session_details sd ON s.session_id = sd.session_id
                      JOIN tutors t ON s.tutor_id = t.tutor_id
-                     JOIN users tutor ON tutor.user_id = t.user_id  -- Get tutor's name
-                     JOIN users student ON student.ku_id = s.student_id  -- Get student's name
+                     JOIN users tutor ON tutor.user_id = t.user_id
+                     JOIN users student ON student.ku_id = s.student_id
                      JOIN courses c ON s.course_id = c.course_id
-                     JOIN semester semester ON semester.semester_id = s.semester_id  -- Join with semester table
+                     JOIN semester semester ON semester.semester_id = s.semester_id
                      LEFT JOIN session_feedback as fe ON s.session_id = fe.session_id
             WHERE semester.is_current = TRUE 
+            GROUP BY s.session_id
             ORDER BY week_number, session_date;
         `, {
             type: QueryTypes.SELECT

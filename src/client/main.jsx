@@ -132,7 +132,10 @@ const router = createBrowserRouter([
       },      
       {
         path: "/majors",
-        element: <Major />
+        element: <RequireRole allowedRoles={["admin", "dev"]} />,
+        children: [
+          {index: true, element: <Major />}
+        ]
       },
       {
         path: "/majors/add",
