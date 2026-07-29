@@ -1,0 +1,415 @@
+/* ========================================================================
+   Sidebar.css
+   Ownership: Sidebar.jsx navigation shell + Header.jsx chrome.
+   Sprint 1.6: mobile navigation experience refinement only.
+   ======================================================================== */
+
+:root {
+  /* A small sidebar-specific scale keeps the rail visually coherent. */
+  --sidebar-space-1: 8px;
+  --sidebar-space-2: 12px;
+  --sidebar-space-3: 16px;
+  --sidebar-space-4: 24px;
+  --sidebar-row-height: 48px;
+  --sidebar-icon-column: 22px;
+  --sidebar-mobile-width: min(80vw, 304px);
+  --sidebar-motion-duration: 220ms;
+  --sidebar-motion-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* -------------------------------------------------------------------- */
+/*  HEADER CHROME                                                       */
+/* -------------------------------------------------------------------- */
+
+.heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: absolute;
+  width: 100%;
+  background-color: #f4f4f4;
+  border-bottom: 4px solid #d7d7d3;
+  height: 72px;
+  z-index: 2;
+}
+
+.heading-phrase {
+  min-width: 0;
+  padding-left: var(--sidebar-content-offset);
+}
+
+.heading-phrase p {
+  margin: 0;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-welcome {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  min-width: 0;
+  padding-right: var(--sidebar-space-3);
+}
+
+.user-link,
+.user-icon {
+  padding: 0;
+  text-decoration: none;
+}
+
+.user-link {
+  margin-left: var(--sidebar-space-1);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.user-link:visited {
+  color: inherit;
+}
+
+.user-icon {
+  font-size: 1.2rem;
+}
+
+/* -------------------------------------------------------------------- */
+/*  SIDEBAR SHELL                                                       */
+/* -------------------------------------------------------------------- */
+
+.sidebar {
+  background-color: var(--blue);
+  height: 100vh;
+  width: var(--sidebar-width);
+  position: fixed;
+  top: 0;
+  left: 0;
+  overflow-y: auto;
+  z-index: 1000;
+}
+
+/* Make the navbar fill the sidebar height so account actions can be
+   pushed toward the bottom via flex layout. */
+.sidebar .nav-menu {
+  background-color: var(--blue);
+  min-height: 100vh;
+  width: 100%;
+  padding: 0 0 var(--sidebar-space-3);
+  align-items: stretch;
+  flex-wrap: nowrap;
+}
+
+/* -------------------------------------------------------------------- */
+/*  LOGO AREA                                                           */
+/* -------------------------------------------------------------------- */
+/* .navbar-brand wrapper around the logo image */
+
+.sidebar .navbar-brand {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: var(--sidebar-space-4) var(--sidebar-space-3) var(--sidebar-space-3);
+  margin: 0;
+  width: 100%;
+}
+
+.nav-logo {
+  width: 64px;
+  height: auto;
+}
+
+.nav-logo img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* -------------------------------------------------------------------- */
+/*  PRIMARY NAVIGATION CONTAINER                                        */
+/* -------------------------------------------------------------------- */
+
+.sidebar .navbar-nav.nav-links {
+  padding: 0;
+  margin: 0;
+}
+
+/* -------------------------------------------------------------------- */
+/*  ACCOUNT ACTIONS CONTAINER                                           */
+/* -------------------------------------------------------------------- */
+
+.sidebar .navbar-nav.nav-setting {
+  margin-top: auto;
+  padding: var(--sidebar-space-2) 0 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+/* -------------------------------------------------------------------- */
+/*  LINK ROW â€” shared by primary navigation and account actions         */
+/* -------------------------------------------------------------------- */
+/* Specificity: .sidebar .navbar-nav .nav-link = 0,3,0
+   Equals Bootstrap's .navbar-dark .navbar-nav .nav-link (0,3,0);
+   wins via source order since Sidebar.css loads after bootstrap.
+   For :visited we use .sidebar .navbar-nav a:visited (0,3,1) which
+   beats the global a:visited { color: inherit } (0,1,1).           */
+
+.sidebar .navbar-nav .nav-link {
+  display: flex;
+  align-items: center;
+  min-height: var(--sidebar-row-height);
+  padding: 0 var(--sidebar-space-3);
+  color: var(--white);
+  font-size: 0.875rem;
+  text-decoration: none;
+  border-left: 3px solid transparent;
+  transition: background-color 0.18s ease, border-color 0.18s ease;
+  white-space: nowrap;
+}
+
+/* Icon column â€” fixed width, centred */
+.sidebar .navbar-nav .nav-link i {
+  width: var(--sidebar-icon-column);
+  margin-right: var(--sidebar-space-2);
+  font-size: 1.1rem;
+  color: var(--white);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Label */
+.sidebar .navbar-nav .nav-link p {
+  margin: 0;
+  font-size: inherit;
+  color: var(--white);
+  flex: 1;
+  text-align: left;
+  line-height: 1.35;
+}
+
+/* ---- States ---- */
+
+/* Hover */
+.sidebar .navbar-nav .nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+  color: var(--white);
+}
+
+/* Active (current page) */
+.sidebar .navbar-nav .nav-link.active {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-left-color: var(--yellow);
+  color: var(--white);
+}
+
+/* Keyboard focus */
+.sidebar .navbar-nav .nav-link:focus-visible {
+  outline: 2px solid var(--yellow);
+  outline-offset: -2px;
+}
+
+/* Visited â€” override global a:visited { color: inherit } */
+.sidebar .navbar-nav a:visited {
+  color: var(--white);
+}
+
+/* -------------------------------------------------------------------- */
+/*  MOBILE DRAWER & HAMBURGER                                           */
+/* -------------------------------------------------------------------- */
+
+.mobile-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(8, 16, 39, 0.32);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 180ms ease-out;
+  z-index: 2990;
+}
+
+.mobile-backdrop.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.hamburger-btn {
+  position: fixed;
+  left: 8px;
+  top: 8px;
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3100;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: left var(--sidebar-motion-duration) var(--sidebar-motion-ease),
+    background-color 160ms ease-out, border-color 160ms ease-out;
+}
+
+.hamburger-btn:hover {
+  background: rgba(25, 45, 100, 0.08);
+}
+
+.hamburger-btn:focus-visible {
+  outline: 2px solid var(--yellow);
+  outline-offset: -3px;
+}
+
+/* Once the drawer is open, the same control becomes a deliberate close
+   affordance at the drawer edge instead of competing with the brand. */
+.hamburger-btn.is-open {
+  left: calc(var(--sidebar-mobile-width) - 52px);
+  border-color: rgba(255, 255, 255, 0.28);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.hamburger-btn.is-open .bar,
+.hamburger-btn.is-open .bar::before,
+.hamburger-btn.is-open .bar::after {
+  background: var(--white);
+}
+
+.hamburger-btn .bar,
+.hamburger-btn .bar::before,
+.hamburger-btn .bar::after {
+  content: "";
+  display: block;
+  width: 20px;
+  height: 2px;
+  background: #222;
+  position: relative;
+  border-radius: 2px;
+  transition: transform var(--sidebar-motion-duration) var(--sidebar-motion-ease),
+    opacity 160ms ease-out, top var(--sidebar-motion-duration) var(--sidebar-motion-ease),
+    background-color 160ms ease-out;
+}
+
+.hamburger-btn .bar::before {
+  top: -6px;
+  position: relative;
+}
+
+.hamburger-btn .bar::after {
+  top: 4px;
+  position: relative;
+}
+
+.hamburger-btn.is-open .bar {
+  transform: rotate(45deg);
+}
+
+.hamburger-btn.is-open .bar::before {
+  transform: rotate(90deg);
+  top: 0;
+}
+
+.hamburger-btn.is-open .bar::after {
+  opacity: 0;
+  transform: translateY(-4px);
+}
+
+/* -------------------------------------------------------------------- */
+/*  MOBILE â‰¤ 991.98px  (Bootstrap lg breakpoint)                        */
+/* -------------------------------------------------------------------- */
+
+@media (max-width: 991.98px) {
+  .heading {
+    height: 64px;
+  }
+
+  .heading-phrase {
+    padding-left: 68px;
+  }
+
+  .heading-phrase p {
+    font-size: 0.82rem;
+  }
+
+  .user-welcome {
+    padding-right: var(--sidebar-space-2);
+  }
+
+  .user-link {
+    font-size: 0.78rem;
+    max-width: 92px;
+  }
+
+  .user-icon {
+    font-size: 1rem;
+  }
+
+  .sidebar {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    height: 100dvh;
+    width: var(--sidebar-mobile-width);
+    transform: translate3d(-100%, 0, 0);
+    transition: transform var(--sidebar-motion-duration) var(--sidebar-motion-ease),
+      box-shadow var(--sidebar-motion-duration) ease-out;
+    z-index: 3000;
+    border-radius: 0 18px 18px 0;
+    box-shadow: 0 18px 48px rgba(5, 17, 45, 0.32);
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    will-change: transform;
+  }
+
+  .sidebar.open {
+    transform: translate3d(0, 0, 0);
+  }
+
+  .sidebar .nav-menu {
+    min-height: 100%;
+  }
+
+  .sidebar .navbar-brand {
+    padding: 20px var(--sidebar-space-3) 14px;
+    margin-bottom: 4px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  }
+
+  .nav-logo {
+    width: 52px;
+  }
+
+  .sidebar .navbar-nav .nav-link {
+    min-height: 52px;
+    padding-right: 20px;
+    padding-left: 20px;
+  }
+
+  .sidebar .navbar-nav.nav-setting {
+    padding-top: 10px;
+    padding-bottom: 4px;
+  }
+}
+
+@media (max-width: 374.98px) {
+  .heading-phrase p {
+    font-size: 0.76rem;
+  }
+
+  .user-link {
+    max-width: 76px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mobile-backdrop,
+  .hamburger-btn,
+  .hamburger-btn .bar,
+  .hamburger-btn .bar::before,
+  .hamburger-btn .bar::after,
+  .sidebar .navbar-nav .nav-link {
+    transition-duration: 1ms;
+  }
+}

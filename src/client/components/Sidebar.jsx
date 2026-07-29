@@ -5,34 +5,59 @@ import axios from "axios";
 import auth from '../authService';
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import texts from "../texts/layout.json";
+import "./Sidebar.css";
+
+// ---------------------------------------------------------------------------
+// SideBar â€” role-filtered navigation rail (desktop) / drawer (mobile).
+//
+// Public props:
+//   user  â€“ authenticated user object with { role, user_id, ... }
+//
+// Sprint 1 notes:
+//   - All sidebar/header-chrome styles moved to Sidebar.css.
+//   - Generic `nav` selectors in App.css scoped to .navbar-container.
+//   - TODO markers placed where Sprint 2 will extract reusable components.
+// ---------------------------------------------------------------------------
 
 function SideBar({ user }) {
-  // En desktop abierto, en móvil cerrado (se calcula abajo)
+  // -----------------------------------------------------------------------
+  // State
+  // -----------------------------------------------------------------------
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
 
+  // -----------------------------------------------------------------------
+  // Hooks
+  // -----------------------------------------------------------------------
   const navigate = useNavigate();
   const location = useLocation();
   const currentPath = location.pathname;
 
-  // Detecta viewport y actualiza estados
+  // -----------------------------------------------------------------------
+  // Viewport detection â€” match Bootstrap lg breakpoint (â‰¤ 991px = mobile)
+  // -----------------------------------------------------------------------
   useEffect(() => {
     const check = () => {
-      const mobile = window.innerWidth <= 991; // breakpoint ~ lg
+      const mobile = window.innerWidth <= 991;
       setIsMobile(mobile);
-      setIsSidebarOpen(!mobile); // móvil: cerrado; desktop: abierto
+      setIsSidebarOpen(!mobile);  // mobile starts closed, desktop starts open
     };
     check();
     window.addEventListener('resize', check);
     return () => window.removeEventListener('resize', check);
   }, []);
 
-  // Cierra el drawer al cambiar de ruta (mejor UX)
+  // -----------------------------------------------------------------------
+  // Close drawer on route change (mobile UX)
+  // -----------------------------------------------------------------------
   useEffect(() => {
     if (isMobile) setIsSidebarOpen(false);
   }, [currentPath, isMobile]);
 
-  // Bloquea scroll del body cuando el drawer está abierto en móvil
+  // -----------------------------------------------------------------------
+  // Lock body scroll while mobile drawer is open
+  // TODO (Sprint 3): Remove when Offcanvas provides built-in scroll locking.
+  // -----------------------------------------------------------------------
   useEffect(() => {
     if (isMobile && isSidebarOpen) {
       const original = document.body.style.overflow;
@@ -41,6 +66,9 @@ function SideBar({ user }) {
     }
   }, [isMobile, isSidebarOpen]);
 
+  // -----------------------------------------------------------------------
+  // Logout handler â€” POST /logout, clear token, redirect to /login
+  // -----------------------------------------------------------------------
   const logout = useCallback(async () => {
     try {
       await auth.post("/logout");
@@ -53,13 +81,16 @@ function SideBar({ user }) {
     }
   }, [navigate]);
 
+  // -----------------------------------------------------------------------
+  // Render
+  // -----------------------------------------------------------------------
   return (
     <>
-      {/* Botón hamburguesa fijo SOLO en móvil */}
+      {/* ---- Hamburger toggle (mobile only) ---- */}
       {isMobile && (
         <button
           className={`hamburger-btn ${isSidebarOpen ? 'is-open' : ''}`}
-          aria-label="Abrir menú"
+          aria-label="Abrir menÃº"
           aria-expanded={isSidebarOpen}
           onClick={() => setIsSidebarOpen(v => !v)}
         >
@@ -67,7 +98,7 @@ function SideBar({ user }) {
         </button>
       )}
 
-      {/* Backdrop para cerrar tocando fuera */}
+      {/* ---- Backdrop (mobile only) ---- */}
       {isMobile && (
         <div
           className={`mobile-backdrop ${isSidebarOpen ? 'show' : ''}`}
@@ -75,17 +106,21 @@ function SideBar({ user }) {
         />
       )}
 
-      {/* Sidebar: en móvil actúa como drawer */}
+      {/* ---- Sidebar shell (desktop rail / mobile drawer) ---- */}
+      {/* TODO (Sprint 2): Extract shared SidebarContent helper so desktop and
+          mobile render identical filtered markup from a single source. */}
       <div className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
         <Navbar variant="dark" className={texts.header.sidebar[0]["navbarClassname"]}>
-          {/* En desktop sigue togglenado el ancho, en móvil abrimos/cerramos drawer */}
+          {/* ---- Logo ---- */}
           <Navbar.Brand
-            onClick={() => setIsSidebarOpen(v => (isMobile ? !v : !v))}
+            onClick={() => setIsSidebarOpen(v => !v)}
             className={texts.header.sidebar[0]["Navbar.BrandClassName"]}
           >
             <img src="/img/Picture1.svg" alt="CAE-logo" className="nav-logo" />
           </Navbar.Brand>
 
+          {/* ---- Primary navigation items ---- */}
+          {/* TODO (Sprint 2): Extract SidebarNavItem for reusable icon+label row markup. */}
           <Nav className={texts.header.sidebar[0]["navLinksClassName"]}>
             {texts.header.sidebar[0]["links"]
               .filter(link => (link.role ? link.role.includes(user.role) : true))
@@ -104,6 +139,7 @@ function SideBar({ user }) {
               ))}
           </Nav>
 
+          {/* ---- Account actions (Settings / Logout) ---- */}
           <Nav className={texts.header.sidebar[0]["logoutButtonClassName"]}>
             {texts.header.sidebar[0]["settings"].map((setting, index) =>
               setting.label === "Logout" ? (
