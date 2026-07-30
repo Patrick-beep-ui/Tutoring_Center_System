@@ -1,30 +1,131 @@
 import React, { useState, useCallback, memo, useEffect } from 'react';
 import { Navbar, Nav } from 'react-bootstrap';
-import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from "axios";
 import auth from '../authService';
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import texts from "../texts/layout.json";
-import "./Sidebar.css";
 
 // ---------------------------------------------------------------------------
-// SideBar â€” role-filtered navigation rail (desktop) / drawer (mobile).
+// SideBar — role-filtered navigation rail (desktop) / drawer (mobile).
 //
 // Public props:
-//   user  â€“ authenticated user object with { role, user_id, ... }
+//   user  – authenticated user object with { role, user_id, ... }
 //
-// Sprint 1 notes:
-//   - All sidebar/header-chrome styles moved to Sidebar.css.
-//   - Generic `nav` selectors in App.css scoped to .navbar-container.
-//   - TODO markers placed where Sprint 2 will extract reusable components.
 // ---------------------------------------------------------------------------
+
+const MOBILE_NAV_QUERY = '(max-width: 991.98px)';
+
+const navbarClass = [
+  'relative flex! min-h-full w-full flex-col! flex-nowrap! items-stretch! justify-between overflow-x-hidden',
+  'bg-blue pt-0! pr-0 pb-4! pl-0',
+].join(' ');
+
+const brandClass = [
+  'box-border flex w-full items-center justify-center whitespace-nowrap text-[1.25rem] text-white! no-underline',
+  'mt-0! mr-0 mb-0! ml-0 pt-6 pr-4 pb-4! pl-4',
+  'max-[991.98px]:mb-1! max-[991.98px]:pt-5 max-[991.98px]:pb-[14px]!',
+  'max-[991.98px]:border-b max-[991.98px]:border-b-[rgba(255,255,255,0.12)]',
+].join(' ');
+
+const primaryNavClass = 'm-0! flex! w-full min-w-0 flex-col! items-stretch! p-0!';
+
+const accountNavClass = [
+  'mt-auto! mr-0 mb-0! ml-0 flex! w-full min-w-0 shrink-0 flex-col! items-stretch!',
+  'border-t border-t-[rgba(255,255,255,0.16)]',
+  'pt-3! pr-0 pb-0! pl-0',
+  'max-[991.98px]:pt-[10px]! max-[991.98px]:pb-1!',
+].join(' ');
+
+const navRowClass = [
+  'box-border flex! min-h-12 w-full min-w-0 shrink-0 items-center border-0! border-l-[3px]!',
+  'pt-0! pr-4 pb-0! pl-4 text-sm font-normal text-white! no-underline',
+  '[transition:background-color_0.18s_ease,border-color_0.18s_ease]',
+  'hover:text-white!',
+  'visited:text-white!',
+  'focus-visible:outline-[2px]! focus-visible:outline-yellow! focus-visible:outline-offset-[-2px]!',
+  'focus-visible:shadow-[0_0_0_0.25rem_rgba(13,110,253,0.25)]!',
+  'max-[991.98px]:min-h-[52px] max-[991.98px]:pr-5 max-[991.98px]:pl-5',
+  'motion-reduce:[transition-duration:1ms]',
+].join(' ');
+
+const inactiveNavRowClass = [
+  'border-l-transparent! bg-transparent!',
+  'hover:bg-[rgba(255,255,255,0.08)]!',
+].join(' ');
+const activeNavRowClass = [
+  'border-l-yellow! bg-[rgba(255,255,255,0.1)]!',
+  'hover:bg-[rgba(255,255,255,0.1)]!',
+].join(' ');
+
+const navIconClass = 'mr-3 flex! w-[22px] shrink-0 items-center justify-center text-[1.1rem] text-white!';
+const navLabelClass = 'm-0! min-w-0 flex-1 truncate text-left text-[inherit] leading-[1.35] text-white!';
+
+const hamburgerClass = [
+  'fixed top-2 z-[3100] inline-flex h-12 w-12 touch-manipulation cursor-pointer',
+  'items-center justify-center rounded-lg border!',
+  '[transition:left_220ms_cubic-bezier(0.2,0.8,0.2,1),background-color_160ms_ease-out,border-color_160ms_ease-out]',
+  'focus-visible:outline-[2px]! focus-visible:outline-yellow! focus-visible:outline-offset-[-3px]!',
+  'motion-reduce:[transition-duration:1ms]',
+].join(' ');
+
+const hamburgerOpenClass = [
+  'left-[calc(min(80vw,304px)-52px)]',
+  'border-[rgba(255,255,255,0.28)]! bg-[rgba(255,255,255,0.1)]!',
+].join(' ');
+
+const hamburgerClosedClass = [
+  'left-2 border-transparent! bg-transparent!',
+  'hover:border-transparent! hover:bg-[rgba(25,45,100,0.08)]!',
+].join(' ');
+
+const hamburgerBarClass = [
+  "relative block h-[2px] w-5 rounded-[2px] [content:'']",
+  '[transition:transform_220ms_cubic-bezier(0.2,0.8,0.2,1),opacity_160ms_ease-out,top_220ms_cubic-bezier(0.2,0.8,0.2,1),background-color_160ms_ease-out]',
+  "before:relative before:block before:h-[2px] before:w-5 before:rounded-[2px] before:content-['']",
+  'before:[transition:transform_220ms_cubic-bezier(0.2,0.8,0.2,1),opacity_160ms_ease-out,top_220ms_cubic-bezier(0.2,0.8,0.2,1),background-color_160ms_ease-out]',
+  "after:relative after:top-1 after:block after:h-[2px] after:w-5 after:rounded-[2px] after:content-['']",
+  'after:[transition:transform_220ms_cubic-bezier(0.2,0.8,0.2,1),opacity_160ms_ease-out,top_220ms_cubic-bezier(0.2,0.8,0.2,1),background-color_160ms_ease-out]',
+  'motion-reduce:[transition-duration:1ms] motion-reduce:before:[transition-duration:1ms] motion-reduce:after:[transition-duration:1ms]',
+].join(' ');
+
+const hamburgerBarOpenClass = [
+  'bg-white! [transform:rotate(45deg)]',
+  'before:top-0 before:bg-white! before:[transform:rotate(90deg)]',
+  'after:bg-white! after:opacity-0 after:[transform:translateY(-4px)]',
+].join(' ');
+
+const hamburgerBarClosedClass = 'bg-[#222] before:top-[-6px] before:bg-[#222] after:bg-[#222]';
+
+const backdropClass = [
+  'fixed inset-0 z-[2990] bg-[rgba(8,16,39,0.32)]',
+  'transition-opacity duration-[180ms] ease-out',
+  'motion-reduce:duration-[1ms]',
+].join(' ');
+
+const backdropOpenClass = 'pointer-events-auto opacity-100!';
+const backdropClosedClass = 'pointer-events-none opacity-0!';
+
+const sidebarClass = [
+  'fixed top-0 left-0 z-[1000] h-screen w-sidebar-width overflow-x-hidden overflow-y-auto bg-blue',
+  'max-[991.98px]:z-[3000] max-[991.98px]:h-dvh max-[991.98px]:w-[min(80vw,304px)]',
+  'max-[991.98px]:rounded-r-[18px] max-[991.98px]:shadow-[0_18px_48px_rgba(5,17,45,0.32)]',
+  'max-[991.98px]:overscroll-contain max-[991.98px]:[-webkit-overflow-scrolling:touch]',
+  'max-[991.98px]:will-change-transform',
+  'max-[991.98px]:[transition:transform_220ms_cubic-bezier(0.2,0.8,0.2,1),box-shadow_220ms_ease-out]',
+  'motion-reduce:[transition-duration:1ms]',
+].join(' ');
+
+const sidebarOpenClass = 'max-[991.98px]:[transform:translate3d(0,0,0)]';
+const sidebarClosedClass = 'max-[991.98px]:[transform:translate3d(-100%,0,0)]';
 
 function SideBar({ user }) {
   // -----------------------------------------------------------------------
   // State
   // -----------------------------------------------------------------------
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [isMobile, setIsMobile] = useState(false);
+  const getInitialMobileState = () =>
+    typeof window !== 'undefined' && window.matchMedia(MOBILE_NAV_QUERY).matches;
+  const [isMobile, setIsMobile] = useState(getInitialMobileState);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(() => !getInitialMobileState());
 
   // -----------------------------------------------------------------------
   // Hooks
@@ -34,17 +135,17 @@ function SideBar({ user }) {
   const currentPath = location.pathname;
 
   // -----------------------------------------------------------------------
-  // Viewport detection â€” match Bootstrap lg breakpoint (â‰¤ 991px = mobile)
+  // Viewport detection — match the CSS breakpoint exactly.
   // -----------------------------------------------------------------------
   useEffect(() => {
-    const check = () => {
-      const mobile = window.innerWidth <= 991;
+    const mediaQuery = window.matchMedia(MOBILE_NAV_QUERY);
+    const check = ({ matches: mobile }) => {
       setIsMobile(mobile);
-      setIsSidebarOpen(!mobile);  // mobile starts closed, desktop starts open
+      setIsSidebarOpen(!mobile);
     };
-    check();
-    window.addEventListener('resize', check);
-    return () => window.removeEventListener('resize', check);
+    check(mediaQuery);
+    mediaQuery.addEventListener('change', check);
+    return () => mediaQuery.removeEventListener('change', check);
   }, []);
 
   // -----------------------------------------------------------------------
@@ -56,7 +157,6 @@ function SideBar({ user }) {
 
   // -----------------------------------------------------------------------
   // Lock body scroll while mobile drawer is open
-  // TODO (Sprint 3): Remove when Offcanvas provides built-in scroll locking.
   // -----------------------------------------------------------------------
   useEffect(() => {
     if (isMobile && isSidebarOpen) {
@@ -67,7 +167,7 @@ function SideBar({ user }) {
   }, [isMobile, isSidebarOpen]);
 
   // -----------------------------------------------------------------------
-  // Logout handler â€” POST /logout, clear token, redirect to /login
+  // Logout handler — POST /logout, clear token, redirect to /login
   // -----------------------------------------------------------------------
   const logout = useCallback(async () => {
     try {
@@ -89,72 +189,81 @@ function SideBar({ user }) {
       {/* ---- Hamburger toggle (mobile only) ---- */}
       {isMobile && (
         <button
-          className={`hamburger-btn ${isSidebarOpen ? 'is-open' : ''}`}
-          aria-label="Abrir menÃº"
+          type="button"
+          className={`${hamburgerClass} ${isSidebarOpen ? hamburgerOpenClass : hamburgerClosedClass}`}
+          aria-label={isSidebarOpen ? "Cerrar menú" : "Abrir menú"}
           aria-expanded={isSidebarOpen}
+          aria-controls="primary-sidebar"
           onClick={() => setIsSidebarOpen(v => !v)}
         >
-          <span className="bar" />
+          <span
+            aria-hidden="true"
+            className={`${hamburgerBarClass} ${isSidebarOpen ? hamburgerBarOpenClass : hamburgerBarClosedClass}`}
+          />
         </button>
       )}
 
       {/* ---- Backdrop (mobile only) ---- */}
       {isMobile && (
         <div
-          className={`mobile-backdrop ${isSidebarOpen ? 'show' : ''}`}
+          aria-hidden="true"
+          className={`${backdropClass} ${isSidebarOpen ? backdropOpenClass : backdropClosedClass}`}
           onClick={() => setIsSidebarOpen(false)}
         />
       )}
 
       {/* ---- Sidebar shell (desktop rail / mobile drawer) ---- */}
-      {/* TODO (Sprint 2): Extract shared SidebarContent helper so desktop and
-          mobile render identical filtered markup from a single source. */}
-      <div className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
-        <Navbar variant="dark" className={texts.header.sidebar[0]["navbarClassname"]}>
+      <div
+        id="primary-sidebar"
+        className={`${sidebarClass} ${isSidebarOpen ? sidebarOpenClass : sidebarClosedClass}`}
+      >
+        <Navbar expand={false} className={navbarClass}>
           {/* ---- Logo ---- */}
           <Navbar.Brand
             onClick={() => setIsSidebarOpen(v => !v)}
-            className={texts.header.sidebar[0]["Navbar.BrandClassName"]}
+            className={brandClass}
           >
-            <img src="/img/Picture1.svg" alt="CAE-logo" className="nav-logo" />
+            <img
+              src="/img/Picture1.svg"
+              alt="CAE-logo"
+              className="block h-auto w-16 max-[991.98px]:w-[52px]"
+            />
           </Navbar.Brand>
 
           {/* ---- Primary navigation items ---- */}
-          {/* TODO (Sprint 2): Extract SidebarNavItem for reusable icon+label row markup. */}
-          <Nav className={texts.header.sidebar[0]["navLinksClassName"]}>
+          <Nav className={primaryNavClass}>
             {texts.header.sidebar[0]["links"]
               .filter(link => (link.role ? link.role.includes(user.role) : true))
               .map((link, index) => (
                 <Nav.Link
                   key={index}
                   href={link.url}
-                  className={
-                    currentPath === link.url
-                      ? texts.header.sidebar[0]["activeLinkClassName"]
-                      : ""
-                  }
+                  aria-current={currentPath === link.url ? 'page' : undefined}
+                  className={`${navRowClass} ${currentPath === link.url ? activeNavRowClass : inactiveNavRowClass}`}
                 >
-                  <i className={link.icon}></i> <p>{link.label}</p>
+                  <i className={`${link.icon} ${navIconClass}`}></i>
+                  <p className={navLabelClass}>{link.label}</p>
                 </Nav.Link>
               ))}
           </Nav>
 
           {/* ---- Account actions (Settings / Logout) ---- */}
-          <Nav className={texts.header.sidebar[0]["logoutButtonClassName"]}>
+          <Nav className={accountNavClass}>
             {texts.header.sidebar[0]["settings"].map((setting, index) =>
               setting.label === "Logout" ? (
-                <Nav.Link key={index} onClick={logout}>
-                  <i className={`${setting.icon} ${currentPath === setting.url ? "active" : ""}`} />
-                  <p>{setting.label}</p>
+                <Nav.Link key={index} onClick={logout} className={`${navRowClass} ${inactiveNavRowClass}`}>
+                  <i className={`${setting.icon} ${navIconClass}`} />
+                  <p className={navLabelClass}>{setting.label}</p>
                 </Nav.Link>
               ) : (
                 <Link
                   key={index}
                   to={`${setting.url}/${user.user_id}`}
-                  className={`nav-link ${currentPath.startsWith(setting.url) ? "active" : ""}`}
+                  aria-current={currentPath.startsWith(setting.url) ? 'page' : undefined}
+                  className={`${navRowClass} ${currentPath.startsWith(setting.url) ? activeNavRowClass : inactiveNavRowClass}`}
                 >
-                  <i className={`${setting.icon}`} />
-                  <p>{setting.label}</p>
+                  <i className={`${setting.icon} ${navIconClass}`} />
+                  <p className={navLabelClass}>{setting.label}</p>
                 </Link>
               )
             )}

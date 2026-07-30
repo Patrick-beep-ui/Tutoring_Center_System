@@ -1,14 +1,8 @@
 {
     "header": {
         "title": "Writing Studio Center",
-        "user-icon": "bx bx-user user-icon",
         "sidebar": [
             {
-                "navbarClassname": "flex-column nav-menu",
-                "Navbar.BrandClassName": "nav-logo",
-                "navLinksClassName": "flex-column nav-links",
-                "activeLinkClassName": "active",
-                "logoutButtonClassName": "flex-column nav-setting ",
                 "links": [
                     {
                         "label": "Activity",

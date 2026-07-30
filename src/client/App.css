@@ -1,3 +1,7 @@
+@import "tailwindcss/theme.css";
+@import "tailwindcss/utilities.css";
+@config "../../tailwind.config.js";
+
 /*------------------- GENERAL ------------------*/
 :root {
   --blue: #192D64;
@@ -2223,9 +2227,6 @@ canvas {
 .edit-session-btn-container button:hover {
   background-color: #383636;
 }
-
-
-/* sidebar and header-chrome styles moved to Sidebar.css */
 
 /* Report and Courses */
 
