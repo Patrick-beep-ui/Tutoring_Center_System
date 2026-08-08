@@ -1,3 +1,7 @@
+@import "tailwindcss/theme.css";
+@import "tailwindcss/utilities.css";
+@config "../../tailwind.config.js";
+
 /*------------------- GENERAL ------------------*/
 :root {
   --blue: #192D64;
@@ -6,6 +10,11 @@
   --white: #FFFEF6;
   --gray: #949494;
   --dark-gray: #777676;
+  /* Sidebar layout system: the rail and every desktop content start share
+     this relationship so they cannot drift apart as the rail is refined. */
+  --sidebar-width: 184px;
+  --sidebar-page-gap: 20px;
+  --sidebar-content-offset: calc(var(--sidebar-width) + var(--sidebar-page-gap));
 }
 
 @font-face {
@@ -65,7 +74,7 @@ body {
   width: 100%;
   height: 100%;
   padding: 70px 20px 20px;
-  padding-left: 160px;
+  padding-left: var(--sidebar-content-offset);
   overflow-y: scroll;
 }
 
@@ -2219,205 +2228,6 @@ canvas {
   background-color: #383636;
 }
 
-
-/* Header */
-.heading {
-  display: flex;
-  align-content: center;
-  justify-content: space-between;
-  background-color: var(--yellow);
-  position: absolute;
-  width: 100%;
-  background-color: #f4f4f4;
-  border-bottom: 4px solid #d7d7d3;
-  height: 70px;
-  z-index: 2;
-}
-
-.heading-phrase {
-  padding-left: 165px;
-} 
-
-.heading-phrase p {
-  padding-top: 20px;
-  font-weight: 700;
-}
-
-.user-welcome {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  padding-right: 20px;
-}
-
-.user-link, .user-icon {
-  padding-right: 20px;
-  padding-top: 10px;
-  text-decoration: none;
-}
-
-.user-link:visited {
-  color: inherit;
-}
-
-.user-icon {
-  font-size: 1.2rem;
-  padding-right: 10px;
-}
-
-
-/* Sidebar */
-.sidebar {
-  background-color: var(--blue);
-  height: 100vh; /* Full viewport height */
-  width: 140px;
-  position: fixed;
-  top: 0;
-  left: 0;
-  overflow: hidden;
-  z-index: 1000;
-  transition: width 0.3s;
-
-}
-
-.nav-menu {
-  display: flex;
-  justify-content: space-between;
-}
-
-.sidebar .nav-menu {
-  background-color: var(--blue);
-}
-
-.nav-logo {
-  width: 70px;
-  height: 80px;
-  margin-bottom: 30%;
-}
-
-.nav-logo img {
-  width: 100%;
-  height: 100%;
-}
-
-.nav-links {
-  height: auto;
-  padding: 0;
-  width: 100%;
-  margin: 10px 0px 100px 0;
-  border-bottom: 3px solid #222222;
-}
-
-.nav-links > *:last-child {
-  margin-bottom: 40px;
-}
-
-.nav-links a {
-  width: 100%;
-  height: 50px;
-  margin: 0;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-} 
-
-.nav-setting a {
-  width: 100%;
-  height: 50px;
-  margin: 0px 50px 0px 10px;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-
-}
-
-.nav-links a p, .nav-setting a p {
-  font-size: 0.7rem;
-}
-
-.nav-links a, .nav-setting a {
-  font-size: 1.5rem;
-  color: var(--white);
-}
-
-.nav-links .active {
-  background-color: #181e3e;  
-  transition: background-color 0.3s ease;
-}
-
-.nav-links i, .nav-links p {
-  transition: color 0.3s ease;
-}
-.nav-links  i{
-  transition: color 0.3s ease;
-  flex: 35%;
-  display: grid;
-  place-items: center;
-}
-
-.nav-links p{
-  padding-bottom: 0;
-  margin: 0;
-  padding-top:7px;
-  flex: 70%;
-
-  }
-
-  .nav-setting  i{
-    transition: color 0.3s ease;
-    flex: 35%;
-    display: grid;
-    place-items: center;
-  }
-  
-  .nav-setting p{
-    padding-bottom: 0;
-    margin: 0;
-    padding-top:7px;
-    flex: 90%;
-    }
-
-.nav-links .active, .nav-setting .active {
-  background-color: #181e3e; 
-  transition: background-color 0.3s ease;
-}
-
-.nav-links i, .nav-links p {
-  transition: color 0.3s ease;
-
-}
-.nav-links  i{
-  transition: color 0.3s ease;
-  flex: 35%;
-  display: grid;
-  place-items: center;
-  text-align: left;
-}
-
-.nav-links p{
-  padding-bottom: 0;
-  margin: 0;
-  padding-top:7px;
-  flex: 70%;
-  text-align: left;
-
-
-}
-
-  .nav-setting  i{
-    transition: color 0.3s ease;
-    flex: 35%;
-    display: grid;
-    place-items: center;
-  }
-  
-  .nav-setting p{
-    padding-bottom: 0;
-    margin: 0;
-    padding-top:7px;
-    flex: 90%;
-    }
-
 /* Report and Courses */
 
 .report-container, .courses-container {
@@ -2790,8 +2600,8 @@ canvas {
 
 /*  // New styles*/
 .activity-container {
-  margin-left: 180px;
-  width: calc(100% - 180px);
+  margin-left: var(--sidebar-content-offset);
+  width: calc(100% - var(--sidebar-content-offset));
   padding: 20px;
   overflow-y: auto;
   height: 100vh;
@@ -3038,7 +2848,7 @@ canvas {
 
 
 
-nav {
+.navbar-container nav {
   box-sizing: border-box;
   background: rgba(175, 175, 175, 0.2);
   border-bottom: 0.7px solid #ffffffab;
@@ -3046,8 +2856,7 @@ nav {
   border-radius: 3px;
 }
 
-
-nav ul {
+.navbar-container nav ul {
   list-style: none;
   float: right;
   margin: 0;
@@ -3056,33 +2865,31 @@ nav ul {
   gap: 80px;
 }
 
-nav ul li a {
+.navbar-container nav ul li a {
   padding: 0px 20px;
   text-decoration: none;
   font-size: 14px;
-
-  /*text-transform: uppercase;*/
 }
-nav ul li {
+
+.navbar-container nav ul li {
   padding: 0px 20px;
   text-decoration: none;
   font-size: 14px;
   cursor: pointer;
-
-  /*text-transform: uppercase;*/
 }
 
-nav ul li:hover {
+.navbar-container nav ul li:hover {
   background: #ffffffab;
 }
 
-nav ul li:hover a {
+.navbar-container nav ul li:hover a {
   border-radius: 3px;
   padding: 4px 20px 4px 20px;
   background-color: snow;
   color: black;
 }
-nav ul li :hover li {
+
+.navbar-container nav ul li :hover li {
   border-radius: 3px;
   padding: 4px 20px 4px 20px;
   background-color: snow;
@@ -3671,7 +3478,7 @@ der { background-color: lightblue; }
 
 .dashboard {
   padding-top: 100px;
-  margin-left: 160px;
+  margin-left: var(--sidebar-content-offset);
   margin-right: 30px;
   display: flex;
   flex-direction: column;
@@ -4349,86 +4156,43 @@ der { background-color: lightblue; }
     min-width: auto;
   }
 }
-nav ul li:hover a {
-  border-radius: 3px;
-  padding: 4px 20px;
-  background-color: snow;
-  color: black;
-}
-
 /* ====================== MOBILE ≤ 991.98px ====================== */
 @media (max-width: 991.98px) {
 
-  .sidebar {
-    position: fixed !important;
-    top: 0;
-    left: 0;
-    height: 100vh;
-    width: 280px;             
-    transform: translateX(-100%);
-    transition: transform .25s ease-in-out;
-    z-index: 3000;             
-    box-shadow: 0 6px 28px rgba(0,0,0,.25);
-  }
-  .sidebar.open {
-    transform: translateX(0);
-  }
+  /* Mini_Nav responsive overrides */
+  .navbar-container nav { padding: 9px 12px !important; }
+  .navbar-container nav ul { gap: 0 !important; float: none !important; flex-direction: column !important; }
+  .navbar-container nav ul li,
+  .navbar-container nav ul li a { width: 100%; padding: 10px 12px !important; }
 
-  .mobile-backdrop {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,.35);
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity .2s ease;
-    z-index: 2990;
-  }
-  .mobile-backdrop.show {
-    opacity: 1;
-    pointer-events: auto;
-  }
-
-  .hamburger-btn {
-    position: fixed;
-    left: 12px;
-    top: 12px;
-    width: 42px;
-    height: 42px;
-    border-radius: 10px;
-    border: 1px solid #e5e5e5;
-    background: #fff;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 3100;
-    cursor: pointer;
-  }
-  .hamburger-btn .bar,
-  .hamburger-btn .bar::before,
-  .hamburger-btn .bar::after {
-    content: "";
-    display: block;
-    width: 22px;
-    height: 2px;
-    background: #222;
-    position: relative;
-    transition: transform .2s ease, opacity .2s ease, top .2s ease;
-  }
-  .hamburger-btn .bar::before { top: -6px; position: relative; }
-  .hamburger-btn .bar::after  { top:  4px; position: relative; }
-  .hamburger-btn.is-open .bar { transform: rotate(45deg); }
-  .hamburger-btn.is-open .bar::before { transform: rotate(90deg); top: 0; }
-  .hamburger-btn.is-open .bar::after { opacity: 0; transform: translateY(-4px); }
-
-  /* Evita superposiciones del navbar de arriba con popovers/filtros */
-
-  nav { padding: 9px 12px !important; }
-  nav ul { gap: 0 !important; float: none !important; flex-direction: column !important; }
-  nav ul li, nav ul li a { width: 100%; padding: 10px 12px !important; }
+  /* Reset sidebar-related page offsets on mobile */
   .content,
   .main,
   .page-content {
     margin-left: 0 !important;
+  }
+
+  /* The sidebar is an overlay at this breakpoint, so page layouts must not
+     reserve desktop rail space. */
+  .section {
+    padding-left: 20px;
+  }
+
+  .activity-container {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .dashboard {
+    margin-left: 0;
+  }
+}
+
+/* Preserve the existing narrow-screen content breathing room after the
+   tablet reset above removes only the desktop rail offset. */
+@media (max-width: 600px) {
+  .section {
+    padding-left: 30px;
   }
 }
 
