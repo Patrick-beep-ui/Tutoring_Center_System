@@ -1,15 +1,17 @@
-import { useState, useEffect, useRef, useCallback, memo, useMemo } from "react";
+import { useState, useEffect, useRef, useCallback, memo, useMemo, useContext } from "react";
 import auth from "../authService";
 import { Link, useOutletContext } from "react-router-dom";
 import Header from "../components/Header";
 import { v4 as uuid } from "uuid";
 import UserNavigators from "../components/UsersNavigators";
 import { toast } from "sonner";
+import { SemesterContext } from "../context/currentSemester";
 import '.././App.css';
 
 function ClassName() {
     const { user: contextUser } = useOutletContext();
     const isAdmin = contextUser?.role === 'admin' || contextUser?.role === 'dev';
+    const { selectedSemesterId } = useContext(SemesterContext);
 
     // Data states
     const [majors, setMajors] = useState([]);
@@ -29,7 +31,7 @@ function ClassName() {
     const [itemsPerPage, setItemsPerPage] = useState(2);
     const scrollRef = useRef(null);
 
-    // Fetch majors, courses, students on mount
+    // Fetch majors and students on mount
     useEffect(() => {
         const fetchMajors = async () => {
             try {
@@ -37,16 +39,6 @@ function ClassName() {
                 setMajors(res.data.majors);
             } catch (e) {
                 console.error(e);
-            }
-        };
-        const fetchCourses = async () => {
-            try {
-                // Catalog with current-semester offering flag and scoped tutor counts
-                const res = await auth.get("/api/courses/catalog");
-                setCourses(res.data.courses);
-            } catch (e) {
-                console.error(e);
-                toast.error(e.response?.data?.msg || "Error fetching courses");
             }
         };
         const fetchStudents = async () => {
@@ -59,9 +51,23 @@ function ClassName() {
         };
 
         fetchMajors();
-        fetchCourses();
         fetchStudents();
     }, []);
+
+    // Fetch catalog scoped to the selected semester
+    useEffect(() => {
+        if (!selectedSemesterId) return;
+        const fetchCourses = async () => {
+            try {
+                const res = await auth.get(`/api/courses/catalog?semester_id=${selectedSemesterId}`);
+                setCourses(res.data.courses);
+            } catch (e) {
+                console.error(e);
+                toast.error(e.response?.data?.msg || "Error fetching courses");
+            }
+        };
+        fetchCourses();
+    }, [selectedSemesterId]);
 
     // Filter courses whenever filters or courses/majors change
     useEffect(() => {
@@ -77,10 +83,12 @@ function ClassName() {
             filtered = filtered.filter(c => major && c.major_id === major.major_id);
         }
 
-        // Course filter
+        // Course filter: match against name or code (search box)
         if (courseFilter !== "all" && courseFilter !== "") {
+            const q = courseFilter.toLowerCase();
             filtered = filtered.filter(c =>
-                c.course_name.toLowerCase().includes(courseFilter.toLowerCase())
+                c.course_name.toLowerCase().includes(q) ||
+                c.course_code.toLowerCase().includes(q)
             );
         }
 
@@ -131,18 +139,18 @@ function ClassName() {
     const toggleRoster = useCallback(async (c) => {
         try {
             if (isOffered(c)) {
-                await auth.delete(`/api/courses/${c.course_id}/roster/current`);
-                toast.success(`${c.course_code} removed from the current semester`);
+                await auth.delete(`/api/courses/${c.course_id}/roster/${selectedSemesterId}`);
+                toast.success(`${c.course_code} removed from the semester`);
             } else {
-                await auth.post(`/api/courses/${c.course_id}/roster/current`);
-                toast.success(`${c.course_code} added to the current semester`);
+                await auth.post(`/api/courses/${c.course_id}/roster/${selectedSemesterId}`);
+                toast.success(`${c.course_code} added to the semester`);
             }
-            const res = await auth.get("/api/courses/catalog");
+            const res = await auth.get(`/api/courses/catalog?semester_id=${selectedSemesterId}`);
             setCourses(res.data.courses);
         } catch (e) {
             toast.error(e.response?.data?.msg || "Error updating semester roster");
         }
-    }, [isOffered]);
+    }, [isOffered, selectedSemesterId]);
 
     return (
         <>
@@ -168,7 +176,7 @@ function ClassName() {
                         <input className="form-check-input" type="checkbox" id="offeredOnlySwitch"
                             checked={offeredOnly} onChange={(e) => setOfferedOnly(e.target.checked)} />
                         <label className="form-check-label" htmlFor="offeredOnlySwitch">
-                            Current semester offerings only
+                            Offerings in selected semester only
                         </label>
                     </div>}
 
