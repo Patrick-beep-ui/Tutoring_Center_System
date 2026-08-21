@@ -25,7 +25,8 @@ function AddSemester() {
                 );
                 setTerms(sorted);
                 if (sorted.length > 0) {
-                    setSourceId(String(sorted[0].semester_id));
+                    const current = sorted.find(t => t.is_current);
+                    setSourceId(String((current || sorted[0]).semester_id));
                 }
             } catch (e) {
                 console.error(e);
@@ -55,9 +56,15 @@ function AddSemester() {
                     if (copied.tutors !== undefined) parts.push(`${copied.tutors} tutor assignments`);
                     if (copied.students !== undefined) parts.push(`${copied.students} student enrollments`);
                     if (copied.schedules !== undefined) parts.push(`${copied.schedules} schedule blocks`);
-                    copySummary = parts.length > 0 ? ` Copied: ${parts.join(", ")}.` : "";
+                    const totalCopied = Object.values(copied).reduce((sum, n) => sum + Number(n || 0), 0);
+                    if (totalCopied === 0) {
+                        toast.warning(`The source semester has nothing to copy for the selected options.`, { duration: 6000 });
+                        copySummary = " Nothing was copied.";
+                    } else {
+                        copySummary = ` Copied: ${parts.join(", ")}.`;
+                    }
                 } catch (copyError) {
-                    toast.error("Semester created, but copying rosters failed. You can re-copy later.", { duration: 5000 });
+                    toast.error("Semester created, but copying rosters failed. You can re-copy later.", { duration: 8000 });
                     console.error(copyError);
                 }
             }
@@ -117,39 +124,35 @@ function AddSemester() {
             </section>
 
             {terms.length > 0 && (
-                <section className="border rounded p-3 mt-3">
+                <section className="border rounded p-3 mt-3 copy-roster-options">
                     <label className="fw-bold">Copy rosters from:</label>
                     <select value={sourceId} onChange={(e) => setSourceId(e.target.value)} className="form-select my-2">
                         <option value="">Don't copy anything</option>
-                        {terms.map(t => (
-                            <option key={t.semester_id} value={t.semester_id}>
-                                {t.semester_type} {t.semester_year}
-                            </option>
-                        ))}
+                        {terms.map(t => {
+                            const rc = t.roster_counts || { courses: 0, tutors: 0, students: 0, schedules: 0 };
+                            return (
+                                <option key={t.semester_id} value={t.semester_id}>
+                                    {`${t.semester_type} ${t.semester_year}${t.is_current ? ' (current)' : ''} — ${rc.courses} courses, ${rc.tutors} tutors, ${rc.students} students`}
+                                </option>
+                            );
+                        })}
                     </select>
 
                     {sourceId && (
                         <div className="d-flex flex-column gap-1 mt-2">
-                            <div className="form-check">
-                                <input className="form-check-input" type="checkbox" id="copyCourses"
-                                    checked={copyCourses} onChange={(e) => setCopyCourses(e.target.checked)} />
-                                <label className="form-check-label" htmlFor="copyCourses">Courses offered</label>
-                            </div>
-                            <div className="form-check">
-                                <input className="form-check-input" type="checkbox" id="copyTutors"
-                                    checked={copyTutors} onChange={(e) => setCopyTutors(e.target.checked)} />
-                                <label className="form-check-label" htmlFor="copyTutors">Tutor roster (with their course assignments)</label>
-                            </div>
-                            <div className="form-check">
-                                <input className="form-check-input" type="checkbox" id="copyStudents"
-                                    checked={copyStudents} onChange={(e) => setCopyStudents(e.target.checked)} />
-                                <label className="form-check-label" htmlFor="copyStudents">Student roster (with their course enrollments)</label>
-                            </div>
-                            <div className="form-check">
-                                <input className="form-check-input" type="checkbox" id="copySchedules"
-                                    checked={copySchedules} onChange={(e) => setCopySchedules(e.target.checked)} />
-                                <label className="form-check-label" htmlFor="copySchedules">Tutor schedules</label>
-                            </div>
+                            {[
+                                { id: "copyCourses", label: "Courses offered", state: copyCourses, set: setCopyCourses },
+                                { id: "copyTutors", label: "Tutor roster (with their course assignments)", state: copyTutors, set: setCopyTutors },
+                                { id: "copyStudents", label: "Student roster (with their course enrollments)", state: copyStudents, set: setCopyStudents },
+                                { id: "copySchedules", label: "Tutor schedules", state: copySchedules, set: setCopySchedules }
+                            ].map(({ id, label, state, set }) => (
+                                <div className={`form-check copy-option ${state ? 'is-included' : 'is-excluded'}`} key={id}>
+                                    <input className="form-check-input" type="checkbox" id={id}
+                                        checked={state} onChange={(e) => set(e.target.checked)} />
+                                    <label className="form-check-label" htmlFor={id}>{label}</label>
+                                    <span className="copy-state-badge">{state ? "Included" : "Excluded"}</span>
+                                </div>
+                            ))}
                             <small className="text-muted">After copying you can clean up or re-assign courses from each tutor/student profile.</small>
                         </div>
                     )}

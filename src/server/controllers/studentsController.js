@@ -18,7 +18,7 @@ export const getStudents = async (req, res) => {
                 users u
             JOIN
                 majors m ON u.major_id = m.major_id
-            LEFT JOIN
+            JOIN
                 user_courses tc ON u.user_id = tc.user_id AND tc.status = 'Received' AND tc.semester_id = :semester_id
             LEFT JOIN
                 courses c ON c.course_id = tc.course_id
@@ -39,6 +39,9 @@ export const getStudents = async (req, res) => {
         });
     }
     catch(e) {
+        if (e.message === 'No current semester is set') {
+            return res.status(404).json({ error: e.message });
+        }
         console.error(e);
         res.status(500).json({ error: 'Internal server error' });
     }

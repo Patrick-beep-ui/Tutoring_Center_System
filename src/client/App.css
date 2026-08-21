@@ -4196,4 +4196,66 @@ der { background-color: lightblue; }
   }
 }
 
+/* ---------------- COPY ROSTER OPTIONS (ADD SEMESTER WIZARD) ---------------- */
+.copy-roster-options .form-check-input {
+  width: 1.15em;
+  height: 1.15em;
+  margin-top: 0.2em;
+  border: 2px solid var(--blue);
+  background-color: var(--white);
+  cursor: pointer;
+  accent-color: var(--blue);
+}
+
+.copy-roster-options .form-check-input:checked {
+  background-color: var(--blue);
+  border-color: var(--blue);
+}
+
+.copy-roster-options .copy-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 5px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 20px; /* This is provisional and hardcoded to avoid the layout to break*/
+  border-radius: 6px;
+  transition: background-color 0.15s ease, opacity 0.15s ease;
+}
+
+.copy-roster-options .copy-option.is-included {
+  background-color: rgba(25, 45, 100, 0.06);
+}
+
+.copy-roster-options .copy-option.is-excluded {
+  opacity: 0.55;
+  background-color: transparent;
+}
+
+.copy-roster-options .copy-option.is-excluded .form-check-label {
+  text-decoration: line-through;
+}
+
+.copy-roster-options .copy-state-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 2px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.copy-roster-options .is-included .copy-state-badge {
+  background-color: var(--blue);
+  color: var(--white);
+}
+
+.copy-roster-options .is-excluded .copy-state-badge {
+  background-color: transparent;
+  border: 1px solid var(--gray);
+  color: var(--dark-gray);
+}
+
 

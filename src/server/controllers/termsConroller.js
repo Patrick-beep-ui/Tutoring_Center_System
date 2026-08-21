@@ -7,8 +7,44 @@ export const getSemesters = async (req, res) => {
         const terms = await Semester.findAll({
             order: [["semester_year", "DESC"], ["semester_id", "DESC"]]
         })
+
+        const [courseCounts] = await connection.query(`
+            SELECT semester_id, COUNT(DISTINCT course_id) AS courses
+            FROM semester_courses GROUP BY semester_id`);
+        const [rosterCounts] = await connection.query(`
+            SELECT semester_id,
+                SUM(status = 'Given') AS tutors,
+                SUM(status = 'Received') AS students
+            FROM user_courses GROUP BY semester_id`);
+        const [scheduleCounts] = await connection.query(`
+            SELECT semester_id, COUNT(*) AS schedules
+            FROM schedules GROUP BY semester_id`);
+
+        const countMap = {};
+        for (const row of courseCounts) {
+            countMap[row.semester_id] = { courses: Number(row.courses), tutors: 0, students: 0, schedules: 0 };
+        }
+        for (const row of rosterCounts) {
+            countMap[row.semester_id] = {
+                ...(countMap[row.semester_id] || { courses: 0, schedules: 0 }),
+                tutors: Number(row.tutors),
+                students: Number(row.students)
+            };
+        }
+        for (const row of scheduleCounts) {
+            countMap[row.semester_id] = {
+                ...(countMap[row.semester_id] || { courses: 0, tutors: 0, students: 0 }),
+                schedules: Number(row.schedules)
+            };
+        }
+
+        const termsWithCounts = terms.map(term => ({
+            ...term.toJSON(),
+            roster_counts: countMap[term.semester_id] || { courses: 0, tutors: 0, students: 0, schedules: 0 }
+        }));
+
         res.status(200).json({
-            terms
+            terms: termsWithCounts
         })
     }
     catch(e) {
