@@ -63,8 +63,6 @@ const ScheduleSession = (props) => {
         <form onSubmit={handleSubmit(processData)} className="form-container schedule-session-form">
         <h1>Schedule Session</h1>
             <input type="text" {...register("student_id")} value={user.ku_id} hidden />
-            <input type="hidden" {...register("semester_id")} value={1} />
-
             <input type="hidden" {...register("created_by")} value={user.user_id} />
 
             <section>

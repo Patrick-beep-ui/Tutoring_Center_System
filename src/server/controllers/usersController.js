@@ -5,6 +5,7 @@ import TutorCourse from "../models/TutorCourse.js";
 import connection from "../connection.js";
 import {QueryTypes} from "sequelize";
 import {sanitizeUserInput} from "../utils/sanitize.js";
+import { resolveSemesterId } from "../utils/currentSemester.js";
 
 //Function to sanitize input variables when using raw queries
 
@@ -116,33 +117,37 @@ export const getUserCourses = async (req, res) => {
     try {
         const user_id = sanitizeUserInput(req.params.user_id);
         const ku_id = sanitizeUserInput(req.params.ku_id);
+        const semester_id = await resolveSemesterId(req.query.semester_id);
 
       const userCourses = await connection.query(
-            `SELECT 
+            `SELECT
                 c.course_id,
                 c.course_code,
                 c.course_name,
                 COUNT(sd.session_id) AS qtyOfSessions
-            FROM 
+            FROM
                 user_courses uc
-            JOIN 
+            JOIN
                 courses c ON uc.course_id = c.course_id
-            LEFT JOIN 
-                sessions s ON s.course_id = c.course_id AND s.student_id = :ku_id
-            LEFT JOIN 
+            LEFT JOIN
+                sessions s ON s.course_id = c.course_id AND s.student_id = :ku_id AND s.semester_id = :semester_id
+            LEFT JOIN
                 session_details sd ON s.session_id = sd.session_id AND sd.session_status = 'completed'
-            WHERE 
-                uc.user_id = :user_id AND uc.status = 'Received'
-            GROUP BY 
+            WHERE
+                uc.user_id = :user_id AND uc.status = 'Received' AND uc.semester_id = :semester_id
+            GROUP BY
                 c.course_id, c.course_code, c.course_name;`,
                 {
-                    replacements: { user_id: user_id, ku_id: ku_id },
-                    type: QueryTypes.SELECT 
+                    replacements: { user_id: user_id, ku_id: ku_id, semester_id },
+                    type: QueryTypes.SELECT
                 }
       )
       res.status(200).json({ userCourses });
-      
+
     } catch (e) {
+      if (e.message === 'No current semester is set') {
+            return res.status(404).json({ error: e.message });
+        }
       console.error(e);
       res.status(500).json({ error: 'Internal Server Error' });
     }
@@ -152,6 +157,7 @@ export const updateStudentCourses = async (req, res) => {
     try {
         const user_id = sanitizeUserInput(req.params.user_id);
         const { course_ids } = req.body;
+        const semester_id = await resolveSemesterId(req.body.semester_id);
 
         if (!Array.isArray(course_ids)) {
             return res.status(400).json({ error: 'course_ids must be an array' });
@@ -164,7 +170,7 @@ export const updateStudentCourses = async (req, res) => {
 
         await connection.transaction(async (t) => {
             await TutorCourse.destroy({
-                where: { user_id: user_id, status: 'Received' },
+                where: { user_id: user_id, status: 'Received', semester_id },
                 transaction: t
             });
 
@@ -172,31 +178,32 @@ export const updateStudentCourses = async (req, res) => {
                 const records = course_ids.map((course_id) => ({
                     course_id,
                     user_id: user_id,
-                    status: 'Received'
+                    status: 'Received',
+                    semester_id
                 }));
                 await TutorCourse.bulkCreate(records, { transaction: t });
             }
         });
 
         const updatedCourses = await connection.query(`
-            SELECT 
+            SELECT
                 c.course_id,
                 c.course_code,
                 c.course_name,
                 COUNT(sd.session_id) AS qtyOfSessions
-            FROM 
+            FROM
                 user_courses uc
-            JOIN 
+            JOIN
                 courses c ON uc.course_id = c.course_id
-            LEFT JOIN 
-                sessions s ON s.course_id = c.course_id AND s.student_id = :ku_id
-            LEFT JOIN 
+            LEFT JOIN
+                sessions s ON s.course_id = c.course_id AND s.student_id = :ku_id AND s.semester_id = :semester_id
+            LEFT JOIN
                 session_details sd ON s.session_id = sd.session_id AND sd.session_status = 'completed'
-            WHERE 
-                uc.user_id = :user_id AND uc.status = 'Received'
-            GROUP BY 
+            WHERE
+                uc.user_id = :user_id AND uc.status = 'Received' AND uc.semester_id = :semester_id
+            GROUP BY
                 c.course_id, c.course_code, c.course_name;`, {
-                replacements: { user_id, ku_id: user.ku_id },
+                replacements: { user_id, ku_id: user.ku_id, semester_id },
                 type: QueryTypes.SELECT
             });
 
@@ -205,6 +212,9 @@ export const updateStudentCourses = async (req, res) => {
             courses: updatedCourses
         });
     } catch (e) {
+        if (e.message === 'No current semester is set') {
+            return res.status(404).json({ error: e.message });
+        }
         console.error(e);
         res.status(500).json({ error: 'Internal server error' });
     }

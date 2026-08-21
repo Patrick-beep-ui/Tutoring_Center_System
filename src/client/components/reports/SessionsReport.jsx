@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useRef, useMemo, memo } from "react";
+import React, { useState, useEffect, useRef, useMemo, memo, useContext } from "react";
 import api from "../../axiosService";
+import { SemesterContext } from "../../context/currentSemester";
 import { Card } from "react-bootstrap";
 import { Tabs, Tab } from "react-bootstrap";
 import {
@@ -49,10 +50,12 @@ function SessionsReportComponent() {
   const completionRef = useRef(null);
   const feedbackRef = useRef(null);
 
+  const { selectedSemesterId } = useContext(SemesterContext);
+
   useEffect(() => {
     const getReportData = async () => {
       try {
-        const { data } = await api.get("/report/sessions");
+        const { data } = await api.get(`/report/sessions${selectedSemesterId ? `?semester_id=${selectedSemesterId}` : ''}`);
 
         setWeeklyData(data.weeklyData || []);
 
@@ -93,7 +96,7 @@ function SessionsReportComponent() {
       }
     };
     getReportData();
-  }, []);
+  }, [selectedSemesterId]);
 
   // Memoizar charts
   const weeklyChart = useMemo(

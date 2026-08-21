@@ -1,7 +1,8 @@
-import { useState, useEffect, useCallback, useMemo, memo, useRef } from "react"
+import { useState, useEffect, useCallback, useMemo, memo, useRef, useContext } from "react"
 import { Card,Button } from "react-bootstrap"
 import { Tabs, Tab } from "react-bootstrap"
 import api from "../../axiosService"
+import { SemesterContext } from "../../context/currentSemester"
 import {
   Bar,
   BarChart,
@@ -82,10 +83,12 @@ const DepartmentReport = () => {
     const sessionsRef = useRef(null);
     const satisfactionRef = useRef(null);
 
+    const { selectedSemesterId } = useContext(SemesterContext);
+
     useEffect(() => {
       const getReportData = async () => {
         try {
-          const response = await api.get("/report/majors");
+          const response = await api.get(`/report/majors${selectedSemesterId ? `?semester_id=${selectedSemesterId}` : ''}`);
           const data = response.data;
 
           const formatRates = (value) => {
@@ -132,7 +135,7 @@ const DepartmentReport = () => {
       }
 
       getReportData()
-    }, [])
+    }, [selectedSemesterId])
 
     const usageChart = useMemo(() => (
       <ResponsiveContainer width="100%" height="100%" minHeight="400px">

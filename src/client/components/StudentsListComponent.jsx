@@ -1,13 +1,15 @@
 import UserNavigators from "./UsersNavigators";
-import { useState, useEffect, useCallback, memo } from "react";
+import { useState, useEffect, useCallback, memo, useContext } from "react";
 import StudentsNavigationTable from "./StudentsNavigationTable";
 import UserNavigationTable from "./UsersNavigationTable";
 import { exportToCSV } from "../services/exportCSV";
 import auth from "../authService";
+import { SemesterContext } from "../context/currentSemester";
 
 const StudentsListComponent = ({majors, userCourses}) => {
     const [students, setStudents] = useState([]);
     const [filteredStudents, setFilteredStudents] = useState([]);
+    const { selectedSemesterId } = useContext(SemesterContext);
 
     // Filter states
     const [programFilter, setProgramFilter] = useState("all");
@@ -17,9 +19,8 @@ const StudentsListComponent = ({majors, userCourses}) => {
     useEffect(() => {
         const getStudents = async () => {
             try {
-                const response = await auth.get("/api/students");
+                const response = await auth.get(`/api/students${selectedSemesterId ? `?semester_id=${selectedSemesterId}` : ''}`);
                 const {data} = response;
-                console.log("students: ",data.students)
                 setStudents(data.students)
             }
             catch(e) {
@@ -28,7 +29,7 @@ const StudentsListComponent = ({majors, userCourses}) => {
         }
 
         getStudents();
-    }, []);
+    }, [selectedSemesterId]);
 
     const getFilteredStudents = useCallback(() => {
         let filtered = [...students];

@@ -1,7 +1,8 @@
-import { useState, useEffect, useMemo, memo, useCallback } from "react";
+import { useState, useEffect, useMemo, memo, useCallback, useContext } from "react";
 import SessionCard from "../components/SessionCard.jsx";
 import SessionFilters from "../components/SessionFilters.jsx";
 import api from "../axiosService.js";
+import { SemesterContext } from "../context/currentSemester";
 
 import "../App.css";
 
@@ -18,11 +19,12 @@ const DEFAULT_FILTERS = {
 const Activity_Sessions = () => {
     const [sessions, setSessions] = useState([]);
     const [filters, setFilters] = useState(DEFAULT_FILTERS);
+    const { selectedSemesterId } = useContext(SemesterContext);
 
     useEffect(() => {
         const fetchSessions = async () => {
             try {
-                const response = await api.get("/sessions");
+                const response = await api.get(`/sessions${selectedSemesterId ? `?semester_id=${selectedSemesterId}` : ''}`);
                 setSessions(response.data.sessions);
             } catch (error) {
                 console.error("Error fetching sessions:", error);
@@ -30,7 +32,7 @@ const Activity_Sessions = () => {
         };
 
         fetchSessions();
-    }, []);
+    }, [selectedSemesterId]);
 
     const tutors = useMemo(() => {
         const names = [...new Set(sessions.map(s => s.tutor_name).filter(Boolean))];

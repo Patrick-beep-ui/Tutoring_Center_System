@@ -1,4 +1,5 @@
 module.exports = {
+  blocklist: ['container'],
   theme: {
     extend: {
       colors: {
@@ -11,6 +12,10 @@ module.exports = {
       },
       fontFamily: {
         poppins: ['Poppins', 'sans-serif'],
+      },
+      spacing: {
+        'sidebar-width': 'var(--sidebar-width)',
+        'sidebar-content-offset': 'var(--sidebar-content-offset)',
       },
     },
   },

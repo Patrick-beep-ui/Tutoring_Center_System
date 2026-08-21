@@ -1,23 +1,28 @@
 import { useState, useEffect, useRef, useCallback, memo, useMemo } from "react";
 import auth from "../authService";
-import { Link } from "react-router-dom";
+import { Link, useOutletContext } from "react-router-dom";
 import Header from "../components/Header";
 import { v4 as uuid } from "uuid";
 import UserNavigators from "../components/UsersNavigators";
+import { toast } from "sonner";
 import '.././App.css';
 
 function ClassName() {
+    const { user: contextUser } = useOutletContext();
+    const isAdmin = contextUser?.role === 'admin' || contextUser?.role === 'dev';
+
     // Data states
     const [majors, setMajors] = useState([]);
-    const [courses, setCourses] = useState([]);  
-    const [students, setStudents] = useState([]);  
+    const [courses, setCourses] = useState([]);
+    const [students, setStudents] = useState([]);
 
     const [filteredCourses, setFilteredCourses] = useState([]);
 
     // Filter states
     const [programFilter, setProgramFilter] = useState("all");
     const [courseFilter, setCourseFilter] = useState("all");
-    const [idFilter, setIdFilter] = useState("");  
+    const [idFilter, setIdFilter] = useState("");
+    const [offeredOnly, setOfferedOnly] = useState(true);
 
     // Pagination states
     const [currentPage, setCurrentPage] = useState(0);
@@ -36,10 +41,12 @@ function ClassName() {
         };
         const fetchCourses = async () => {
             try {
-                const res = await auth.get("/api/courses");
+                // Catalog with current-semester offering flag and scoped tutor counts
+                const res = await auth.get("/api/courses/catalog");
                 setCourses(res.data.courses);
             } catch (e) {
                 console.error(e);
+                toast.error(e.response?.data?.msg || "Error fetching courses");
             }
         };
         const fetchStudents = async () => {
@@ -60,11 +67,14 @@ function ClassName() {
     useEffect(() => {
         let filtered = [...courses];
 
+        if (offeredOnly) {
+            filtered = filtered.filter(c => c.offered === 1 || c.offered === true);
+        }
+
         // Program filter: map major_name to major_id
         if (programFilter !== "all") {
             const major = majors.find(m => m.major_name === programFilter);
-            console.log("Major Filter: ", major.major_id);
-            filtered = filtered.filter(c => c.major_id === major.major_id);
+            filtered = filtered.filter(c => major && c.major_id === major.major_id);
         }
 
         // Course filter
@@ -84,7 +94,7 @@ function ClassName() {
 
         setFilteredCourses(filtered);
         setCurrentPage(0); // Reset pagination on filter change
-    }, [programFilter, courseFilter, idFilter, courses, majors]);
+    }, [programFilter, courseFilter, idFilter, offeredOnly, courses, majors]);
 
     // Handle responsive items per page
     useEffect(() => {
@@ -116,6 +126,24 @@ function ClassName() {
         );
     }, [filteredCourses, currentPage, itemsPerPage]);
 
+    const isOffered = useCallback((c) => c.offered === 1 || c.offered === true, []);
+
+    const toggleRoster = useCallback(async (c) => {
+        try {
+            if (isOffered(c)) {
+                await auth.delete(`/api/courses/${c.course_id}/roster/current`);
+                toast.success(`${c.course_code} removed from the current semester`);
+            } else {
+                await auth.post(`/api/courses/${c.course_id}/roster/current`);
+                toast.success(`${c.course_code} added to the current semester`);
+            }
+            const res = await auth.get("/api/courses/catalog");
+            setCourses(res.data.courses);
+        } catch (e) {
+            toast.error(e.response?.data?.msg || "Error updating semester roster");
+        }
+    }, [isOffered]);
+
     return (
         <>
             <Header />
@@ -130,10 +158,19 @@ function ClassName() {
                     majors={majors}
                     courses={courses}
                     students={students}
-                    isInputSearch={true} 
+                    isInputSearch={true}
                     IdLabel="Code"
                     IdPlaceholder="Type Course Code"
                 />
+
+                {isAdmin &&
+                    <div className="form-check form-switch" style={{ margin: '10px 20px' }}>
+                        <input className="form-check-input" type="checkbox" id="offeredOnlySwitch"
+                            checked={offeredOnly} onChange={(e) => setOfferedOnly(e.target.checked)} />
+                        <label className="form-check-label" htmlFor="offeredOnlySwitch">
+                            Current semester offerings only
+                        </label>
+                    </div>}
 
                 <button className="arrow left" onClick={prevPage} disabled={currentPage === 0}>←</button>
 
@@ -144,11 +181,22 @@ function ClassName() {
                                 <p>{c.course_code}</p>
                                 <p>{c.course_name}</p>
                                 <p>{c.credits} Credits</p>
-                                <p>{c.Major?.major_name}</p>
+                                <p>{c.major_name}</p>
                             </div>
                             <div className="course-tutors">
                                 <p>{c.tutors_counter} Tutors</p>
                                 <a href="">See Tutors</a>
+                                {isAdmin && (
+                                    isOffered(c) ? (
+                                        <button className="btn btn-sm btn-outline-danger" onClick={() => toggleRoster(c)}>
+                                            Remove from Semester
+                                        </button>
+                                    ) : (
+                                        <button className="btn btn-sm btn-outline-success" onClick={() => toggleRoster(c)}>
+                                            Add to Semester
+                                        </button>
+                                    )
+                                )}
                             </div>
                         </div>
                     ))}

@@ -51,7 +51,7 @@ function AddTutor() {
         const fetchData = async () => {
             try {
                 const [classesResponse, majorsResponse] = await Promise.all([
-                    auth.get("/api/courses"),
+                    auth.get("/api/courses/semester/current"),
                     auth.get("/api/majors")
                 ]);
     
