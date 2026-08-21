@@ -4214,9 +4214,12 @@ der { background-color: lightblue; }
 
 .copy-roster-options .copy-option {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 8px;
-  padding: 6px 10px;
+  margin: 5px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 20px; /* This is provisional and hardcoded to avoid the layout to break*/
   border-radius: 6px;
   transition: background-color 0.15s ease, opacity 0.15s ease;
 }
@@ -4235,7 +4238,6 @@ der { background-color: lightblue; }
 }
 
 .copy-roster-options .copy-state-badge {
-  margin-left: auto;
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.04em;
