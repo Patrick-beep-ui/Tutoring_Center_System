@@ -6,21 +6,23 @@ import Schedule from "../models/Schedule.js";
 import connection from "../connection.js";
 import {QueryTypes} from "sequelize";
 import { sanitizeUserInput } from "../utils/sanitize.js";
+import { resolveSemesterId } from "../utils/currentSemester.js";
 
 export const getTutors = async (req, res) => {
     try {
-        const tutors = await connection.query(` 
+        const currentSemesterId = await resolveSemesterId(null);
+        const tutors = await connection.query(`
         SELECT CONCAT(u.first_name, ' ', u.last_name) as 'tutor_name', u.email as 'tutor_email', u.ku_id as 'tutor_id', m.major_name as 'tutor_major', GROUP_CONCAT(DISTINCT c.course_code ORDER BY c.course_code SEPARATOR ', ') AS tutor_courses, GROUP_CONCAT(DISTINCT c.course_name ORDER BY c.course_name SEPARATOR ', ') AS tutor_courses_names, t.tutor_id as 'id'
-        FROM users u 
+        FROM users u
         JOIN tutors t ON u.user_id = t.user_id
         JOIN majors m ON u.major_id = m.major_id
-        JOIN user_courses tc ON t.user_id = tc.user_id
+        JOIN user_courses tc ON t.user_id = tc.user_id AND tc.semester_id = :semester_id
         JOIN courses c ON c.course_id = tc.course_id
         WHERE tc.status = 'Given'
         GROUP BY tutor_name, tutor_email, tutor_id, tutor_major, id
         ORDER BY tutor_id;`, {
             type: QueryTypes.SELECT,
-            replacements: [],
+            replacements: { semester_id: currentSemesterId },
         })
         res.status(201);
         res.json({
@@ -29,6 +31,7 @@ export const getTutors = async (req, res) => {
     }
     catch(e) {
         console.error(e)
+        res.status(500).json({ error: 'Internal server error' });
     }
 }
 
@@ -36,33 +39,34 @@ export const getTutors = async (req, res) => {
 export const getTutorsByUser = async (req, res) => {
     try {
         const user_id = sanitizeUserInput(req.params.user_id)
+        const currentSemesterId = await resolveSemesterId(null);
         const tutors = await connection.query(
-            `SELECT 
-                CONCAT(u.first_name, ' ', u.last_name) as 'tutor_name', 
-                u.email as 'tutor_email', 
-                u.ku_id as 'tutor_id', 
-                m.major_name as 'tutor_major', 
+            `SELECT
+                CONCAT(u.first_name, ' ', u.last_name) as 'tutor_name',
+                u.email as 'tutor_email',
+                u.ku_id as 'tutor_id',
+                m.major_name as 'tutor_major',
                 GROUP_CONCAT(DISTINCT c.course_code ORDER BY c.course_code SEPARATOR ', ') AS tutor_courses,
                 t.tutor_id as 'id'
-            FROM 
+            FROM
                 users u
-            JOIN 
+            JOIN
                 tutors t ON u.user_id = t.user_id
-            JOIN 
+            JOIN
                 majors m ON u.major_id = m.major_id
-            JOIN 
-                user_courses tc ON t.user_id = tc.user_id
-            JOIN 
+            JOIN
+                user_courses tc ON t.user_id = tc.user_id AND tc.semester_id = :semester_id
+            JOIN
                 courses c ON c.course_id = tc.course_id
-            WHERE 
-                tc.status = 'Given' 
-                AND c.course_id IN (SELECT course_id FROM user_courses WHERE user_id = :user_id)
-            GROUP BY 
+            WHERE
+                tc.status = 'Given'
+                AND c.course_id IN (SELECT course_id FROM user_courses WHERE user_id = :user_id AND status = 'Received' AND semester_id = :semester_id)
+            GROUP BY
                 tutor_name, tutor_email, tutor_id, tutor_major, id
-            ORDER BY 
+            ORDER BY
                 tutor_id;`, {
                     type: QueryTypes.SELECT,
-                    replacements: { user_id: user_id },
+                    replacements: { user_id: user_id, semester_id: currentSemesterId },
                 }
         )
 
@@ -73,6 +77,7 @@ export const getTutorsByUser = async (req, res) => {
     }
     catch(e) {
         console.error(e)
+        res.status(500).json({ error: 'Internal server error' });
     }
 }
 
@@ -83,6 +88,7 @@ export const addTutor = async (req, res) => {
 
         const classIDs = req.body['class_option'];
         const schedules = req.body.schedule;
+        const currentSemesterId = await resolveSemesterId(null);
         
         const user = new User({
             first_name: req.body.first_name,
@@ -120,19 +126,21 @@ export const addTutor = async (req, res) => {
                         user_id: tutor.tutor_id,
                         day,
                         start_time: schedule.start_time,
-                        end_time: schedule.end_time
+                        end_time: schedule.end_time,
+                        semester_id: currentSemesterId
                     });
                     await newSchedule.save();
                 }
             }
         }
-        
+
         if (Array.isArray(classIDs)) {
             for(const classID of classIDs) {
                 const tutorCourse = new TutorCourse({
                     course_id: classID,
                     user_id: tutor.tutor_id,
-                    status: 'Given'
+                    status: 'Given',
+                    semester_id: currentSemesterId
                 });
                 await tutorCourse.save();
             }
@@ -191,6 +199,7 @@ export const updateTutorCourses = async (req, res) => {
     try {
         const tutor_id = sanitizeUserInput(req.params.tutor_id);
         const { course_ids } = req.body;
+        const semester_id = await resolveSemesterId(req.body.semester_id);
 
         if (!Array.isArray(course_ids)) {
             return res.status(400).json({ error: 'course_ids must be an array' });
@@ -203,7 +212,7 @@ export const updateTutorCourses = async (req, res) => {
 
         await connection.transaction(async (t) => {
             await TutorCourse.destroy({
-                where: { user_id: tutor_id, status: 'Given' },
+                where: { user_id: tutor_id, status: 'Given', semester_id },
                 transaction: t
             });
 
@@ -211,43 +220,45 @@ export const updateTutorCourses = async (req, res) => {
                 const records = course_ids.map((course_id) => ({
                     course_id,
                     user_id: tutor_id,
-                    status: 'Given'
+                    status: 'Given',
+                    semester_id
                 }));
                 await TutorCourse.bulkCreate(records, { transaction: t });
             }
         });
 
         const updatedCourses = await connection.query(`
-            SELECT 
+            SELECT
                 c.course_id,
                 c.course_name,
                 c.course_code,
-                COUNT(CASE WHEN sd.session_status = 'completed' AND sem.is_current = TRUE THEN s.session_id END) AS completed_sessions
-            FROM 
+                COUNT(CASE WHEN sd.session_status = 'completed' THEN s.session_id END) AS completed_sessions
+            FROM
                 user_courses uc
-            JOIN 
+            JOIN
                 courses c ON uc.course_id = c.course_id
-            LEFT JOIN 
-                sessions s ON uc.user_id = s.tutor_id AND s.course_id = c.course_id
-            LEFT JOIN 
+            LEFT JOIN
+                sessions s ON uc.user_id = s.tutor_id AND s.course_id = c.course_id AND s.semester_id = :semester_id
+            LEFT JOIN
                 session_details sd ON s.session_id = sd.session_id
-            LEFT JOIN 
-                semester sem ON s.semester_id = sem.semester_id
-            WHERE 
-                uc.user_id = :user_id AND uc.status = 'Given'
-            GROUP BY 
+            WHERE
+                uc.user_id = :user_id AND uc.status = 'Given' AND uc.semester_id = :semester_id
+            GROUP BY
                 c.course_id, c.course_name, c.course_code
-            ORDER BY 
+            ORDER BY
                 c.course_name;`, {
-                replacements: { user_id: tutor_id },
+                replacements: { user_id: tutor_id, semester_id },
                 type: QueryTypes.SELECT
             });
 
-        res.status(200).json({ 
+        res.status(200).json({
             msg: 'Tutor courses updated successfully',
-            courses: updatedCourses 
+            courses: updatedCourses
         });
     } catch (e) {
+        if (e.message === 'No current semester is set') {
+            return res.status(404).json({ error: e.message });
+        }
         console.error(e);
         res.status(500).json({ error: 'Internal server error' });
     }

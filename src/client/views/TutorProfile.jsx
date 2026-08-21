@@ -81,10 +81,11 @@ function TutorProfile() {
 
     const fetchAllCourses = useCallback(async () => {
         try {
-            const response = await auth.get("/api/courses");
+            // Only courses offered in the current semester can be assigned
+            const response = await auth.get("/api/courses/semester/current");
             setAllCourses(response.data.courses || []);
         } catch (e) {
-            console.error("Error fetching all courses:", e);
+            console.error("Error fetching semester courses:", e);
         }
     }, []);
 
