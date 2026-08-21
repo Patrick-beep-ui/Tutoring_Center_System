@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import auth from '../authService';
+import { SemesterContext } from '../context/currentSemester';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -33,10 +34,12 @@ const Graph = () => {
     }]
   });
 
+  const { selectedSemesterId } = useContext(SemesterContext);
+
   useEffect(() => {
     const getSessions = async () => {
       try {
-        const response = await auth.get(`/api/sessions`);
+        const response = await auth.get(`/api/sessions${selectedSemesterId ? `?semester_id=${selectedSemesterId}` : ''}`);
         const { data } = response;
         if (data && data.sessions) {
           // Aggregate data: count sessions per tutor
@@ -66,7 +69,7 @@ const Graph = () => {
     };
 
     getSessions();
-  }, []);
+  }, [selectedSemesterId]);
 
   const options = {
     maintainAspectRatio: false,

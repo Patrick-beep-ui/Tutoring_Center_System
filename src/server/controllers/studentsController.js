@@ -4,7 +4,7 @@ import { resolveSemesterId } from "../utils/currentSemester.js";
 
 export const getStudents = async (req, res) => {
     try {
-        const currentSemesterId = await resolveSemesterId(null);
+        const currentSemesterId = await resolveSemesterId(req.query.semester_id);
         const students = await connection.query(
             `SELECT
                 CONCAT(u.first_name, ' ', u.last_name) AS student_name,

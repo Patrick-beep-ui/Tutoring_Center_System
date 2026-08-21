@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, memo } from "react";
+import { useState, useEffect, useCallback, memo, useContext } from "react";
 import { useParams, useOutletContext } from "react-router-dom";
 import { Link } from "react-router-dom";
 import Header from "../components/Header";
@@ -7,6 +7,7 @@ import texts from "../texts/tutorProfile.json"
 import auth from "../authService";
 import Popup from "reactjs-popup";
 import { toast } from "sonner";
+import { SemesterContext } from "../context/currentSemester";
 
 
 function TutorProfile() {
@@ -27,13 +28,16 @@ function TutorProfile() {
     console.log("User Role:", role);
     console.log("User context tole:", contextUser.role);
 
+    const { selectedSemesterId } = useContext(SemesterContext);
+    const semesterQuery = selectedSemesterId ? `?semester_id=${selectedSemesterId}` : '';
+
     const fetchTutorData = useCallback(async () => {
         try {
             const [TutorResponse, coursesResponse, sessionResponse, schedulesResponse] = await Promise.all([
                 auth.get(`/api/tutors/${tutor_id}`),
-                auth.get(`/api/courses/${tutor_id}`),
-                auth.get(`/api/sessions/session_status/${tutor_id}`),
-                auth.get(`/api/schedules/${tutor_id}`)
+                auth.get(`/api/courses/${tutor_id}${semesterQuery}`),
+                auth.get(`/api/sessions/session_status/${tutor_id}${semesterQuery}`),
+                auth.get(`/api/schedules/${tutor_id}${semesterQuery}`)
             ]);
 
             const tutorData = TutorResponse.data.tutor_info;
@@ -60,7 +64,7 @@ function TutorProfile() {
 
             console.error("Error fetching data:", error);
         }
-    }, [tutor_id]);
+    }, [tutor_id, semesterQuery]);
 
     const fecthStudentData = useCallback(async () => {
         try {

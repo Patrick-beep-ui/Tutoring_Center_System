@@ -7,16 +7,18 @@ import "../App.css";
 import texts from "../texts/sessions.json";
 import { exportToCSV } from "../services/exportCSV";
 import api from "../axiosService";
+import { SemesterContext } from "../context/currentSemester";
 
 function Home() {
     const [sessions, setSessions] = useState([]);
     const [currentWeek, setCurrentWeek] = useState(1);  // Start at week 1
     const navigate = useNavigate();
+    const { selectedSemesterId } = useContext(SemesterContext);
 
     useEffect(() => {
         const getSessions = async () => {
             try {
-                const response = await api.get(`/sessions`);
+                const response = await api.get(`/sessions${selectedSemesterId ? `?semester_id=${selectedSemesterId}` : ''}`);
                 const { data } = response;
                 setSessions(data.sessions);
             } catch (e) {
@@ -24,7 +26,7 @@ function Home() {
             }
         };
         getSessions();
-    }, []);         
+    }, [selectedSemesterId]);         
 
     const redirect = useCallback((sessionId) => {
         navigate(`/session/details/${sessionId}`);

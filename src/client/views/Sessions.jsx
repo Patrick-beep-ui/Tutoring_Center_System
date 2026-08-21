@@ -1,10 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useParams } from "react-router-dom";
 import { Link, useOutletContext} from "react-router-dom";
 import SessionTable from "../components/SessionTable";
 import Header from "../components/Header";
 import { useLayout } from "../context/Layout.jsx";
 import auth from "../authService.js";
+import { SemesterContext } from "../context/currentSemester";
 
 // You can use this to conditionally render different layouts
 //const isElectron = typeof window !== "undefined" && window.platform && window.platform.isElectron;
@@ -15,6 +16,7 @@ function Session() {
     const {tutor_id} = useParams();
     const {course_id} = useParams();
     const {role} = useParams();
+    const { selectedSemesterId } = useContext(SemesterContext);
 
     //const [layout, setLayout] = useState("undefined");
     const { layout } = useLayout();
@@ -23,9 +25,8 @@ function Session() {
     useEffect(() => {
         const getSessions = async () => {
             try {
-                const response = await auth.get(`/api/sessions/${tutor_id}/${course_id}`)
+                const response = await auth.get(`/api/sessions/${tutor_id}/${course_id}${selectedSemesterId ? `?semester_id=${selectedSemesterId}` : ''}`)
                 const {data} = response;
-                console.log(data.sessions)
                 setSession(data.sessions)
             }
             catch(e) {
@@ -33,7 +34,7 @@ function Session() {
             }
         }
         getSessions();
-    }, [])
+    }, [selectedSemesterId])
 
     /*
     useEffect(() => {
