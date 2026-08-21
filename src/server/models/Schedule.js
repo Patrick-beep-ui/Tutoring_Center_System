@@ -31,6 +31,16 @@ const Schedule = connection.define("Schedule", {
         type: DataTypes.TIME,
         allowNull: false
     },
+    semester_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+            model: 'Semester',
+            key: "semester_id"
+        },
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE"
+    },
 }, {
     tableName: "schedules",
     timestamps: false

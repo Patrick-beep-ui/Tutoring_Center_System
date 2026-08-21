@@ -8,6 +8,8 @@ import TutorCourse from "./TutorCourse.js";
 import Contact from "./Contact.js";
 import SessionFeedback from "./SessionFeedback.js";
 import Semester from "./Semester.js";
+import SemesterCourse from "./SemesterCourse.js";
+import Schedule from "./Schedule.js";
 
 // User ↔ Major
 User.belongsTo(Major, { foreignKey: "major_id" });
@@ -24,6 +26,20 @@ TutorSession.belongsTo(Course, { foreignKey: "course_id" });
 // TutorSession ↔ Semester
 Semester.hasMany(TutorSession, { foreignKey: 'semester_id' });
 TutorSession.belongsTo(Semester, { foreignKey: 'semester_id' });
+
+// Semester ↔ Course (offerings per semester)
+Semester.hasMany(SemesterCourse, { foreignKey: 'semester_id' });
+SemesterCourse.belongsTo(Semester, { foreignKey: 'semester_id' });
+Course.hasMany(SemesterCourse, { foreignKey: 'course_id' });
+SemesterCourse.belongsTo(Course, { foreignKey: 'course_id' });
+
+// Semester ↔ TutorCourse (assignments/enrollments per semester)
+Semester.hasMany(TutorCourse, { foreignKey: 'semester_id' });
+TutorCourse.belongsTo(Semester, { foreignKey: 'semester_id' });
+
+// Semester ↔ Schedule (availability per semester)
+Semester.hasMany(Schedule, { foreignKey: 'semester_id' });
+Schedule.belongsTo(Semester, { foreignKey: 'semester_id' });
 
 // Course ↔ TutorCourse
 Course.hasMany(TutorCourse, { foreignKey: "course_id" });
