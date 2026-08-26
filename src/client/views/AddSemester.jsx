@@ -139,19 +139,19 @@ function AddSemester() {
                     </select>
 
                     {sourceId && (
-                        <div className="d-flex flex-column gap-1 mt-2">
+                        <div className="copy-option-list">
                             {[
                                 { id: "copyCourses", label: "Courses offered", state: copyCourses, set: setCopyCourses },
                                 { id: "copyTutors", label: "Tutor roster (with their course assignments)", state: copyTutors, set: setCopyTutors },
                                 { id: "copyStudents", label: "Student roster (with their course enrollments)", state: copyStudents, set: setCopyStudents },
                                 { id: "copySchedules", label: "Tutor schedules", state: copySchedules, set: setCopySchedules }
                             ].map(({ id, label, state, set }) => (
-                                <div className={`form-check copy-option ${state ? 'is-included' : 'is-excluded'}`} key={id}>
-                                    <input className="form-check-input" type="checkbox" id={id}
+                                <label className={`copy-option ${state ? 'is-included' : 'is-excluded'}`} key={id} htmlFor={id}>
+                                    <input type="checkbox" id={id}
                                         checked={state} onChange={(e) => set(e.target.checked)} />
-                                    <label className="form-check-label" htmlFor={id}>{label}</label>
+                                    <span className="copy-option-text">{label}</span>
                                     <span className="copy-state-badge">{state ? "Included" : "Excluded"}</span>
-                                </div>
+                                </label>
                             ))}
                             <small className="text-muted">After copying you can clean up or re-assign courses from each tutor/student profile.</small>
                         </div>
