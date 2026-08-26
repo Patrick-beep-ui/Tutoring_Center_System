@@ -1,7 +1,7 @@
 import express from "express";
 
 import {
-    getReportData, getMajorSessions, getSessionsReport, getTutorsReport, getStudentsReport, getMajorsReport
+    getReportData, getMajorSessions, getSessionsReport, getTutorsReport, getStudentsReport, getMajorsReport, getTopTutors
  } from "../controllers/reportsController.js";
 import passport from "passport";
 import semesterScope from "../middlewares/semesterScope.js";
@@ -16,5 +16,6 @@ ReportRouter.get("/sessions", passport.authenticate("jwt", { session: false }), 
 ReportRouter.get("/tutors", passport.authenticate("jwt", { session: false }), semesterScope, getTutorsReport);
 ReportRouter.get("/students", passport.authenticate("jwt", { session: false }), semesterScope, getStudentsReport);
 ReportRouter.get("/majors", passport.authenticate("jwt", { session: false }), semesterScope, getMajorsReport);
+ReportRouter.get("/top-tutors", passport.authenticate("jwt", { session: false }), semesterScope, getTopTutors);
 
 export default ReportRouter;
