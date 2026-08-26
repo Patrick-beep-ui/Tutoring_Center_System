@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Calendar, momentLocalizer } from 'react-big-calendar';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import moment from 'moment';
@@ -9,6 +9,7 @@ import ScheduleSession from './ScheduleSession';
 import { ics } from 'ics';
 import { createEvent } from 'ics';
 import auth from '../authService';
+import { SemesterContext } from '../context/currentSemester';
 
 const localizer = momentLocalizer(moment);
 
@@ -18,6 +19,7 @@ const MyCalendar = () => {
     const [tutor, setTutor] = useState('');
     const { user } = useOutletContext();
     const {tutor_id} = useParams();
+    const { selectedSemesterId } = useContext(SemesterContext);
     
     const isTutor = () => {
         return tutor_id === user.user_id
@@ -26,7 +28,7 @@ const MyCalendar = () => {
     useEffect(() => {
         async function fetchEvents() {
             try {
-                const response = await auth.get(`/api/calendar-session/${tutor_id}`);
+                const response = await auth.get(`/api/calendar-session/${tutor_id}${selectedSemesterId ? `?semester_id=${selectedSemesterId}` : ''}`);
                 const {data} = response;
                 console.log(data.sessions)
 
@@ -59,7 +61,7 @@ const MyCalendar = () => {
         if (user && user.user_id) {
             fetchEvents();
         }
-    }, [user]);
+    }, [user, selectedSemesterId]);
 
     const generateICSFile = (event) => {
         const start = [

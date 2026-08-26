@@ -1,15 +1,20 @@
 import Schedule from '../models/Schedule.js';
 import Tutor from '../models/Tutor.js';
 import { sanitizeUserInput } from '../utils/sanitize.js';
+import { resolveSemesterId } from '../utils/currentSemester.js';
 
 export const getSchedules = async (req, res) => {
     const { tutor_id } = req.params;
     try {
+        const semester_id = await resolveSemesterId(req.query.semester_id);
         const schedules = await Schedule.findAll({
-            where: { user_id: tutor_id },
+            where: { user_id: tutor_id, semester_id },
         });
         res.json({schedules});
     } catch (error) {
+        if (error.message === 'No current semester is set') {
+            return res.status(404).json({ error: error.message });
+        }
         console.error('Error fetching schedules:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
@@ -19,6 +24,7 @@ export const updateSchedules = async (req, res) => {
     try {
         const tutor_id = sanitizeUserInput(req.params.tutor_id);
         const { schedules } = req.body;
+        const semester_id = await resolveSemesterId(req.body.semester_id);
 
         if (!Array.isArray(schedules)) {
             return res.status(400).json({ error: 'schedules must be an array' });
@@ -30,7 +36,7 @@ export const updateSchedules = async (req, res) => {
         }
 
         await Schedule.destroy({
-            where: { user_id: tutor_id }
+            where: { user_id: tutor_id, semester_id }
         });
 
         if (schedules.length > 0) {
@@ -44,7 +50,8 @@ export const updateSchedules = async (req, res) => {
                         user_id: tutor_id,
                         day,
                         start_time: block.start_time,
-                        end_time: block.end_time
+                        end_time: block.end_time,
+                        semester_id
                     });
                 }
             }
@@ -54,7 +61,7 @@ export const updateSchedules = async (req, res) => {
         }
 
         const updatedSchedules = await Schedule.findAll({
-            where: { user_id: tutor_id },
+            where: { user_id: tutor_id, semester_id },
             order: [['day', 'ASC'], ['start_time', 'ASC']]
         });
 
@@ -63,6 +70,9 @@ export const updateSchedules = async (req, res) => {
             schedules: updatedSchedules
         });
     } catch (e) {
+        if (e.message === 'No current semester is set') {
+            return res.status(404).json({ error: e.message });
+        }
         console.error(e);
         res.status(500).json({ error: 'Internal server error' });
     }
@@ -71,6 +81,7 @@ export const updateSchedules = async (req, res) => {
 export const clearSchedules = async (req, res) => {
     try {
         const tutor_id = sanitizeUserInput(req.params.tutor_id);
+        const semester_id = await resolveSemesterId(req.query.semester_id ?? req.body?.semester_id);
 
         const tutor = await Tutor.findByPk(tutor_id);
         if (!tutor) {
@@ -78,7 +89,7 @@ export const clearSchedules = async (req, res) => {
         }
 
         await Schedule.destroy({
-            where: { user_id: tutor_id }
+            where: { user_id: tutor_id, semester_id }
         });
 
         res.status(200).json({
@@ -86,6 +97,9 @@ export const clearSchedules = async (req, res) => {
             schedules: []
         });
     } catch (e) {
+        if (e.message === 'No current semester is set') {
+            return res.status(404).json({ error: e.message });
+        }
         console.error(e);
         res.status(500).json({ error: 'Internal server error' });
     }

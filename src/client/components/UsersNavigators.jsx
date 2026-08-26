@@ -5,11 +5,9 @@ const UserNavigators = ({
     programFilter = "all",
     courseFilter = "all",
     idFilter = "",
-    semesterFilter = "current",
     setProgramFilter = () => {},
     setCourseFilter = () => {},
     setIdFilter = () => {},
-    setSemesterFilter = () => {},
     majors = [],
     courses = [],
     students = [], 
@@ -18,7 +16,7 @@ const UserNavigators = ({
     IdPlaceholder = "Type student ID / Name"
 }) => {
     const [searchTerm, setSearchTerm] = useState(idFilter);
-    const { currentSemester } = useContext(SemesterContext);
+    const { semesters, selectedSemesterId, setSelectedSemesterId } = useContext(SemesterContext);
 
 
     useEffect(() => {
@@ -82,12 +80,16 @@ const UserNavigators = ({
             <div className="users-navigation-item">
                 <label className="navigation-item-label">Semester</label>
                 <select
-                    className="navigation-item-select pointer-disabled"
-                    value={semesterFilter}
-                    onChange={(e) => setSemesterFilter(e.target.value)}
-                    disabled={true}
+                    className="navigation-item-select"
+                    value={selectedSemesterId ?? ""}
+                    onChange={(e) => setSelectedSemesterId(Number(e.target.value))}
+                    disabled={!semesters.length}
                 >
-                    <option value="current">{currentSemester?.currentSemester?.semester_code}</option>
+                    {semesters.map(s => (
+                        <option key={s.semester_id} value={s.semester_id}>
+                            {s.semester_code}{s.is_current ? " (current)" : ""}
+                        </option>
+                    ))}
                 </select>
             </div>
         </section>

@@ -10,6 +10,7 @@ import connection from "../connection.js";
 import { sendFeedbackEmail, sendSessionCancelationEmail, sendSessionReassignedToEmail, sendSessionReassignedFromEmail } from "../mail.js";
 import { QueryTypes } from "sequelize";
 import { sanitizeUserInput } from "../utils/sanitize.js";
+import { resolveSemesterId } from "../utils/currentSemester.js";
 import moment from 'moment';
 
 import os from 'os';
@@ -28,6 +29,7 @@ function getLocalIPAddress() {
 
 export const getSessions = async (req, res) => {
     try {
+        const semester_id = await resolveSemesterId(req.query.semester_id);
         const sessions = await connection.query(`
             SELECT
                 s.session_id AS 'session_id',
@@ -56,16 +58,20 @@ export const getSessions = async (req, res) => {
                      JOIN courses c ON s.course_id = c.course_id
                      JOIN semester semester ON semester.semester_id = s.semester_id
                      LEFT JOIN session_feedback as fe ON s.session_id = fe.session_id
-            WHERE semester.is_current = TRUE 
+            WHERE s.semester_id = :semester_id
             GROUP BY s.session_id
             ORDER BY week_number, session_date;
         `, {
-            type: QueryTypes.SELECT
+            type: QueryTypes.SELECT,
+            replacements: { semester_id }
         });
-        
+
         res.status(200).json({ sessions });
     }
     catch(e) {
+        if (e.message === 'No current semester is set') {
+            return res.status(404).json({ error: e.message });
+        }
         console.error("Error getting sessions:",e);
         res.status(500).json({ error: 'Internal server error' });
     }
@@ -74,6 +80,7 @@ export const getSessions = async (req, res) => {
 export const getSessionsByTutor = async (req, res) => {
     try {
         const id = req.params.tutor_id
+        const semester_id = await resolveSemesterId(req.query.semester_id);
 
         // Validate and sanitize tutor_id
         const sanitizedId = sanitizeUserInput(id);
@@ -86,17 +93,19 @@ export const getSessionsByTutor = async (req, res) => {
             FROM sessions s JOIN tutors t on s.tutor_id = t.tutor_id
             JOIN users u ON u.user_id = t.user_id
             JOIN courses c ON s.course_id = c.course_id
-            JOIN semester semester ON semester.semester_id = s.semester_id
-            WHERE t.tutor_id = :id AND semester.is_current = TRUE
+            WHERE t.tutor_id = :id AND s.semester_id = :semester_id
             GROUP BY session_id, tutor_name, student, total_hours
             ORDER BY course_name;`, {
                 type: QueryTypes.SELECT,
-                replacements: { id: sanitizedId }
+                replacements: { id: sanitizedId, semester_id }
             })
-    
+
             res.status(200).json({ sessions });
     }
     catch(e) {
+        if (e.message === 'No current semester is set') {
+            return res.status(404).json({ error: e.message });
+        }
         console.error("Error getting tutor sessions:",e);
         res.status(500).json({ error: 'Internal server error' });
     }
@@ -106,6 +115,7 @@ export const getSessionsByTutorCourse = async (req, res) => {
     try {
         const tutor_id = req.params.tutor_id;
         const course_id = req.params.course_id;
+        const semester_id = await resolveSemesterId(req.query.semester_id);
 
         // Validate and sanitize tutor_id and course_id
         const sanitizedTutorId = sanitizeUserInput(tutor_id);
@@ -120,17 +130,19 @@ export const getSessionsByTutorCourse = async (req, res) => {
             JOIN users u ON u.user_id = t.user_id
             JOIN courses c ON s.course_id = c.course_id
             JOIN session_details sd ON s.session_id = sd.session_id
-            JOIN semester se ON s.semester_id = se.semester_id
-            WHERE t.tutor_id = :tutor_id AND s.course_id = :course_id AND sd.session_status = 'completed' AND se.is_current = TRUE
+            WHERE t.tutor_id = :tutor_id AND s.course_id = :course_id AND sd.session_status = 'completed' AND s.semester_id = :semester_id
             GROUP BY session_id, tutor_name, student, total_hours
             ORDER BY course_name;`, {
                 type: QueryTypes.SELECT,
-                replacements: { tutor_id: sanitizedTutorId, course_id: sanitizedCourseId }
+                replacements: { tutor_id: sanitizedTutorId, course_id: sanitizedCourseId, semester_id }
             })
-    
+
             res.status(200).json({ sessions });
     }
     catch(e) {
+        if (e.message === 'No current semester is set') {
+            return res.status(404).json({ error: e.message });
+        }
         console.error("Error getting tutor course sessions:",e);
         res.status(500).json({ error: 'Internal server error' });
     }
@@ -234,6 +246,7 @@ export const getSessionDetails = async (req, res) => {
 export const getScheduledSessionsCount = async (req, res) => {
     try {
         const id = req.params.tutor_id;
+        const semester_id = await resolveSemesterId(req.query.semester_id);
 
         const scheduled_sessions = await SessionDetail.count({
             distinct: true,
@@ -241,13 +254,7 @@ export const getScheduledSessionsCount = async (req, res) => {
             include: [
                 {
                     model: TutorSession,
-                    where: { tutor_id: id },
-                    include: [
-                        {
-                            model: Semester,
-                            where: { is_current: true }
-                        }
-                    ]
+                    where: { tutor_id: id, semester_id }
                 },
             ],
             where: {
@@ -260,6 +267,9 @@ export const getScheduledSessionsCount = async (req, res) => {
         });
     }
     catch(e) {
+        if (e.message === 'No current semester is set') {
+            return res.status(404).json({ error: e.message });
+        }
         console.error("Error fetching scheduled sessions:",e);
         res.status(500).json({ error: 'Internal server error' });
     }
@@ -271,30 +281,33 @@ export const getScheduledSessionsItems = async (req, res) => {
     try {
         const scheduled = req.params.scheduled
         const id = req.params.tutor_id;
+        const semester_id = await resolveSemesterId(req.query.semester_id);
 
         // Validate and sanitize tutor_id
         const sanitizedId = sanitizeUserInput(id);
 
         if (!Number.isInteger(Number(sanitizedId))) {
             return res.status(400).json({ error: 'Invalid tutor ID' });
-        }        
+        }
 
         const scheduled_sessions = await connection.query(` SELECT s.session_id as 'session_id', CONCAT(u.first_name, ' ', u.last_name) as 'tutor_name', s.student_id as 'student',  c.course_name as 'course_name', s.session_totalhours as 'total_hours', s.session_date as 'session_date'
             FROM sessions s JOIN tutors t on s.tutor_id = t.tutor_id
             JOIN users u ON u.user_id = t.user_id
             JOIN courses c ON s.course_id = c.course_id
             JOIN session_details sd ON s.session_id = sd.session_id
-            JOIN semester se ON s.semester_id = se.semester_id
-            WHERE t.tutor_id = :id AND sd.session_status = 'scheduled' AND se.is_current = TRUE
+            WHERE t.tutor_id = :id AND sd.session_status = 'scheduled' AND s.semester_id = :semester_id
             GROUP BY session_id, tutor_name, student, total_hours
             ORDER BY course_name;`, {
-                replacements: { id: sanitizedId },
+                replacements: { id: sanitizedId, semester_id },
                 type: QueryTypes.SELECT
             })
 
             res.status(200).json({ scheduled_sessions });
     }
     catch(e) {
+        if (e.message === 'No current semester is set') {
+            return res.status(404).json({ error: e.message });
+        }
         console.error("Error fetching scheduled session items:",e);
         res.status(500).json({ error: 'Internal server error' });
     }

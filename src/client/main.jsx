@@ -20,6 +20,7 @@ import AddClass from "./views/AddClass";
 import TutorProfile from "./views/TutorProfile";
 import Major from "./views/Major";
 import AddMajor from "./views/AddMajor";
+import Semesters from "./views/Semesters";
 import AddSemester from "./views/AddSemester";
 import Session from "./views/Sessions";
 import AddSession from "./views/AddSession";
@@ -142,6 +143,13 @@ const router = createBrowserRouter([
         element: <RequireRole allowedRoles={["admin", "dev"]} />,
         children: [
           {index: true, element: <AddMajor />}
+        ]
+      },
+      {
+        path: "/semesters",
+        element: <RequireRole allowedRoles={["admin", "dev"]} />,
+        children: [
+          {index: true, element: <Semesters />}
         ]
       },
       {

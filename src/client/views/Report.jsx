@@ -1,21 +1,22 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Header from "../components/Header";
 import Graph from "../components/Chart";
 import ReportCard from "../components/ReportCard";
 import PieChart from "../components/PieChart";
 import auth from "../authService";
+import { SemesterContext } from "../context/currentSemester";
 
 function Report() {
     const [report, setReport] = useState([
     ]);
     const [sessions, setSessions] = useState([]);
+    const { selectedSemesterId } = useContext(SemesterContext);
 
     useEffect(() => {
         const getReport = async () => {
             try {
-                const response = await auth.get("/api/report")
+                const response = await auth.get(`/api/report${selectedSemesterId ? `?semester_id=${selectedSemesterId}` : ''}`)
                 const {data} = response;
-                console.log(data.report);
                 setReport(data.report);
             }
             catch(e) {
@@ -23,23 +24,22 @@ function Report() {
             }
         }
         getReport();
-    }, []);
+    }, [selectedSemesterId]);
 
     useEffect(() => {
         const getSessions = async () => {
              try {
-                 const response = await auth.get('/api/report/major-sessions');
+                 const response = await auth.get(`/api/report/major-sessions${selectedSemesterId ? `?semester_id=${selectedSemesterId}` : ''}`);
                  const { data } = response;
                  setSessions(data.sessions);
-                 console.log(data.sessions)
              }
              catch(e) {
                  console.error(e);
              }
          }
- 
+
          getSessions();
-     }, []);
+     }, [selectedSemesterId]);
 
     return(
         <>

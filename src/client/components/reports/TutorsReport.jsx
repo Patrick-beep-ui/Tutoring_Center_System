@@ -1,7 +1,8 @@
-import { useState, useEffect, useRef, useMemo, memo } from "react"
+import { useState, useEffect, useRef, useMemo, memo, useContext } from "react"
 import { Card, Button } from "react-bootstrap"
 import { Tabs, Tab } from "react-bootstrap"
 import api from "../../axiosService";
+import { SemesterContext } from "../../context/currentSemester";
 import {
   Bar,
   BarChart,
@@ -79,11 +80,13 @@ const TutorsReport = () => {
   const majorsRef = useRef(null);
   const availabilityRef = useRef(null);
 
+  const { selectedSemesterId } = useContext(SemesterContext);
+
   useEffect(() => {
     const getReportData = async () => {
       try {
         setLoading(true);
-        const {data} = await api.get("/report/tutors");
+        const {data} = await api.get(`/report/tutors${selectedSemesterId ? `?semester_id=${selectedSemesterId}` : ''}`);
 
         const total_hours = data.totalHours || 0;
 
@@ -170,7 +173,7 @@ const TutorsReport = () => {
     }
 
     getReportData();
-  }, [])
+  }, [selectedSemesterId])
 
   const performanceChart = useMemo(
     () => (

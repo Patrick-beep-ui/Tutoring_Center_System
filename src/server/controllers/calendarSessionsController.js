@@ -8,6 +8,7 @@ import Course from "../models/Course.js";
 import Semester from "../models/Semester.js";
 import { sendEmail, sendSessionRequestEmail } from "../mail.js";
 import { sanitizeUserInput } from "../utils/sanitize.js";
+import { resolveSemesterId } from "../utils/currentSemester.js";
 import { sendSessionCancelationEmail } from "../mail.js";
 
 import jwt from "jsonwebtoken";
@@ -16,6 +17,7 @@ import { tokenStore } from "../utils/tokenStore.js";
 export const getSessionsByTutor = async (req, res) => {
     try {
         const tutor_id = req.params.tutor_id;
+        const semester_id = await resolveSemesterId(req.query.semester_id);
 
         const sanitizedTutorId = sanitizeUserInput(tutor_id);
 
@@ -38,17 +40,19 @@ export const getSessionsByTutor = async (req, res) => {
             JOIN courses c ON s.course_id = c.course_id
             JOIN session_details sd ON s.session_id = sd.session_id
             JOIN users student ON student.user_id = sd.createdBy
-            JOIN semester sem ON s.semester_id = sem.semester_id
-            WHERE t.tutor_id = :tutor_id AND sd.session_status = 'scheduled' AND sem.is_current = true
+            WHERE t.tutor_id = :tutor_id AND sd.session_status = 'scheduled' AND s.semester_id = :semester_id
             GROUP BY session_id, course_name, scheduled_by, session_time, session_duration, session_date, session_status, tutor, sd.createdBy;`,
             { 
                 type: QueryTypes.SELECT,
-                replacements: { tutor_id: sanitizedTutorId }
+                replacements: { tutor_id: sanitizedTutorId, semester_id }
              }
         );
 
         res.status(200).json({ sessions });
     } catch (e) {
+        if (e.message === 'No current semester is set') {
+            return res.status(404).json({ error: e.message });
+        }
         console.error(e);
         res.status(500).json({ error: "Internal server error" });
     }

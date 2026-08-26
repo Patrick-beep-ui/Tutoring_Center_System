@@ -23,6 +23,9 @@ const Semester = connection.define('Semester', {
     weeks: {
         type: DataTypes.INTEGER
     },
+    start_date: {
+        type: DataTypes.DATEONLY
+    },
     is_current: {
         type: DataTypes.BOOLEAN,
         defaultValue: false

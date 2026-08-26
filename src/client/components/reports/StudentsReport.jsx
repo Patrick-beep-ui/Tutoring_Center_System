@@ -1,7 +1,8 @@
-import { useState, useEffect, useCallback, useMemo, memo, useRef } from "react";
+import { useState, useEffect, useCallback, useMemo, memo, useRef, useContext } from "react";
 import { Card, Button } from "react-bootstrap";
 import { Tabs, Tab } from "react-bootstrap";
 import api from "../../axiosService";
+import { SemesterContext } from "../../context/currentSemester";
 import {
   Bar,
   BarChart,
@@ -79,11 +80,13 @@ const StudentsReport = () => {
   const majorsRef = useRef(null);
   const retentionRef = useRef(null);
 
+  const { selectedSemesterId } = useContext(SemesterContext);
+
   useEffect(() => {
     const getReportData = async () => {
       try {
         setLoading(true);
-        const response = await api.get("/report/students");
+        const response = await api.get(`/report/students${selectedSemesterId ? `?semester_id=${selectedSemesterId}` : ''}`);
         const data = response.data;
 
         const formatRates = (value) => {
@@ -137,7 +140,7 @@ const StudentsReport = () => {
     }
 
     getReportData()
-  }, [])
+  }, [selectedSemesterId])
 
   const attendanceChart = useMemo(() => (
     <ResponsiveContainer width="100%" height="100%" minHeight="400px">

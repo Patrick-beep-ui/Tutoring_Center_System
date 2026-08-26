@@ -53,8 +53,6 @@ function AddSession() {
                         {errors.student_id && <span>{errors.student_id.message}</span>}
                     </section>
 
-                    <input type="hidden" {...register("semester_id")} value={1} />
-
                     <div className="datetime-data"> 
                         <section id="date-form-group">
                             <label>Date:</label>
