@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useContext } from 'react';
 import { FaSearch, FaBell, FaDownload, FaCalendarAlt, FaSyncAlt } from 'react-icons/fa';
 import { Tab } from '@headlessui/react';
 import Header from '../components/Header';
@@ -6,8 +6,11 @@ import SessionsReport from "../components/reports/SessionsReport";
 import TutorsReport from "../components/reports/TutorsReport";
 import StudentsReport from "../components/reports/StudentsReport";
 import DepartmentReport from "../components/reports/DepartmentReports";
+import { SemesterContext } from '../context/currentSemester';
 
 function ReportsPage() {
+  const { semesters, selectedSemesterId, setSelectedSemesterId } = useContext(SemesterContext);
+
   return (
     <>
     <Header/>
@@ -20,7 +23,21 @@ function ReportsPage() {
               <div className="card-header">
                 <div className="d-flex justify-content-between align-items-center">
                   <h2 className="h5 mb-0">Analytics Dashboard</h2>
-                  <div className="d-flex gap-2">
+                  <div className="d-flex gap-2 align-items-center">
+                    <select
+                      className="form-select form-select-sm"
+                      style={{ width: 'auto' }}
+                      aria-label="Select semester"
+                      value={selectedSemesterId ?? ""}
+                      onChange={(e) => setSelectedSemesterId(Number(e.target.value))}
+                      disabled={!semesters.length}
+                    >
+                      {semesters.map(s => (
+                        <option key={s.semester_id} value={s.semester_id}>
+                          {s.semester_code}{s.is_current ? " (current)" : ""}
+                        </option>
+                      ))}
+                    </select>
                     <button className="btn btn-outline-secondary d-flex align-items-center gap-2">
                       <FaCalendarAlt className="fs-5" />
                       Date Range
