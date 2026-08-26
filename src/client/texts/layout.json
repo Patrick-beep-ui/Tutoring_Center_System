@@ -5,6 +5,15 @@
             {
                 "links": [
                     {
+                        "label": "Semesters",
+                        "url": "/semesters",
+                        "icon": "bx bxs-calendar",
+                        "role": [
+                            "admin",
+                            "dev"
+                        ]
+                    },
+                    {
                         "label": "Activity",
                         "url": "/activity",
                         "icon": "bx bxs-megaphone",

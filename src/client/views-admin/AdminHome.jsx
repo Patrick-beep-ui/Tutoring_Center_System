@@ -1,24 +1,40 @@
+import { useState, useEffect, useContext } from "react";
 import Header from "../components/Header";
 import "../App.css";
 
 import StatBox from "../components/StatBox.jsx";
 import ActivityCard from "../components/ActivityCard";
 import TopTutorsList from "../components/TopTutorsList.jsx";
+import api from "../axiosService";
+import { SemesterContext } from "../context/currentSemester";
 
 
 
-const AdminHome = () =>{
+const AdminHome = () => {
+    const { selectedSemesterId } = useContext(SemesterContext);
+    const [topTutors, setTopTutors] = useState([]);
+    const [rankWindow, setRankWindow] = useState(null);
+    const [semesterCode, setSemesterCode] = useState("");
 
-    const tutors = [
-        "1. Patrick Solis",
-        "2. Lucia Acosta",
-        "3. Fabricio Bermudez",
-        "4. Luis Saravia",
-        "5. Elisa Granizo",
-        "6. Lisbeth Rodriguez",
-        "7. Jesahel Gomez",
-        "8. Cynthia Nicolas",
-    ];
+    useEffect(() => {
+        const getTopTutors = async () => {
+            try {
+                const response = await api.get(`/report/top-tutors${selectedSemesterId ? `?semester_id=${selectedSemesterId}` : ''}`);
+                const { data } = response;
+                setTopTutors(data.tutors || []);
+                setRankWindow(data.window || null);
+                setSemesterCode(data.semester_code || "");
+            }
+            catch(e) {
+                console.error(e);
+                setTopTutors([]);
+                setRankWindow(null);
+            }
+        };
+
+        getTopTutors();
+    }, [selectedSemesterId]);
+
     return (
 
         <>
@@ -40,7 +56,7 @@ const AdminHome = () =>{
                         <ActivityCard time="1:00 PM" title="Weekly Performance Update" description="Review the results and take action." tag="Alert" />
                     </div>
 
-                    <TopTutorsList tutors={tutors} />
+                    <TopTutorsList tutors={topTutors} rankWindow={rankWindow} semesterCode={semesterCode} />
                 </div>
             </div>
         </>
@@ -51,3 +67,4 @@ const AdminHome = () =>{
 
 
 export default AdminHome;
+

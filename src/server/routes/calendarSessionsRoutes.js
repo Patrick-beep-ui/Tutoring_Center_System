@@ -1,4 +1,5 @@
 import express from "express";
+import passport from "passport";
 import {
     getSessionsByTutor,
     createSession,
@@ -6,11 +7,12 @@ import {
     declineSession,
     sendDeclineJustification
 } from "../controllers/calendarSessionsController.js";
+import semesterScope from "../middlewares/semesterScope.js";
 
 const CalendarSessionsRouter = express.Router();
 
 CalendarSessionsRouter.route("/:tutor_id?")
-    .get(getSessionsByTutor)
+    .get(passport.authenticate("jwt", { session: false }), semesterScope, getSessionsByTutor)
     .post(createSession);
 
 CalendarSessionsRouter.get("/accept/:session_id", acceptSession);

@@ -796,3 +796,98 @@ export const getMajorsReport = async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 }
+
+// Monday of the week containing the given date
+const startOfWeek = (date) => {
+    const d = new Date(date);
+    d.setHours(0, 0, 0, 0);
+    d.setDate(d.getDate() - ((d.getDay() + 6) % 7));
+    return d;
+};
+
+const toMySQLDate = (date) => {
+    const d = new Date(date);
+    const pad = (n) => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+};
+
+export const getTopTutors = async (req, res) => {
+    try {
+        const semester_id = await resolveSemesterId(req.query.semester_id);
+        const limit = Math.min(Math.max(Number(req.query.limit) || 10, 1), 10);
+
+        const semester = await Semester.findByPk(semester_id);
+        if (!semester) {
+            return res.status(404).json({ error: 'Semester not found' });
+        }
+
+        // Decide the ranking window
+        let from;
+        let mode;
+        const thisWeekStart = startOfWeek(new Date());
+        const startDate = semester.start_date ? new Date(semester.start_date) : null;
+        const endDate = startDate && semester.weeks
+            ? new Date(startDate.getTime() + Number(semester.weeks) * 7 * 24 * 60 * 60 * 1000)
+            : null;
+
+        if (startDate && endDate && thisWeekStart >= startOfWeek(startDate) && thisWeekStart <= endDate) {
+            from = thisWeekStart;               // this week (Monday)
+            mode = 'this-week';
+        } else {
+            // Legacy/old semester: anchor on its last completed-session week
+            const [[{ lastDate }]] = await connection.query(`
+                SELECT MAX(s.session_date) AS lastDate
+                FROM sessions s
+                JOIN session_details sd ON sd.session_id = s.session_id
+                WHERE s.semester_id = :semester_id AND sd.session_status = 'completed'
+            `, { replacements: { semester_id } });
+
+            if (lastDate) {
+                from = startOfWeek(new Date(lastDate));   // last active week (Monday)
+            } else if (endDate) {
+                from = startOfWeek(new Date(endDate.getTime() - 7 * 24 * 60 * 60 * 1000));
+            } else {
+                from = null;
+            }
+            mode = 'last-week';
+        }
+
+        if (!from) {
+            return res.json({ tutors: [], window: { mode, from: null, to: null }, semester_code: semester.semester_code });
+        }
+        const to = new Date(from.getTime() + 7 * 24 * 60 * 60 * 1000); // exclusive upper bound
+
+        const [rows] = await connection.query(`
+            SELECT CONCAT(u.first_name, ' ', u.last_name) AS tutor_name,
+                   SUM(s.session_totalhours) AS total_hours,
+                   COUNT(*) AS sessions_done
+            FROM sessions s
+            JOIN session_details sd ON sd.session_id = s.session_id
+            JOIN tutors t ON t.tutor_id = s.tutor_id
+            JOIN users u ON u.user_id = t.user_id
+            WHERE s.semester_id = :semester_id
+              AND sd.session_status = 'completed'
+              AND s.session_date >= :from AND s.session_date < :to
+            GROUP BY u.user_id, tutor_name
+            ORDER BY total_hours DESC
+            LIMIT :limit
+        `, { replacements: { semester_id, from: toMySQLDate(from), to: toMySQLDate(to), limit } });
+
+        res.json({
+            tutors: rows,
+            window: {
+                mode,
+                from: toMySQLDate(from),
+                to: toMySQLDate(new Date(to.getTime() - 24 * 60 * 60 * 1000)) // inclusive Sunday
+            },
+            semester_code: semester.semester_code
+        });
+    }
+    catch(e) {
+        if (e.message === 'No current semester is set') {
+            return res.status(404).json({ error: e.message });
+        }
+        console.error(e);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+}

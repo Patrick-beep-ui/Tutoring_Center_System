@@ -3472,6 +3472,31 @@ der { background-color: lightblue; }
   border: 1px solid var(--gray);
   border-radius: 15px;
   text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.top-tutor-rank {
+  font-weight: 700;
+  color: var(--blue);
+  min-width: 2.5ch;
+}
+
+.top-tutor-name {
+  flex: 1;
+  min-width: 0;
+}
+
+.top-tutor-hours {
+  font-weight: 700;
+  color: var(--blue);
+  white-space: nowrap;
+}
+
+.top-tutors-empty {
+  color: var(--dark-gray);
+  font-style: italic;
 }
 
 
@@ -4270,5 +4295,18 @@ der { background-color: lightblue; }
   border: 1px solid var(--gray);
   color: var(--dark-gray);
 }
+
+/* ---------- SEMESTERS LIST ---------- */
+.semesters-section .delete {
+  cursor: pointer;
+  font-size: 1.15rem;
+  color: var(--dark-gray);
+  transition: color 0.2s ease;
+}
+
+.semesters-section .delete:hover {
+  color: #dc3545;
+}
+
 
 

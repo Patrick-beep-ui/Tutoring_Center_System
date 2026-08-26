@@ -12,10 +12,11 @@ import {
     cancelSession, 
     deleteSession } from "../controllers/sessionsController.js";
 import passport from "passport";
+import semesterScope from "../middlewares/semesterScope.js";
 
 const SessionsRouter = express.Router();
 
-SessionsRouter.route("/").get(passport.authenticate("jwt", { session: false }), getSessions); // get sessions on sessions pool
+SessionsRouter.route("/").get(passport.authenticate("jwt", { session: false }), semesterScope, getSessions); // get sessions on sessions pool
 SessionsRouter.route("/:tutor_id").get(getSessionsByTutor);
 SessionsRouter.route("/session/:session_id") // This is for session details on the Tutor Sessions part
 .get(getTutorSessionById)
