@@ -1,19 +1,20 @@
 import express from "express";
 
-import { 
+import {
     getReportData, getMajorSessions, getSessionsReport, getTutorsReport, getStudentsReport, getMajorsReport
  } from "../controllers/reportsController.js";
 import passport from "passport";
+import semesterScope from "../middlewares/semesterScope.js";
 
 const ReportRouter = express.Router()
 
-ReportRouter.get("/", getReportData)
-ReportRouter.get("/major-sessions", getMajorSessions)
+ReportRouter.get("/", passport.authenticate("jwt", { session: false }), semesterScope, getReportData)
+ReportRouter.get("/major-sessions", passport.authenticate("jwt", { session: false }), semesterScope, getMajorSessions)
 
 // Reports View
-ReportRouter.get("/sessions",passport.authenticate("jwt", { session: false }), getSessionsReport);
-ReportRouter.get("/tutors", passport.authenticate("jwt", { session: false }), getTutorsReport);
-ReportRouter.get("/students", passport.authenticate("jwt", { session: false }),  getStudentsReport);
-ReportRouter.get("/majors", passport.authenticate("jwt", { session: false }), getMajorsReport);
+ReportRouter.get("/sessions", passport.authenticate("jwt", { session: false }), semesterScope, getSessionsReport);
+ReportRouter.get("/tutors", passport.authenticate("jwt", { session: false }), semesterScope, getTutorsReport);
+ReportRouter.get("/students", passport.authenticate("jwt", { session: false }), semesterScope, getStudentsReport);
+ReportRouter.get("/majors", passport.authenticate("jwt", { session: false }), semesterScope, getMajorsReport);
 
 export default ReportRouter;

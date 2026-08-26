@@ -1,11 +1,13 @@
 import express from "express";
+import passport from "passport";
 import { getTutors, getTutorById, addTutor, getTutorsByUser, updateTutorCourses } from "../controllers/tutorsController.js";
 import userCheck from "../middlewares/userCheck.js";
+import semesterScope from "../middlewares/semesterScope.js";
 
 const TutorsRouter = express.Router();
 
 TutorsRouter.route("/")
-.get(getTutors)
+.get(passport.authenticate("jwt", { session: false }), semesterScope, getTutors)
 .post(addTutor);
 
 TutorsRouter.route("/:tutor_id/courses")
@@ -15,6 +17,6 @@ TutorsRouter.route("/:tutor_id")
 .get(getTutorById);
 
 TutorsRouter.route('/user/:user_id')
-.get(getTutorsByUser)
+.get(passport.authenticate("jwt", { session: false }), semesterScope, getTutorsByUser)
 
 export default TutorsRouter;

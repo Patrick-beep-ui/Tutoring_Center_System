@@ -1,7 +1,8 @@
 import { useState, useEffect, memo, useContext } from "react";
+import { useOutletContext } from "react-router-dom";
 import { SemesterContext } from "../context/currentSemester";
 
-const UserNavigators = ({ 
+const UserNavigators = ({
     programFilter = "all",
     courseFilter = "all",
     idFilter = "",
@@ -10,13 +11,17 @@ const UserNavigators = ({
     setIdFilter = () => {},
     majors = [],
     courses = [],
-    students = [], 
+    students = [],
     isInputSearch = false,
     IdLabel = "ID",
     IdPlaceholder = "Type student ID / Name"
 }) => {
     const [searchTerm, setSearchTerm] = useState(idFilter);
     const { semesters, selectedSemesterId, setSelectedSemesterId } = useContext(SemesterContext);
+    const { user } = useOutletContext();
+    const viewerRole = user?.role ?? user?.user_role;
+    const canChangeSemester = viewerRole === "admin" || viewerRole === "dev";
+    const currentTerm = semesters.find(s => s.is_current);
 
 
     useEffect(() => {
@@ -79,18 +84,31 @@ const UserNavigators = ({
             </div>
             <div className="users-navigation-item">
                 <label className="navigation-item-label">Semester</label>
-                <select
-                    className="navigation-item-select"
-                    value={selectedSemesterId ?? ""}
-                    onChange={(e) => setSelectedSemesterId(Number(e.target.value))}
-                    disabled={!semesters.length}
-                >
-                    {semesters.map(s => (
-                        <option key={s.semester_id} value={s.semester_id}>
-                            {s.semester_code}{s.is_current ? " (current)" : ""}
-                        </option>
-                    ))}
-                </select>
+                {canChangeSemester ? (
+                    <select
+                        className="navigation-item-select"
+                        value={selectedSemesterId ?? ""}
+                        onChange={(e) => setSelectedSemesterId(Number(e.target.value))}
+                        disabled={!semesters.length}
+                    >
+                        {semesters.map(s => (
+                            <option key={s.semester_id} value={s.semester_id}>
+                                {s.semester_code}{s.is_current ? " (current)" : ""}
+                            </option>
+                        ))}
+                    </select>
+                ) : (
+                    <select
+                        className="navigation-item-select"
+                        value={currentTerm?.semester_id ?? ""}
+                        disabled
+                        title="Only admins can view other semesters"
+                    >
+                        {currentTerm && (
+                            <option value={currentTerm.semester_id}>{currentTerm.semester_code}</option>
+                        )}
+                    </select>
+                )}
             </div>
         </section>
     );
