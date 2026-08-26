@@ -481,7 +481,7 @@ details[open] summary::after {
   border-radius: 16px;
   padding: 2rem;
   width: 100%;
-  max-width: 420px;
+  max-width: 480px;
   color: var(--black);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
 }
@@ -4197,47 +4197,47 @@ der { background-color: lightblue; }
 }
 
 /* ---------------- COPY ROSTER OPTIONS (ADD SEMESTER WIZARD) ---------------- */
-.copy-roster-options .form-check-input {
-  width: 1.15em;
-  height: 1.15em;
-  margin-top: 0.2em;
-  border: 2px solid var(--blue);
-  background-color: var(--white);
+/* Plain markup, no Bootstrap form-check classes: the page-level
+   ".add-semester-page .form-container label/input" rules are more specific
+   than single-class selectors, so every property they set must be explicitly
+   overridden here at equal-or-higher specificity. */
+.add-semester-page .copy-roster-options .copy-option-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.add-semester-page .copy-roster-options .copy-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 0;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.15s ease, opacity 0.15s ease;
+}
+
+.add-semester-page .copy-roster-options .copy-option input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  margin: 0;
+  flex-shrink: 0;
   cursor: pointer;
   accent-color: var(--blue);
 }
 
-.copy-roster-options .form-check-input:checked {
-  background-color: var(--blue);
-  border-color: var(--blue);
+.add-semester-page .copy-roster-options .copy-option-text {
+  flex: 1;
+  min-width: 0;
+  line-height: 1.35;
+  font-weight: 500;
 }
 
-.copy-roster-options .copy-option {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin: 5px;
-  padding-top: 10px;
-  padding-bottom: 10px;
-  padding-left: 20px; /* This is provisional and hardcoded to avoid the layout to break*/
-  border-radius: 6px;
-  transition: background-color 0.15s ease, opacity 0.15s ease;
-}
-
-.copy-roster-options .copy-option.is-included {
-  background-color: rgba(25, 45, 100, 0.06);
-}
-
-.copy-roster-options .copy-option.is-excluded {
-  opacity: 0.55;
-  background-color: transparent;
-}
-
-.copy-roster-options .copy-option.is-excluded .form-check-label {
-  text-decoration: line-through;
-}
-
-.copy-roster-options .copy-state-badge {
+.add-semester-page .copy-roster-options .copy-state-badge {
+  flex-shrink: 0;
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.04em;
@@ -4247,12 +4247,25 @@ der { background-color: lightblue; }
   white-space: nowrap;
 }
 
-.copy-roster-options .is-included .copy-state-badge {
+.add-semester-page .copy-roster-options .is-included {
+  background-color: rgba(25, 45, 100, 0.06);
+}
+
+.add-semester-page .copy-roster-options .is-included .copy-state-badge {
   background-color: var(--blue);
   color: var(--white);
 }
 
-.copy-roster-options .is-excluded .copy-state-badge {
+.add-semester-page .copy-roster-options .is-excluded {
+  opacity: 0.55;
+  background-color: transparent;
+}
+
+.add-semester-page .copy-roster-options .is-excluded .copy-option-text {
+  text-decoration: line-through;
+}
+
+.add-semester-page .copy-roster-options .is-excluded .copy-state-badge {
   background-color: transparent;
   border: 1px solid var(--gray);
   color: var(--dark-gray);
