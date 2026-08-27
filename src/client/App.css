@@ -1,13 +1,82 @@
 @import "tailwindcss/theme.css";
 @import "tailwindcss/utilities.css";
+@import "tw-animate-css";
 @config "../../tailwind.config.js";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-information: var(--information);
+  --color-information-foreground: var(--information-foreground);
+  --color-neutral: var(--neutral);
+  --color-neutral-foreground: var(--neutral-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --font-sans: "Poppins", sans-serif;
+  --font-poppins: "Poppins", sans-serif;
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
 
 /*------------------- GENERAL ------------------*/
 :root {
-  --blue: #192D64;
-  --yellow: #EEAF32;
-  --black: #333333;
-  --white: #FFFEF6;
+  --brand-primary: #192D64;
+  --brand-accent: #EEAF32;
+  --background: #FFFEF6;
+  --foreground: #333333;
+  --card: #FFFFFF;
+  --card-foreground: #333333;
+  --popover: #FFFFFF;
+  --popover-foreground: #333333;
+  --primary: var(--brand-primary);
+  --primary-foreground: #FFFEF6;
+  --secondary: var(--brand-accent);
+  --secondary-foreground: #333333;
+  --muted: #F4F4F4;
+  --muted-foreground: #777676;
+  --accent: var(--brand-accent);
+  --accent-foreground: #333333;
+  --destructive: #DC143C;
+  --destructive-foreground: #FFFFFF;
+  --success: #00C522;
+  --success-foreground: #FFFFFF;
+  --warning: #EEAF32;
+  --warning-foreground: #333333;
+  --information: #009DFF;
+  --information-foreground: #FFFFFF;
+  --neutral: #E7E7E2;
+  --neutral-foreground: #333333;
+  --border: #DDDDDD;
+  --input: #DDDDDD;
+  --ring: var(--brand-primary);
+  --radius: 0.5rem;
+  --blue: var(--brand-primary);
+  --yellow: var(--brand-accent);
+  --black: var(--foreground);
+  --white: var(--background);
   --gray: #949494;
   --dark-gray: #777676;
   /* Sidebar layout system: the rail and every desktop content start share
