@@ -1,10 +1,13 @@
 import UserNavigators from "./UsersNavigators";
 import { useState, useEffect, useCallback, memo, useContext } from "react";
-import StudentsNavigationTable from "./StudentsNavigationTable";
-import UserNavigationTable from "./UsersNavigationTable";
+import { DataTable } from "@/components/shared/DataTable";
+import { studentColumns } from "@/components/StudentsTableColumns";
 import { exportToCSV } from "../services/exportCSV";
 import auth from "../authService";
 import { SemesterContext } from "../context/currentSemester";
+
+const getStudentRowKey = (student) => student.id;
+const getStudentRowClassName = () => "border-0 hover:bg-transparent";
 
 const StudentsListComponent = ({majors, userCourses}) => {
     const [students, setStudents] = useState([]);
@@ -99,7 +102,17 @@ const StudentsListComponent = ({majors, userCourses}) => {
                 idFilter={idFilter}
                 setIdFilter={setIdFilter}
                 />
-                <UserNavigationTable users={filteredStudents} role={"student"} coursesRole='student'/>
+                <DataTable
+                    columns={studentColumns}
+                    data={filteredStudents}
+                    emptyMessage={null}
+                    getRowKey={getStudentRowKey}
+                    getRowClassName={getStudentRowClassName}
+                    className="rounded-md border-0 bg-background shadow-none"
+                    tableClassName="border-collapse text-left"
+                    tableContainerClassName="max-h-[440px] overflow-y-auto [&::-webkit-scrollbar]:h-0 [&::-webkit-scrollbar]:w-0"
+                    headerClassName="sticky top-0 z-10 bg-background shadow-sm"
+                />
                 <div className="export-csv-container">
                     <button className="export-csv" onClick={handleExportCSV}>
                         Export as CSV

@@ -172,9 +172,11 @@ function DataTable({
               </TableRow>
             ))
           ) : (
-            <DataTableEmpty columnCount={columnCount}>
-              {emptyMessage}
-            </DataTableEmpty>
+            emptyMessage !== null && (
+              <DataTableEmpty columnCount={columnCount}>
+                {emptyMessage}
+              </DataTableEmpty>
+            )
           )}
         </TableBody>
       </Table>
