@@ -10,6 +10,8 @@ import SessionFeedback from "./SessionFeedback.js";
 import Semester from "./Semester.js";
 import SemesterCourse from "./SemesterCourse.js";
 import Schedule from "./Schedule.js";
+import Alert from "./Alert.js";
+import AlertCategory from "./AlertCategory.js";
 
 // User ↔ Major
 User.belongsTo(Major, { foreignKey: "major_id" });
@@ -63,3 +65,11 @@ SessionFeedback.belongsTo(User, { foreignKey: "user_id" });
 
 TutorSession.hasMany(SessionFeedback, { foreignKey: "session_id" });
 User.hasMany(SessionFeedback, { foreignKey: "user_id" });
+
+// Alert ↔ AlertCategory
+Alert.belongsTo(AlertCategory, { foreignKey: "category_id" });
+AlertCategory.hasMany(Alert, { foreignKey: "category_id" });
+
+// Alert ↔ User (optional affected user)
+Alert.belongsTo(User, { foreignKey: "user_id" });
+User.hasMany(Alert, { foreignKey: "user_id" });
