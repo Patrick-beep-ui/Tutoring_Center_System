@@ -1,12 +1,11 @@
 import UserNavigators from "./UsersNavigators";
 import { useState, useEffect, useCallback, memo, useContext } from "react";
-import StudentsNavigationTable from "./StudentsNavigationTable";
-import UserNavigationTable from "./UsersNavigationTable";
+import UsersDataTable from "@/components/UsersDataTable";
 import { exportToCSV } from "../services/exportCSV";
 import auth from "../authService";
 import { SemesterContext } from "../context/currentSemester";
 
-const StudentsListComponent = ({majors, userCourses}) => {
+const StudentsListComponent = ({active = true, majors, userCourses, onExportReady}) => {
     const [students, setStudents] = useState([]);
     const [filteredStudents, setFilteredStudents] = useState([]);
     const { selectedSemesterId } = useContext(SemesterContext);
@@ -82,13 +81,16 @@ const StudentsListComponent = ({majors, userCourses}) => {
         exportToCSV(rows, headers, 'students.csv'); 
     }, [filteredStudents]);
 
+    useEffect(() => {
+        onExportReady?.("student", handleExportCSV);
+    }, [handleExportCSV, onExportReady]);
+
+    if (!active) return null;
+
     return (
-        <div className="users-list students-list">
-            <details>
-                <summary className="summary-wrapper">
-                    <span className="summary-title">Students Directory</span>
-                </summary>
-                <UserNavigators
+        <div className="min-w-0 lg:flex lg:min-h-0 lg:flex-1 lg:flex-col">
+            <UserNavigators
+                compact
                 majors={majors}
                 courses={userCourses}
                 students={students}
@@ -98,14 +100,11 @@ const StudentsListComponent = ({majors, userCourses}) => {
                 setCourseFilter={setCourseFilter}
                 idFilter={idFilter}
                 setIdFilter={setIdFilter}
-                />
-                <UserNavigationTable users={filteredStudents} role={"student"} coursesRole='student'/>
-                <div className="export-csv-container">
-                    <button className="export-csv" onClick={handleExportCSV}>
-                        Export as CSV
-                    </button>
-                </div>
-            </details>
+            />
+            <UsersDataTable
+                userType="student"
+                data={filteredStudents}
+            />
         </div>
     );
 }

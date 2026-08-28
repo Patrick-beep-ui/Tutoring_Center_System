@@ -13,6 +13,7 @@ const UserNavigators = ({
     courses = [],
     students = [],
     isInputSearch = false,
+    compact = false,
     IdLabel = "ID",
     IdPlaceholder = "Type student ID / Name"
 }) => {
@@ -22,6 +23,22 @@ const UserNavigators = ({
     const viewerRole = user?.role ?? user?.user_role;
     const canChangeSemester = viewerRole === "admin" || viewerRole === "dev";
     const currentTerm = semesters.find(s => s.is_current);
+
+    const navigationClassName = compact
+        ? "grid w-full shrink-0 grid-cols-1 gap-x-5 gap-y-4 border-y border-border bg-muted/40 px-6 py-3 text-left sm:grid-cols-2 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,1.2fr)_minmax(0,1fr)_minmax(0,1fr)]"
+        : "users-navigation";
+    const itemClassName = compact
+        ? "flex min-w-0 flex-col gap-1.5"
+        : "users-navigation-item";
+    const labelClassName = compact
+        ? "text-xs font-semibold text-[var(--primary)]"
+        : "navigation-item-label";
+    const selectClassName = compact
+        ? "h-10 w-full cursor-pointer rounded-md border border-input bg-card px-3 text-sm text-foreground outline-none transition-[color,box-shadow] focus:border-ring focus:ring-[3px] focus:ring-ring/20 disabled:cursor-not-allowed disabled:bg-muted disabled:text-muted-foreground"
+        : "navigation-item-select";
+    const inputClassName = compact
+        ? "h-10 w-full rounded-md border border-input bg-card px-3 text-sm text-foreground outline-none transition-[color,box-shadow] placeholder:text-muted-foreground focus:border-ring focus:ring-[3px] focus:ring-ring/20"
+        : "navigation-item-input";
 
 
     useEffect(() => {
@@ -33,11 +50,11 @@ const UserNavigators = ({
     }, [searchTerm]);
 
     return (
-        <section className="users-navigation">
-            <div className="users-navigation-item">
-                <label className="navigation-item-label">Program</label>
+        <section className={navigationClassName}>
+            <div className={itemClassName}>
+                <label className={labelClassName}>Program</label>
                 <select
-                    className="navigation-item-select"
+                    className={selectClassName}
                     value={programFilter}
                     onChange={(e) => setProgramFilter(e.target.value)}
                 >
@@ -47,11 +64,11 @@ const UserNavigators = ({
                     ))}
                 </select>
             </div>
-            <div className="users-navigation-item">
-                <label className="navigation-item-label">Course</label>
+            <div className={itemClassName}>
+                <label className={labelClassName}>Course</label>
                 {isInputSearch ? (
                     <input
-                        className="navigation-item-input"
+                        className={inputClassName}
                         type="text"
                         value={courseFilter === "all" ? "" : courseFilter}
                         placeholder="Search Course"
@@ -59,7 +76,7 @@ const UserNavigators = ({
                     />
                 ) : (
                     <select
-                        className="navigation-item-select"
+                        className={selectClassName}
                         value={courseFilter}
                         onChange={(e) => setCourseFilter(e.target.value)}
                     >
@@ -72,21 +89,21 @@ const UserNavigators = ({
                 )}
             </div>
 
-            <div className="users-navigation-item">
-                <label className="navigation-item-label">{IdLabel}</label>
+            <div className={itemClassName}>
+                <label className={labelClassName}>{IdLabel}</label>
                 <input
                     type="text"
-                    className="navigation-item-input"
+                    className={inputClassName}
                     placeholder={IdPlaceholder}
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                 />
             </div>
-            <div className="users-navigation-item">
-                <label className="navigation-item-label">Semester</label>
+            <div className={itemClassName}>
+                <label className={labelClassName}>Semester</label>
                 {canChangeSemester ? (
                     <select
-                        className="navigation-item-select"
+                        className={selectClassName}
                         value={selectedSemesterId ?? ""}
                         onChange={(e) => setSelectedSemesterId(Number(e.target.value))}
                         disabled={!semesters.length}
@@ -99,7 +116,7 @@ const UserNavigators = ({
                     </select>
                 ) : (
                     <select
-                        className="navigation-item-select"
+                        className={selectClassName}
                         value={currentTerm?.semester_id ?? ""}
                         disabled
                         title="Only admins can view other semesters"
