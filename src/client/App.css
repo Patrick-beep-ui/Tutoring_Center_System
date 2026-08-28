@@ -3394,6 +3394,12 @@ strong {
   padding: 16px 0;
 }
 
+.activities-fallback {
+  color: #b45309;
+  font-size: 0.85rem;
+  margin-bottom: 10px;
+}
+
 .h3-title {
   font-size: 1.5rem;
   margin-bottom: 20px;

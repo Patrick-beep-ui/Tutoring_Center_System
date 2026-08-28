@@ -5,6 +5,7 @@ import { resolveSemesterId } from "../utils/currentSemester.js";
 const UNACCEPTED_HOURS = Number(process.env.ALERT_UNACCEPTED_HOURS) || 24;
 const CANCELLATION_RATE_PCT = Number(process.env.ALERT_CANCELLATION_PCT) || 20;
 const ATTENDANCE_PCT = Number(process.env.ALERT_ATTENDANCE_PCT) || 60;
+const ALERT_RECENCY_HOURS = Number(process.env.ALERT_RECENCY_HOURS) || 168; // 7 days
 
 // Insert an alert if one with the same (category, user, semester, message) does
 // not already exist. Returns true if inserted.
@@ -30,13 +31,28 @@ async function insertIfNew({ semester_id, source = 'rule' }) {
     };
 }
 
+const mapAlertRow = (r) => ({
+    alert_id: r.alert_id,
+    category_id: r.category_id,
+    category: r.category_name,
+    severity_level: r.severity_level,
+    description: r.description,
+    user_id: r.user_id,
+    user_name: r.user_first && r.user_last ? `${r.user_first} ${r.user_last}` : null,
+    semester_id: r.semester_id,
+    source: r.source,
+    message: r.message,
+    status: r.status,
+    created_at: r.created_at,
+});
+
 export const getAlerts = async (req, res) => {
     try {
         const semester_id = await resolveSemesterId(req.query.semester_id);
         const limit = Math.min(Math.max(Number(req.query.limit) || 10, 1), 50);
         const status = req.query.status; // optional filter: unread|read|pending
 
-        let sql = `
+        const base = `
             SELECT a.alert_id, a.category_id,
                    ac.category_name, ac.severity_level, ac.description,
                    a.user_id, u.first_name AS user_first, u.last_name AS user_last,
@@ -46,30 +62,32 @@ export const getAlerts = async (req, res) => {
             LEFT JOIN users u ON u.user_id = a.user_id
             WHERE a.semester_id = :semester_id
         `;
-        const replacements = { semester_id, limit };
-        if (status) {
-            sql += ` AND a.status = :status`;
-            replacements.status = status;
-        }
-        sql += ` ORDER BY a.created_at DESC, a.alert_id DESC LIMIT :limit`;
 
-        const [rows] = await connection.query(sql, { replacements });
-        res.json({
-            alerts: rows.map(r => ({
-                alert_id: r.alert_id,
-                category_id: r.category_id,
-                category: r.category_name,
-                severity_level: r.severity_level,
-                description: r.description,
-                user_id: r.user_id,
-                user_name: r.user_first && r.user_last ? `${r.user_first} ${r.user_last}` : null,
-                semester_id: r.semester_id,
-                source: r.source,
-                message: r.message,
-                status: r.status,
-                created_at: r.created_at,
-            }))
-        });
+        const run = async (recentOnly) => {
+            let sql = base;
+            const replacements = { semester_id, limit };
+            if (status) {
+                sql += ` AND a.status = :status`;
+                replacements.status = status;
+            }
+            if (recentOnly) {
+                sql += ` AND a.created_at >= (NOW() - INTERVAL :rc HOUR)`;
+                replacements.rc = ALERT_RECENCY_HOURS;
+            }
+            sql += ` ORDER BY a.created_at DESC, a.alert_id DESC LIMIT :limit`;
+            const [rows] = await connection.query(sql, { replacements });
+            return rows.map(mapAlertRow);
+        };
+
+        let alerts = await run(true);
+        if (alerts.length > 0) {
+            return res.json({ alerts, window: "recent" });
+        }
+
+        // Fallback: no recent alerts in window -> show the semester's latest alerts (any age)
+        alerts = await run(false);
+        const noAlertsAtAll = alerts.length === 0;
+        return res.json({ alerts, window: noAlertsAtAll ? "recent" : "fallback" });
     }
     catch (e) {
         if (e.message === 'No current semester is set') {

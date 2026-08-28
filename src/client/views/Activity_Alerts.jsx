@@ -31,6 +31,7 @@ const activityToDetails = (a) => {
 const Activity_Alerts = () => {
     const { selectedSemesterId } = useContext(SemesterContext);
     const [alerts, setAlerts] = useState([]);
+    const [window, setWindow] = useState("recent");
 
     useEffect(() => {
         const fetchAlerts = async () => {
@@ -38,6 +39,7 @@ const Activity_Alerts = () => {
                 const url = `/alerts${selectedSemesterId ? `?semester_id=${selectedSemesterId}` : ''}`;
                 const { data } = await api.get(url);
                 setAlerts(data.alerts || []);
+                setWindow(data.window || "recent");
             } catch (e) {
                 console.error(e);
                 setAlerts([]);
@@ -51,6 +53,9 @@ const Activity_Alerts = () => {
             <Header />
             <section className="activity-container">
                 <h1 className="page-title">System Alerts</h1>
+                {window === "fallback" && alerts.length > 0 && (
+                    <p className="activities-fallback">No recent activity in the past week — showing latest.</p>
+                )}
                 {alerts.length > 0 ? (
                     alerts.map(a => (
                         <AlertBox

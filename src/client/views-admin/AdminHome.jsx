@@ -16,6 +16,7 @@ const AdminHome = () => {
     const [rankWindow, setRankWindow] = useState(null);
     const [semesterCode, setSemesterCode] = useState("");
     const [activities, setActivities] = useState([]);
+    const [activitiesWindow, setActivitiesWindow] = useState("recent");
 
     useEffect(() => {
         const getTopTutors = async () => {
@@ -42,6 +43,7 @@ const AdminHome = () => {
                 const url = `/alerts${selectedSemesterId ? `?semester_id=${selectedSemesterId}` : ''}`;
                 const { data } = await api.get(url);
                 setActivities(data.alerts || []);
+                setActivitiesWindow(data.window || "recent");
             }
             catch(e) {
                 console.error(e);
@@ -85,6 +87,9 @@ const AdminHome = () => {
                     <div className="activities">
                         <h3 className= "h3-title">Recent Activities</h3>
                         <div className="activities-list">
+                            {activitiesWindow === "fallback" && activities.length > 0 && (
+                                <p className="activities-fallback">No recent activity in the past week — showing latest.</p>
+                            )}
                             {activities.length > 0 ? (
                                 activities.map((a, i) => (
                                     <ActivityCard
