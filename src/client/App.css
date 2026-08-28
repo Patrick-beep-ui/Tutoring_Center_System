@@ -3307,6 +3307,25 @@ strong {
   margin: 0 auto;
 }
 
+.activities-list {
+  max-height: 480px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.activities-empty {
+  color: #6b7280;
+  font-style: italic;
+  text-align: center;
+  padding: 16px 0;
+}
+
+.activities-fallback {
+  color: #b45309;
+  font-size: 0.85rem;
+  margin-bottom: 10px;
+}
+
 .h3-title {
   font-size: 1.5rem;
   margin-bottom: 20px;

@@ -29,6 +29,7 @@ import UserRouter from './routes/userRoutes.js';
 import FeedbackRouter from './routes/feedbackRoutes.js';
 import SchedulesRouter from './routes/schedulesRoutes.js';
 import StudentRouter from './routes/studentRoutes.js';
+import AlertRouter from './routes/alertRoutes.js';
 
 const api = express.Router({mergeParams: true});
 
@@ -44,6 +45,7 @@ api.use("/users", UserRouter);
 api.use("/feedback", FeedbackRouter);
 api.use("/schedules", SchedulesRouter);
 api.use("/students", StudentRouter);
+api.use("/alerts", AlertRouter);
 
 
 // Endpoint to check authentication
