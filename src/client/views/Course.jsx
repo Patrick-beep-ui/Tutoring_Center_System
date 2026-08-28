@@ -1,10 +1,14 @@
-import { useState, useEffect, useRef, useCallback, memo, useMemo, useContext } from "react";
-import auth from "../authService";
+import { useState, useEffect, useCallback, memo, useMemo, useContext } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Link, useOutletContext } from "react-router-dom";
-import Header from "../components/Header";
-import { v4 as uuid } from "uuid";
-import UserNavigators from "../components/UsersNavigators";
 import { toast } from "sonner";
+
+import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
+import auth from "../authService";
+import CourseGrid from "../components/courses/CourseGrid";
+import Header from "../components/Header";
+import UserNavigators from "../components/UsersNavigators";
 import { SemesterContext } from "../context/currentSemester";
 import '.././App.css';
 
@@ -29,7 +33,6 @@ function ClassName() {
     // Pagination states
     const [currentPage, setCurrentPage] = useState(0);
     const [itemsPerPage, setItemsPerPage] = useState(2);
-    const scrollRef = useRef(null);
 
     // Fetch majors and students on mount
     useEffect(() => {
@@ -134,6 +137,8 @@ function ClassName() {
         );
     }, [filteredCourses, currentPage, itemsPerPage]);
 
+    const totalPages = Math.ceil(filteredCourses.length / itemsPerPage);
+
     const isOffered = useCallback((c) => c.offered === 1 || c.offered === true, []);
 
     const toggleRoster = useCallback(async (c) => {
@@ -155,64 +160,84 @@ function ClassName() {
     return (
         <>
             <Header />
-            <section className="courses-container section">
-                <UserNavigators
-                    programFilter={programFilter}
-                    courseFilter={courseFilter}
-                    idFilter={idFilter}
-                    setProgramFilter={setProgramFilter}
-                    setCourseFilter={setCourseFilter}
-                    setIdFilter={setIdFilter}
-                    majors={majors}
-                    courses={courses}
-                    students={students}
-                    isInputSearch={true}
-                    IdLabel="Code"
-                    IdPlaceholder="Type Course Code"
-                />
+            <main className="section bg-background text-foreground">
+                <div className="flex min-w-0 flex-col gap-6">
+                    <header className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                        <h1 className="text-left text-2xl font-semibold text-foreground">
+                            Courses Directory
+                        </h1>
+                        <Button asChild>
+                            <Link to="/classes/add">Add Course</Link>
+                        </Button>
+                    </header>
 
-                {isAdmin &&
-                    <div className="form-check form-switch" style={{ margin: '10px 20px' }}>
-                        <input className="form-check-input" type="checkbox" id="offeredOnlySwitch"
-                            checked={offeredOnly} onChange={(e) => setOfferedOnly(e.target.checked)} />
-                        <label className="form-check-label" htmlFor="offeredOnlySwitch">
-                            Offerings in selected semester only
-                        </label>
-                    </div>}
+                    <UserNavigators
+                        programFilter={programFilter}
+                        courseFilter={courseFilter}
+                        idFilter={idFilter}
+                        setProgramFilter={setProgramFilter}
+                        setCourseFilter={setCourseFilter}
+                        setIdFilter={setIdFilter}
+                        majors={majors}
+                        courses={courses}
+                        students={students}
+                        isInputSearch={true}
+                        compact
+                        IdLabel="Code"
+                        IdPlaceholder="Type Course Code"
+                    />
 
-                <button className="arrow left" onClick={prevPage} disabled={currentPage === 0}>←</button>
-
-                <section className="courses" ref={scrollRef}>
-                    {currentCourses.map(c => (
-                        <div className="course-container" key={uuid()}>
-                            <div className="course-description">
-                                <p>{c.course_code}</p>
-                                <p>{c.course_name}</p>
-                                <p>{c.credits} Credits</p>
-                                <p>{c.major_name}</p>
-                            </div>
-                            <div className="course-tutors">
-                                <p>{c.tutors_counter} Tutors</p>
-                                <a href="">See Tutors</a>
-                                {isAdmin && (
-                                    isOffered(c) ? (
-                                        <button className="btn btn-sm btn-outline-danger" onClick={() => toggleRoster(c)}>
-                                            Remove from Semester
-                                        </button>
-                                    ) : (
-                                        <button className="btn btn-sm btn-outline-success" onClick={() => toggleRoster(c)}>
-                                            Add to Semester
-                                        </button>
-                                    )
-                                )}
-                            </div>
+                    {isAdmin && (
+                        <div className="flex items-center gap-3">
+                            <Switch
+                                id="offeredOnlySwitch"
+                                checked={offeredOnly}
+                                onCheckedChange={setOfferedOnly}
+                            />
+                            <label
+                                className="cursor-pointer text-sm font-medium"
+                                htmlFor="offeredOnlySwitch"
+                            >
+                                Offerings in selected semester only
+                            </label>
                         </div>
-                    ))}
-                </section>
-            </section>
+                    )}
 
-            <Link to={"/classes/add"} className="add-class" style={{ color: 'var(--white)' }}>Add Course</Link>
-            <button className="arrow right" onClick={nextPage} disabled={currentPage >= Math.ceil(filteredCourses.length / itemsPerPage) - 1}>→</button>
+                    <CourseGrid
+                        courses={currentCourses}
+                        isAdmin={isAdmin}
+                        isOffered={isOffered}
+                        onToggleRoster={toggleRoster}
+                    />
+
+                    <nav
+                        aria-label="Course pagination"
+                        className="flex flex-col items-center justify-between gap-3 sm:flex-row"
+                    >
+                        <Button
+                            type="button"
+                            variant="outline"
+                            onClick={prevPage}
+                            disabled={currentPage === 0}
+                        >
+                            <ChevronLeft />
+                            Previous
+                        </Button>
+                        <p className="text-sm text-muted-foreground" aria-live="polite">
+                            Page {currentPage + 1} of {Math.max(totalPages, 1)}
+                        </p>
+                        <Button
+                            type="button"
+                            variant="outline"
+                            onClick={nextPage}
+                            disabled={currentPage >= totalPages - 1}
+                        >
+                            Next
+                            <ChevronRight />
+                        </Button>
+                    </nav>
+                </div>
+            </main>
         </>
     );
 }
