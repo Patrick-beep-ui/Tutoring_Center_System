@@ -116,7 +116,7 @@ function DataTable({
     <div
       data-slot="data-table"
       className={cn(
-        "overflow-hidden rounded-lg border bg-card text-card-foreground shadow-sm",
+        "overflow-hidden rounded-md border border-border bg-card text-card-foreground shadow-none",
         className,
       )}
     >
@@ -126,15 +126,20 @@ function DataTable({
         aria-busy={loading}
       >
         {caption ? <TableCaption>{caption}</TableCaption> : null}
-        <TableHeader className={cn("bg-muted/80", headerClassName)}>
+        <TableHeader
+          className={cn(
+            "sticky top-0 z-20 border-b border-border bg-muted",
+            headerClassName,
+          )}
+        >
           {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id} className="hover:bg-transparent">
+            <TableRow key={headerGroup.id} className="bg-muted hover:bg-muted">
               {headerGroup.headers.map((header) => (
                 <TableHead
                   key={header.id}
                   colSpan={header.colSpan}
                   className={cn(
-                    "h-11 px-4 text-xs font-semibold uppercase tracking-wide text-primary",
+                    "sticky top-0 z-20 h-12 border-b border-border bg-muted px-4 text-sm font-semibold normal-case tracking-normal text-muted-foreground",
                     header.column.columnDef.meta?.headerClassName,
                   )}
                 >

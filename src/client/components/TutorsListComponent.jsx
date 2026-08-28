@@ -2,12 +2,11 @@ import UserNavigators from "./UsersNavigators";
 import { useState, useEffect, useCallback, memo, useContext } from "react";
 import auth from "../authService";
 import UsersDataTable from "@/components/UsersDataTable";
-import { Button } from "@/components/ui/button";
 import {exportToCSV} from "../services/exportCSV";
 import { SemesterContext } from "../context/currentSemester";
 
 
-const TutorsListComponent = ({active = true, majors, userCourses}) => {
+const TutorsListComponent = ({active = true, majors, userCourses, onExportReady}) => {
     const [tutors, setTutors] = useState([]);
     const [filteredTutors, setFilteredTutors] = useState([]); 
     const { selectedSemesterId } = useContext(SemesterContext);
@@ -82,10 +81,14 @@ const TutorsListComponent = ({active = true, majors, userCourses}) => {
         exportToCSV(rows, headers, 'tutors.csv'); 
     }, [filteredTutors]);
 
+    useEffect(() => {
+        onExportReady?.("tutor", handleExportCSV);
+    }, [handleExportCSV, onExportReady]);
+
     if (!active) return null;
 
     return (
-        <div className="min-w-0 space-y-4">
+        <div className="min-w-0 lg:flex lg:min-h-0 lg:flex-1 lg:flex-col">
             <UserNavigators
                 compact
                 programFilter={programFilter}
@@ -98,12 +101,10 @@ const TutorsListComponent = ({active = true, majors, userCourses}) => {
                 courses={userCourses}
                 students={tutors}
             />
-            <UsersDataTable userType="tutor" data={filteredTutors} />
-            <div className="flex justify-end">
-                <Button type="button" onClick={handleExportCSV}>
-                    Export as CSV
-                </Button>
-            </div>
+            <UsersDataTable
+                userType="tutor"
+                data={filteredTutors}
+            />
         </div>
     );
 }

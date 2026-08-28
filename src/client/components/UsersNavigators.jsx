@@ -25,19 +25,19 @@ const UserNavigators = ({
     const currentTerm = semesters.find(s => s.is_current);
 
     const navigationClassName = compact
-        ? "grid w-full grid-cols-1 gap-4 rounded-lg border border-border bg-card p-4 text-left sm:grid-cols-2 xl:grid-cols-4"
+        ? "grid w-full shrink-0 grid-cols-1 gap-x-5 gap-y-4 border-y border-border bg-muted/40 px-6 py-3 text-left sm:grid-cols-2 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,1.2fr)_minmax(0,1fr)_minmax(0,1fr)]"
         : "users-navigation";
     const itemClassName = compact
         ? "flex min-w-0 flex-col gap-1.5"
         : "users-navigation-item";
     const labelClassName = compact
-        ? "text-sm font-medium text-foreground"
+        ? "text-xs font-semibold text-[var(--primary)]"
         : "navigation-item-label";
     const selectClassName = compact
-        ? "h-11 w-full cursor-pointer rounded-md border border-input bg-background px-3 text-sm text-foreground outline-none transition-[color,box-shadow] focus:border-ring focus:ring-[3px] focus:ring-ring/20 disabled:cursor-not-allowed disabled:bg-muted disabled:text-muted-foreground"
+        ? "h-10 w-full cursor-pointer rounded-md border border-input bg-card px-3 text-sm text-foreground outline-none transition-[color,box-shadow] focus:border-ring focus:ring-[3px] focus:ring-ring/20 disabled:cursor-not-allowed disabled:bg-muted disabled:text-muted-foreground"
         : "navigation-item-select";
     const inputClassName = compact
-        ? "h-11 w-full rounded-md border border-input bg-background px-3 text-sm text-foreground outline-none transition-[color,box-shadow] placeholder:text-muted-foreground focus:border-ring focus:ring-[3px] focus:ring-ring/20"
+        ? "h-10 w-full rounded-md border border-input bg-card px-3 text-sm text-foreground outline-none transition-[color,box-shadow] placeholder:text-muted-foreground focus:border-ring focus:ring-[3px] focus:ring-ring/20"
         : "navigation-item-input";
 
 

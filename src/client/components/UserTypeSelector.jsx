@@ -17,12 +17,12 @@ function UserTypeSelector({ value, onValueChange, canViewTutors }) {
     : USER_TYPE_OPTIONS.slice(0, 1);
 
   return (
-    <div className="flex w-full items-center gap-3 sm:w-auto">
+    <div className="flex w-full flex-col items-stretch gap-1.5 sm:w-auto sm:flex-row sm:items-center sm:gap-3">
       <label
         id="user-type-label"
-        className="shrink-0 text-sm font-medium text-foreground"
+        className="shrink-0 text-left text-xs font-semibold text-muted-foreground"
       >
-        View
+        User type
       </label>
       <Select
         value={value}
@@ -31,7 +31,7 @@ function UserTypeSelector({ value, onValueChange, canViewTutors }) {
       >
         <SelectTrigger
           aria-labelledby="user-type-label"
-          className="h-10 w-full min-w-40 border-border bg-card text-left font-medium text-primary shadow-none sm:w-44"
+          className="h-9 w-full border-border bg-card text-left font-medium text-[var(--primary)] shadow-none disabled:cursor-default disabled:opacity-100 sm:w-40"
         >
           <SelectValue />
         </SelectTrigger>

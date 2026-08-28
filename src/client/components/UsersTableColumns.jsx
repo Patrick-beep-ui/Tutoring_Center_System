@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 
 const USER_TABLE_HEADER_CLASS =
-  "h-14 px-5 py-0 text-left text-base font-semibold normal-case tracking-normal text-primary";
+  "h-12 px-5 py-0 text-left text-sm font-semibold normal-case tracking-normal text-[var(--primary)]";
 
 const USER_TYPE_CONFIG = {
   student: {
@@ -33,7 +33,7 @@ function renderCourseBadges(coursesString) {
       <Badge
         key={`${courseName}-${index}`}
         variant="outline"
-        className="border-transparent bg-transparent px-2.5 py-1 text-sm font-normal text-foreground ring-1 ring-inset ring-primary"
+        className="rounded-md border-[var(--primary)]/15 bg-[var(--primary)]/5 px-2 py-0.5 text-xs font-medium text-[var(--primary)]"
       >
         {courseName}
       </Badge>
@@ -57,7 +57,7 @@ function createUserTableColumns(userType) {
         const userName = user[config.nameKey];
 
         return (
-          <div className="flex items-center">
+          <div className="flex items-center gap-3">
             <Link
               to={`/profile/${userType}/${user.id}`}
               className="inline-flex shrink-0 rounded-full focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
@@ -65,18 +65,18 @@ function createUserTableColumns(userType) {
               <img
                 src={`/profile/${userType}${user.id}.webp`}
                 alt={`${userName} profile`}
-                className="size-[45px] rounded-full object-cover"
+                className="size-10 rounded-full object-cover"
                 onError={(event) => {
                   event.currentTarget.onerror = null;
                   event.currentTarget.src = "/profile/profile.webp";
                 }}
               />
             </Link>
-            <div className="ml-3 py-2.5">
-              <p className="mb-1 text-base font-medium text-foreground">
+            <div className="min-w-0">
+              <p className="mb-0.5 text-sm font-semibold leading-5 text-foreground">
                 {userName}
               </p>
-              <p className="m-0 text-sm text-muted-foreground">
+              <p className="m-0 text-xs leading-5 text-muted-foreground">
                 {user[config.emailKey]}
               </p>
             </div>
@@ -84,47 +84,47 @@ function createUserTableColumns(userType) {
         );
       },
       meta: {
-        headerClassName: USER_TABLE_HEADER_CLASS,
-        cellClassName: "py-0 pl-5",
+        headerClassName: `${USER_TABLE_HEADER_CLASS} w-[30%]`,
+        cellClassName: "w-[30%] py-3 pl-5",
       },
     },
     {
       accessorKey: config.majorKey,
       header: "Major",
       cell: ({ row }) => (
-        <p className="m-0 text-base text-foreground">
+        <p className="m-0 text-sm text-foreground">
           {row.original[config.majorKey]}
         </p>
       ),
       meta: {
-        headerClassName: USER_TABLE_HEADER_CLASS,
-        cellClassName: "py-0",
+        headerClassName: `${USER_TABLE_HEADER_CLASS} w-[20%]`,
+        cellClassName: "w-[20%] py-3",
       },
     },
     {
       accessorKey: config.coursesKey,
       header: "Courses",
       cell: ({ row }) => (
-        <div className="flex flex-wrap gap-1.5 py-2.5">
+        <div className="flex flex-wrap gap-1.5">
           {renderCourseBadges(row.original[config.coursesKey])}
         </div>
       ),
       meta: {
-        headerClassName: USER_TABLE_HEADER_CLASS,
-        cellClassName: "whitespace-normal py-0",
+        headerClassName: `${USER_TABLE_HEADER_CLASS} w-[50%]`,
+        cellClassName: "w-[50%] whitespace-normal py-3",
       },
     },
     {
       accessorKey: config.idKey,
       header: "ID",
       cell: ({ row }) => (
-        <span className="text-base text-foreground">
+        <span className="text-sm font-medium text-foreground">
           {row.original[config.idKey]}
         </span>
       ),
       meta: {
-        headerClassName: USER_TABLE_HEADER_CLASS,
-        cellClassName: "py-0 pr-5",
+        headerClassName: `${USER_TABLE_HEADER_CLASS} w-0 text-right`,
+        cellClassName: "w-0 py-3 pr-5 text-right",
       },
     },
   ];
