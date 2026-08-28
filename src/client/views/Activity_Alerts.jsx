@@ -2,6 +2,7 @@ import { useState, useEffect, useContext } from "react";
 import AlertBox from "../components/AlertBox.jsx";
 import Header from "../components/Header.jsx";
 import api from "../axiosService";
+import { alertCategoryLabel } from "../services/alertLabels";
 import { SemesterContext } from "../context/currentSemester";
 import "../App.css";
 
@@ -60,7 +61,7 @@ const Activity_Alerts = () => {
                     alerts.map(a => (
                         <AlertBox
                             key={a.alert_id}
-                            title={a.category || "Alert"}
+                            title={alertCategoryLabel(a.category)}
                             message={a.message}
                             type={severityToType(a.severity_level)}
                             details={activityToDetails(a)}
