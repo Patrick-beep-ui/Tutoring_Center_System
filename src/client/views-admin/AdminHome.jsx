@@ -15,6 +15,7 @@ const AdminHome = () => {
     const [topTutors, setTopTutors] = useState([]);
     const [rankWindow, setRankWindow] = useState(null);
     const [semesterCode, setSemesterCode] = useState("");
+    const [activities, setActivities] = useState([]);
 
     useEffect(() => {
         const getTopTutors = async () => {
@@ -35,6 +36,38 @@ const AdminHome = () => {
         getTopTutors();
     }, [selectedSemesterId]);
 
+    useEffect(() => {
+        const getActivities = async () => {
+            try {
+                const url = `/alerts${selectedSemesterId ? `?semester_id=${selectedSemesterId}` : ''}`;
+                const { data } = await api.get(url);
+                setActivities(data.alerts || []);
+            }
+            catch(e) {
+                console.error(e);
+                setActivities([]);
+            }
+        };
+
+        getActivities();
+    }, [selectedSemesterId]);
+
+    const formatActivityTime = (createdAt) => {
+        if (!createdAt) return "";
+        return new Date(createdAt).toLocaleString("en-US", {
+            month: "short", day: "numeric", hour: "numeric", minute: "2-digit"
+        });
+    };
+
+    const tagForSeverity = (severity) => {
+        switch (severity) {
+            case "high": return "Alert";
+            case "critical": return "Alert";
+            case "medium": return "Reminder";
+            default: return "System";
+        }
+    };
+
     return (
 
         <>
@@ -51,9 +84,21 @@ const AdminHome = () => {
                 <div className="content-grid">
                     <div className="activities">
                         <h3 className= "h3-title">Recent Activities</h3>
-                        <ActivityCard time="10:24 AM" title="New Tutor Registered" description="A software engineer student has joined." tag="System" />
-                        <ActivityCard time="11:00 AM" title="Academic Honors Assembly" description="Congratulate awarded tutors." tag="Reminder" />
-                        <ActivityCard time="1:00 PM" title="Weekly Performance Update" description="Review the results and take action." tag="Alert" />
+                        <div className="activities-list">
+                            {activities.length > 0 ? (
+                                activities.map((a, i) => (
+                                    <ActivityCard
+                                        key={a.alert_id ?? i}
+                                        time={formatActivityTime(a.created_at)}
+                                        title={a.category || "Alert"}
+                                        description={a.message}
+                                        tag={tagForSeverity(a.severity_level)}
+                                    />
+                                ))
+                            ) : (
+                                <p className="activities-empty">No recent activity yet.</p>
+                            )}
+                        </div>
                     </div>
 
                     <TopTutorsList tutors={topTutors} rankWindow={rankWindow} semesterCode={semesterCode} />
