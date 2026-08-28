@@ -6,6 +6,7 @@ import StatBox from "../components/StatBox.jsx";
 import ActivityCard from "../components/ActivityCard";
 import TopTutorsList from "../components/TopTutorsList.jsx";
 import api from "../axiosService";
+import { alertCategoryLabel } from "../services/alertLabels";
 import { SemesterContext } from "../context/currentSemester";
 
 
@@ -95,7 +96,7 @@ const AdminHome = () => {
                                     <ActivityCard
                                         key={a.alert_id ?? i}
                                         time={formatActivityTime(a.created_at)}
-                                        title={a.category || "Alert"}
+                                        title={alertCategoryLabel(a.category)}
                                         description={a.message}
                                         tag={tagForSeverity(a.severity_level)}
                                     />
