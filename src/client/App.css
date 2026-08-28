@@ -163,77 +163,7 @@ h1 {
   margin-top: 1rem;
 }
 /*------------------- END SECTION ------------------*/
-/*------------------- USERS ------------------*/
-.users-section {
-  overflow: scroll;
-}
-
-.users-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  box-shadow: 4px 2px 10px rgba(0, 0, 0, 0.1);
-  border-radius: 5px;
-  max-height: 100vh;
-  overflow-y: auto;
-}
-
-.users-list {
-  background-color: #fff;
-  margin: 10px;
-  text-align: left;
-  font-size: 20px;
-  border-radius: 5px;
-}
-/*------------------- END USERS ------------------*/
-/*------------------- SUMMARY ------------------*/
-summary {
-  list-style: none; /* Remove default arrow */
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-}
-
-
-summary::marker, /* Standard */
-summary::-webkit-details-marker { 
-  display: none; /* Hide default arrow */
-}
-
-summary {
-  display: flex;
-  align-items: center; /* Vertically center the content */
-  cursor: pointer;
-  position: relative;
-}
-
-.summary-title {
-  font-size: 1.4em; /* Same as h2 */
-  font-weight: 500;
-  padding: 22px; 
-  display: inline-block; /* Ensures padding applies properly */
-}
-
-/* Custom arrow */
-summary::after {
-  content: ""; /* Empty content required for pseudo-elements */
-  display: inline-block;
-  width: 25px;
-  height: 25px;
-  background-image: url('/src/client/assets/down-squared.png');
-  background-size: contain;
-  background-repeat: no-repeat;
-  margin-left: 10px;  /* Space between button and arrow */
-  transition: transform 0.3s ease;
-}
-/*------------------- END SUMMARY ------------------*/
 /*------------------- NAVIGATION ------------------*/
-/* Rotate arrow when open */
-details[open] summary::after {
-  transform: rotate(180deg);
-}
-
 .users-navigation {
   background-color: #f4f4f4;
   display: flex;
@@ -289,48 +219,11 @@ details[open] summary::after {
   
 }
 
-.pointer-disabled {
-  pointer-events: none; /* Disable pointer events */
-  opacity: 0.5; 
-  background-image: none;
-}
-
 .navigation-item-select option {
   font-size: 1.1rem;
   padding: 5px;
 }
 
-
-.users-navigation-table-container {
-  max-height: 440px !important;
-  overflow-y: auto; 
-  background-color: var(--white) !important;
-  border-radius: 5px;
-}
-
-.users-navigation-table {
-  width: 100%;
-  border-collapse: collapse;
-  background-color: var(--white) !important;
-}
-
-.users-navigation-table thead {
-  position: sticky;
-  top: 0;
-  background-color: var(--white); 
-  z-index: 10; 
-  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1); 
-}
-
-.users-navigation-table th {
-  text-align: left;
-  padding: 20px;
-}
-
-.users-navigation-table-container::-webkit-scrollbar {
-  width: 0px;
-  scrollbar-width: thin;
-}
 
 .tutors-table-container::-webkit-scrollbar, .table-container::-webkit-scrollbar {
   width: 0px;
@@ -341,38 +234,6 @@ details[open] summary::after {
 .tutors-table-container table thead {
   top: 0;
   position: sticky;
-}
-
-.users-navigation-table tbody tr td {
-  padding: 0px 10px;
-  border: none;
-}
-
-.users-navigation-info {
-  padding-left: 15px;
-}
-
-.users-navigation-data {
-  font-size: 1.1rem;
-}
-
-.users-navigation-email {
-  font-size: 14px;
-  color: var(--gray);
-}
-
-.users-navigation-courses {
-  margin-top: 5px !important;
-  text-align: left;
-}
-
-.users-navigation-courses .course-badge { 
-  padding: 5px 10px;
-  border-radius: 15px;
-  border: 1px solid var(--blue);
-  font-size: 0.9rem;
-  margin-right: 5px;
-  display: inline-block;
 }
 
 /* Tutors */
