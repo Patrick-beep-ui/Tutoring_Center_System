@@ -7,11 +7,19 @@ function UsersCourseAutocomplete({ value, onChange, options, placeholder = "Sear
     const [query, setQuery] = useState(value && value !== "all" ? value : "");
     const [open, setOpen] = useState(false);
     const [highlighted, setHighlighted] = useState(0);
+    const [isTyping, setIsTyping] = useState(false);
     const containerRef = useRef(null);
 
+    const selectedCourse = options.find((o) => o.course_code === value);
+
     useEffect(() => {
-        if (value && value !== "all") setQuery(value);
-        else setQuery("");
+        if (value && value !== "all") {
+            setQuery(value);
+            setIsTyping(false);
+        } else {
+            setQuery("");
+            setIsTyping(false);
+        }
     }, [value]);
 
     const matches = useMemo(() => {
@@ -47,12 +55,14 @@ function UsersCourseAutocomplete({ value, onChange, options, placeholder = "Sear
 
     const selectCourse = (course) => {
         setQuery(course.course_code);
+        setIsTyping(false);
         onChange(course.course_code);
         setOpen(false);
     };
 
     const clear = () => {
         setQuery("");
+        setIsTyping(false);
         onChange("all");
         setOpen(false);
     };
@@ -70,7 +80,10 @@ function UsersCourseAutocomplete({ value, onChange, options, placeholder = "Sear
                 e.preventDefault();
                 selectCourse(matches[highlighted]);
             }
-        } else if (e.key === "Backspace" && query === "" && value && value !== "all") {
+        } else if (
+            (e.key === "Backspace" && query === "" && value && value !== "all") ||
+            (e.key === "Backspace" && !isTyping && !open && value && value !== "all")
+        ) {
             clear();
         }
     };
@@ -80,15 +93,21 @@ function UsersCourseAutocomplete({ value, onChange, options, placeholder = "Sear
 
     const isSelected = (course) => value && value !== "all" && course.course_code === value;
 
+    const displayValue =
+        !isTyping && !open && selectedCourse
+            ? `${selectedCourse.course_code} — ${selectedCourse.course_name}`
+            : query;
+
     return (
         <div ref={containerRef} className="relative w-full">
             <Input
                 className={cn(selectClassName, "h-10")}
                 type="text"
-                value={query}
+                value={displayValue}
                 placeholder={placeholder}
                 onChange={(e) => {
                     setQuery(e.target.value);
+                    setIsTyping(true);
                     setOpen(true);
                     if (e.target.value.trim() === "") onChange("all");
                 }}
