@@ -1,6 +1,7 @@
 import { useState, useEffect, memo, useContext } from "react";
 import { useOutletContext } from "react-router-dom";
 import { SemesterContext } from "../context/currentSemester";
+import UsersCourseAutocomplete from "./courses/UsersCourseAutocomplete";
 
 const UserNavigators = ({
     programFilter = "all",
@@ -12,6 +13,8 @@ const UserNavigators = ({
     majors = [],
     courses = [],
     students = [],
+    allCourses = [],
+    autocomplete = false,
     isInputSearch = false,
     compact = false,
     IdLabel = "ID",
@@ -66,7 +69,13 @@ const UserNavigators = ({
             </div>
             <div className={itemClassName}>
                 <label className={labelClassName}>Course</label>
-                {isInputSearch ? (
+                {autocomplete && (viewerRole === "admin" || viewerRole === "dev") ? (
+                    <UsersCourseAutocomplete
+                        value={courseFilter}
+                        onChange={setCourseFilter}
+                        options={allCourses}
+                    />
+                ) : isInputSearch ? (
                     <input
                         className={inputClassName}
                         type="text"

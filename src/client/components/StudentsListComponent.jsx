@@ -1,5 +1,6 @@
 import UserNavigators from "./UsersNavigators";
 import { useState, useEffect, useCallback, memo, useContext } from "react";
+import { useOutletContext } from "react-router-dom";
 import UsersDataTable from "@/components/UsersDataTable";
 import { exportToCSV } from "../services/exportCSV";
 import auth from "../authService";
@@ -8,7 +9,11 @@ import { SemesterContext } from "../context/currentSemester";
 const StudentsListComponent = ({active = true, majors, userCourses, onExportReady}) => {
     const [students, setStudents] = useState([]);
     const [filteredStudents, setFilteredStudents] = useState([]);
+    const [allCourses, setAllCourses] = useState([]);
     const { selectedSemesterId } = useContext(SemesterContext);
+    const { user } = useOutletContext();
+    const viewerRole = user?.user_role ?? user?.role;
+    const isAdminDev = viewerRole === "admin" || viewerRole === "dev";
 
     // Filter states
     const [programFilter, setProgramFilter] = useState("all");
@@ -29,6 +34,24 @@ const StudentsListComponent = ({active = true, majors, userCourses, onExportRead
 
         getStudents();
     }, [selectedSemesterId]);
+
+    // Fetch the full course catalog for the admin/dev course autocomplete.
+    useEffect(() => {
+        if (!isAdminDev || !selectedSemesterId) {
+            setAllCourses([]);
+            return;
+        }
+        const getAllCourses = async () => {
+            try {
+                const response = await auth.get(`/api/courses/catalog?semester_id=${selectedSemesterId}`);
+                const { data } = response;
+                setAllCourses(data.courses || []);
+            } catch (e) {
+                setAllCourses([]);
+            }
+        };
+        getAllCourses();
+    }, [isAdminDev, selectedSemesterId]);
 
     const getFilteredStudents = useCallback(() => {
         let filtered = [...students];
@@ -100,6 +123,8 @@ const StudentsListComponent = ({active = true, majors, userCourses, onExportRead
                 setCourseFilter={setCourseFilter}
                 idFilter={idFilter}
                 setIdFilter={setIdFilter}
+                allCourses={allCourses}
+                autocomplete
             />
             <UsersDataTable
                 userType="student"
