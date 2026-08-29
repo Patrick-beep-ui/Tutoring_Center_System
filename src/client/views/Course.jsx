@@ -1,10 +1,14 @@
-import { useState, useEffect, useRef, useCallback, memo, useMemo, useContext } from "react";
-import auth from "../authService";
+import { useState, useEffect, useCallback, memo, useMemo, useContext } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Link, useOutletContext } from "react-router-dom";
-import Header from "../components/Header";
-import { v4 as uuid } from "uuid";
-import UserNavigators from "../components/UsersNavigators";
 import { toast } from "sonner";
+
+import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
+import auth from "../authService";
+import CourseGrid from "../components/courses/CourseGrid";
+import Header from "../components/Header";
+import UserNavigators from "../components/UsersNavigators";
 import { SemesterContext } from "../context/currentSemester";
 import '.././App.css';
 
@@ -29,7 +33,6 @@ function ClassName() {
     // Pagination states
     const [currentPage, setCurrentPage] = useState(0);
     const [itemsPerPage, setItemsPerPage] = useState(2);
-    const scrollRef = useRef(null);
 
     // Fetch majors and students on mount
     useEffect(() => {
@@ -134,6 +137,8 @@ function ClassName() {
         );
     }, [filteredCourses, currentPage, itemsPerPage]);
 
+    const totalPages = Math.ceil(filteredCourses.length / itemsPerPage);
+
     const isOffered = useCallback((c) => c.offered === 1 || c.offered === true, []);
 
     const toggleRoster = useCallback(async (c) => {
@@ -155,64 +160,104 @@ function ClassName() {
     return (
         <>
             <Header />
-            <section className="courses-container section">
-                <UserNavigators
-                    programFilter={programFilter}
-                    courseFilter={courseFilter}
-                    idFilter={idFilter}
-                    setProgramFilter={setProgramFilter}
-                    setCourseFilter={setCourseFilter}
-                    setIdFilter={setIdFilter}
-                    majors={majors}
-                    courses={courses}
-                    students={students}
-                    isInputSearch={true}
-                    IdLabel="Code"
-                    IdPlaceholder="Type Course Code"
-                />
+            <main className="section overflow-y-auto bg-background text-foreground lg:flex lg:min-h-0 lg:flex-col lg:overflow-hidden">
+                <div className="w-full max-w-none min-w-0 overflow-clip rounded-lg border border-border bg-card shadow-sm lg:flex lg:min-h-0 lg:flex-1 lg:flex-col">
+                    <header className="flex shrink-0 flex-col gap-3 border-b border-border px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+                        <h1 className="text-left text-xl font-semibold text-foreground">
+                            Courses Directory
+                        </h1>
+                        <Button
+                            asChild
+                            variant="outline"
+                            size="sm"
+                            className="border-primary/20 bg-card text-primary! shadow-sm hover:border-secondary hover:bg-secondary hover:text-secondary-foreground!"
+                        >
+                            <Link to="/classes/add">Add Course</Link>
+                        </Button>
+                    </header>
 
-                {isAdmin &&
-                    <div className="form-check form-switch" style={{ margin: '10px 20px' }}>
-                        <input className="form-check-input" type="checkbox" id="offeredOnlySwitch"
-                            checked={offeredOnly} onChange={(e) => setOfferedOnly(e.target.checked)} />
-                        <label className="form-check-label" htmlFor="offeredOnlySwitch">
-                            Offerings in selected semester only
-                        </label>
-                    </div>}
+                    <div className="shrink-0 border-b border-border bg-muted/30 [&>section]:gap-y-3 [&>section]:border-0 [&>section]:bg-transparent [&>section]:px-5 [&>section]:py-3 [&_input]:h-9 [&_label]:text-foreground [&_select]:h-9">
+                        <UserNavigators
+                            programFilter={programFilter}
+                            courseFilter={courseFilter}
+                            idFilter={idFilter}
+                            setProgramFilter={setProgramFilter}
+                            setCourseFilter={setCourseFilter}
+                            setIdFilter={setIdFilter}
+                            majors={majors}
+                            courses={courses}
+                            students={students}
+                            isInputSearch={true}
+                            compact
+                            IdLabel="Code"
+                            IdPlaceholder="Type Course Code"
+                        />
+                    </div>
 
-                <button className="arrow left" onClick={prevPage} disabled={currentPage === 0}>←</button>
+                    {isAdmin && (
+                        <div className="flex shrink-0 items-center gap-3 border-b border-border px-5 py-3">
+                            <Switch
+                                id="offeredOnlySwitch"
+                                checked={offeredOnly}
+                                onCheckedChange={setOfferedOnly}
+                            />
+                            <label
+                                className="cursor-pointer text-sm font-medium"
+                                htmlFor="offeredOnlySwitch"
+                            >
+                                Offerings in selected semester only
+                            </label>
+                        </div>
+                    )}
 
-                <section className="courses" ref={scrollRef}>
-                    {currentCourses.map(c => (
-                        <div className="course-container" key={uuid()}>
-                            <div className="course-description">
-                                <p>{c.course_code}</p>
-                                <p>{c.course_name}</p>
-                                <p>{c.credits} Credits</p>
-                                <p>{c.major_name}</p>
-                            </div>
-                            <div className="course-tutors">
-                                <p>{c.tutors_counter} Tutors</p>
-                                <a href="">See Tutors</a>
-                                {isAdmin && (
-                                    isOffered(c) ? (
-                                        <button className="btn btn-sm btn-outline-danger" onClick={() => toggleRoster(c)}>
-                                            Remove from Semester
-                                        </button>
-                                    ) : (
-                                        <button className="btn btn-sm btn-outline-success" onClick={() => toggleRoster(c)}>
-                                            Add to Semester
-                                        </button>
-                                    )
-                                )}
+                    <div className="min-h-0 flex-1 overflow-y-auto bg-muted/20 p-4 lg:p-5 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-border">
+                        <CourseGrid
+                            courses={currentCourses}
+                            isAdmin={isAdmin}
+                            isOffered={isOffered}
+                            onToggleRoster={toggleRoster}
+                        />
+                    </div>
+
+                    <nav
+                        aria-label="Course pagination"
+                        className="sticky bottom-0 z-10 flex w-full flex-none justify-center border-t border-border bg-card/95 px-4 py-3 backdrop-blur-sm"
+                    >
+                        <div className="flex w-full justify-center">
+                            <div className="grid grid-cols-[88px_auto_88px] items-center justify-center gap-4">
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                    className="inline-flex h-8 w-[88px] items-center justify-center gap-1 px-2 leading-none has-[>svg]:px-2"
+                                    onClick={prevPage}
+                                    disabled={currentPage === 0}
+                                >
+                                    <ChevronLeft className="size-4 shrink-0" />
+                                    Previous
+                                </Button>
+                                <span
+                                    className="inline-flex h-8 items-center justify-center justify-self-center whitespace-nowrap px-1 text-center text-sm leading-none text-muted-foreground"
+                                    aria-live="polite"
+                                >
+                                    Page {currentPage + 1} of {Math.max(totalPages, 1)}
+                                </span>
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                    className="inline-flex h-8 w-[88px] items-center justify-center gap-1 px-2 leading-none has-[>svg]:px-2"
+                                    onClick={nextPage}
+                                    disabled={currentPage >= totalPages - 1}
+                                >
+                                    Next
+                                    <ChevronRight className="size-4 shrink-0" />
+                                </Button>
                             </div>
                         </div>
-                    ))}
-                </section>
-            </section>
-
-            <Link to={"/classes/add"} className="add-class" style={{ color: 'var(--white)' }}>Add Course</Link>
-            <button className="arrow right" onClick={nextPage} disabled={currentPage >= Math.ceil(filteredCourses.length / itemsPerPage) - 1}>→</button>
+                    </nav>
+                </div>
+            </main>
         </>
     );
 }
