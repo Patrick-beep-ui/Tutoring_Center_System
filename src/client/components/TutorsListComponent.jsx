@@ -6,14 +6,14 @@ import {exportToCSV} from "../services/exportCSV";
 import { SemesterContext } from "../context/currentSemester";
 
 
-const TutorsListComponent = ({active = true, majors, userCourses, onExportReady}) => {
+const TutorsListComponent = ({active = true, majors, userCourses, onExportReady, initialCourse}) => {
     const [tutors, setTutors] = useState([]);
     const [filteredTutors, setFilteredTutors] = useState([]); 
     const { selectedSemesterId } = useContext(SemesterContext);
 
     // Filter states
     const [programFilter, setProgramFilter] = useState("all");
-    const [courseFilter, setCourseFilter] = useState("all");
+    const [courseFilter, setCourseFilter] = useState(initialCourse || "all");
     const [idFilter, setIdFilter] = useState("");
 
     useEffect(() => {
@@ -29,6 +29,10 @@ const TutorsListComponent = ({active = true, majors, userCourses, onExportReady}
         }
         getTutors();
     }, [selectedSemesterId])
+
+    useEffect(() => {
+        if (initialCourse) setCourseFilter(initialCourse);
+    }, [initialCourse]);
 
     const getFilteredTutors = useCallback(() => {
         let filtered = [...tutors];

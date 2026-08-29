@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ChevronRight, Users } from "lucide-react";
 import {
@@ -49,10 +50,13 @@ function CourseCard({ course, isAdmin, offered, onToggleRoster }) {
                     size="sm"
                     className="-ml-1.5 h-6 px-1.5 text-xs font-medium text-primary hover:text-primary"
                 >
-                    <a href="">
+                    <Link
+                        to={`/classes/${course.course_id}/tutors`}
+                        state={{ courseCode: course.course_code, courseName: course.course_name }}
+                    >
                         See Tutors
                         <ChevronRight className="size-3.5" aria-hidden="true" />
-                    </a>
+                    </Link>
                 </Button>
 
                 {isAdmin && (

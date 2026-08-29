@@ -16,6 +16,7 @@ import Home from "./views/Home";
 import Tutors from "./views/Tutors";
 import AddTutor from "./views/AddTutor";
 import ClassName from "./views/Course";
+import CourseTutors from "./views/CourseTutors";
 import AddClass from "./views/AddClass";
 import TutorProfile from "./views/TutorProfile";
 import Major from "./views/Major";
@@ -102,9 +103,10 @@ const router = createBrowserRouter([
       },
       {
         path: "/classes",
-        element: <RequireRole allowedRoles={["admin", "dev", "tutor"]} />,
+        element: <RequireRole allowedRoles={["admin", "dev", "tutor", "student"]} />,
         children: [
-          {index: true, element: <ClassName />}
+          {index: true, element: <ClassName />},
+          {path: ":course_id/tutors", element: <CourseTutors />}
         ]
       },
       {
