@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import auth from "../authService";
 import CourseGrid from "../components/courses/CourseGrid";
+import { courseNavigationRef } from "../components/courses/courseNavigationRef";
 import Header from "../components/Header";
 import UserNavigators from "../components/UsersNavigators";
 import { SemesterContext } from "../context/currentSemester";
@@ -25,14 +26,25 @@ function ClassName() {
     const [filteredCourses, setFilteredCourses] = useState([]);
 
     // Filter states
-    const [programFilter, setProgramFilter] = useState("all");
-    const [courseFilter, setCourseFilter] = useState("all");
-    const [idFilter, setIdFilter] = useState("");
+    const [programFilter, setProgramFilter] = useState(courseNavigationRef.current.programFilter);
+    const [courseFilter, setCourseFilter] = useState(courseNavigationRef.current.courseFilter);
+    const [idFilter, setIdFilter] = useState(courseNavigationRef.current.idFilter);
     const [offeredOnly, setOfferedOnly] = useState(true);
 
     // Pagination states
-    const [currentPage, setCurrentPage] = useState(0);
+    const [currentPage, setCurrentPage] = useState(courseNavigationRef.current.currentPage);
     const [itemsPerPage, setItemsPerPage] = useState(2);
+
+    // Persist filter state to the shared ref so navigating to "See Tutors"
+    // and back preserves the user's filters and pagination.
+    useEffect(() => {
+        courseNavigationRef.current = {
+            programFilter,
+            courseFilter,
+            idFilter,
+            currentPage,
+        };
+    }, [programFilter, courseFilter, idFilter, currentPage]);
 
     // Fetch majors and students on mount
     useEffect(() => {
