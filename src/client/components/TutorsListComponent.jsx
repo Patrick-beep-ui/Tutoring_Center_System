@@ -1,5 +1,6 @@
 import UserNavigators from "./UsersNavigators";
 import { useState, useEffect, useCallback, memo, useContext } from "react";
+import { useOutletContext } from "react-router-dom";
 import auth from "../authService";
 import UsersDataTable from "@/components/UsersDataTable";
 import {exportToCSV} from "../services/exportCSV";
@@ -9,7 +10,11 @@ import { SemesterContext } from "../context/currentSemester";
 const TutorsListComponent = ({active = true, majors, userCourses, onExportReady, initialCourse, hideFilters = false}) => {
     const [tutors, setTutors] = useState([]);
     const [filteredTutors, setFilteredTutors] = useState([]); 
+    const [allCourses, setAllCourses] = useState([]);
     const { selectedSemesterId } = useContext(SemesterContext);
+    const { user } = useOutletContext();
+    const viewerRole = user?.user_role ?? user?.role;
+    const isAdminDev = viewerRole === "admin" || viewerRole === "dev";
 
     // Filter states
     const [programFilter, setProgramFilter] = useState("all");
@@ -29,6 +34,25 @@ const TutorsListComponent = ({active = true, majors, userCourses, onExportReady,
         }
         getTutors();
     }, [selectedSemesterId])
+
+    // Fetch the full course catalog for the admin/dev course autocomplete.
+    // Only fetched when filters are visible (not the hidden see-tutors view).
+    useEffect(() => {
+        if (hideFilters || !isAdminDev || !selectedSemesterId) {
+            setAllCourses([]);
+            return;
+        }
+        const getAllCourses = async () => {
+            try {
+                const response = await auth.get(`/api/courses/catalog?semester_id=${selectedSemesterId}`);
+                const { data } = response;
+                setAllCourses(data.courses || []);
+            } catch (e) {
+                setAllCourses([]);
+            }
+        };
+        getAllCourses();
+    }, [hideFilters, isAdminDev, selectedSemesterId]);
 
     useEffect(() => {
         if (initialCourse) setCourseFilter(initialCourse);
@@ -105,6 +129,8 @@ const TutorsListComponent = ({active = true, majors, userCourses, onExportReady,
                     majors={majors}
                     courses={userCourses}
                     students={tutors}
+                    allCourses={allCourses}
+                    autocomplete
                 />
             )}
             <UsersDataTable
