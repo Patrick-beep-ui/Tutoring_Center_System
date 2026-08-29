@@ -6,7 +6,7 @@ import {exportToCSV} from "../services/exportCSV";
 import { SemesterContext } from "../context/currentSemester";
 
 
-const TutorsListComponent = ({active = true, majors, userCourses, onExportReady, initialCourse}) => {
+const TutorsListComponent = ({active = true, majors, userCourses, onExportReady, initialCourse, hideFilters = false}) => {
     const [tutors, setTutors] = useState([]);
     const [filteredTutors, setFilteredTutors] = useState([]); 
     const { selectedSemesterId } = useContext(SemesterContext);
@@ -93,18 +93,20 @@ const TutorsListComponent = ({active = true, majors, userCourses, onExportReady,
 
     return (
         <div className="min-w-0 lg:flex lg:min-h-0 lg:flex-1 lg:flex-col">
-            <UserNavigators
-                compact
-                programFilter={programFilter}
-                setProgramFilter={setProgramFilter}
-                courseFilter={courseFilter}
-                setCourseFilter={setCourseFilter}
-                idFilter={idFilter}
-                setIdFilter={setIdFilter}
-                majors={majors}
-                courses={userCourses}
-                students={tutors}
-            />
+            {!hideFilters && (
+                <UserNavigators
+                    compact
+                    programFilter={programFilter}
+                    setProgramFilter={setProgramFilter}
+                    courseFilter={courseFilter}
+                    setCourseFilter={setCourseFilter}
+                    idFilter={idFilter}
+                    setIdFilter={setIdFilter}
+                    majors={majors}
+                    courses={userCourses}
+                    students={tutors}
+                />
+            )}
             <UsersDataTable
                 userType="tutor"
                 data={filteredTutors}

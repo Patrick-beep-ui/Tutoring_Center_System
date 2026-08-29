@@ -42,7 +42,7 @@ function CourseTutors() {
                         </div>
                     </header>
 
-                    <TutorsListComponent active initialCourse={courseCode} />
+                    <TutorsListComponent active initialCourse={courseCode} hideFilters />
                 </div>
             </section>
         </>
