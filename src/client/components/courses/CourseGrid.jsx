@@ -5,7 +5,7 @@ function CourseGrid({ courses, isAdmin, isOffered, onToggleRoster }) {
         <section aria-label="Courses">
             <div
                 role="list"
-                className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+                className="grid w-full grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
             >
                 {courses.map((course) => (
                     <CourseCard

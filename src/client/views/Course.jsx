@@ -160,35 +160,42 @@ function ClassName() {
     return (
         <>
             <Header />
-            <main className="section bg-background text-foreground">
-                <div className="flex min-w-0 flex-col gap-6">
-                    <header className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                        <h1 className="text-left text-2xl font-semibold text-foreground">
+            <main className="section overflow-y-auto bg-background text-foreground lg:flex lg:min-h-0 lg:flex-col lg:overflow-hidden">
+                <div className="w-full max-w-none min-w-0 overflow-clip rounded-lg border border-border bg-card shadow-sm lg:flex lg:min-h-0 lg:flex-1 lg:flex-col">
+                    <header className="flex shrink-0 flex-col gap-3 border-b border-border px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+                        <h1 className="text-left text-xl font-semibold text-foreground">
                             Courses Directory
                         </h1>
-                        <Button asChild>
+                        <Button
+                            asChild
+                            variant="outline"
+                            size="sm"
+                            className="border-primary/20 bg-card text-primary! shadow-sm hover:border-secondary hover:bg-secondary hover:text-secondary-foreground!"
+                        >
                             <Link to="/classes/add">Add Course</Link>
                         </Button>
                     </header>
 
-                    <UserNavigators
-                        programFilter={programFilter}
-                        courseFilter={courseFilter}
-                        idFilter={idFilter}
-                        setProgramFilter={setProgramFilter}
-                        setCourseFilter={setCourseFilter}
-                        setIdFilter={setIdFilter}
-                        majors={majors}
-                        courses={courses}
-                        students={students}
-                        isInputSearch={true}
-                        compact
-                        IdLabel="Code"
-                        IdPlaceholder="Type Course Code"
-                    />
+                    <div className="shrink-0 border-b border-border bg-muted/30 [&>section]:gap-y-3 [&>section]:border-0 [&>section]:bg-transparent [&>section]:px-5 [&>section]:py-3 [&_input]:h-9 [&_label]:text-foreground [&_select]:h-9">
+                        <UserNavigators
+                            programFilter={programFilter}
+                            courseFilter={courseFilter}
+                            idFilter={idFilter}
+                            setProgramFilter={setProgramFilter}
+                            setCourseFilter={setCourseFilter}
+                            setIdFilter={setIdFilter}
+                            majors={majors}
+                            courses={courses}
+                            students={students}
+                            isInputSearch={true}
+                            compact
+                            IdLabel="Code"
+                            IdPlaceholder="Type Course Code"
+                        />
+                    </div>
 
                     {isAdmin && (
-                        <div className="flex items-center gap-3">
+                        <div className="flex shrink-0 items-center gap-3 border-b border-border px-5 py-3">
                             <Switch
                                 id="offeredOnlySwitch"
                                 checked={offeredOnly}
@@ -203,38 +210,51 @@ function ClassName() {
                         </div>
                     )}
 
-                    <CourseGrid
-                        courses={currentCourses}
-                        isAdmin={isAdmin}
-                        isOffered={isOffered}
-                        onToggleRoster={toggleRoster}
-                    />
+                    <div className="min-h-0 flex-1 overflow-y-auto bg-muted/20 p-4 lg:p-5 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-border">
+                        <CourseGrid
+                            courses={currentCourses}
+                            isAdmin={isAdmin}
+                            isOffered={isOffered}
+                            onToggleRoster={toggleRoster}
+                        />
+                    </div>
 
                     <nav
                         aria-label="Course pagination"
-                        className="flex flex-col items-center justify-between gap-3 sm:flex-row"
+                        className="sticky bottom-0 z-10 flex w-full flex-none justify-center border-t border-border bg-card/95 px-4 py-3 backdrop-blur-sm"
                     >
-                        <Button
-                            type="button"
-                            variant="outline"
-                            onClick={prevPage}
-                            disabled={currentPage === 0}
-                        >
-                            <ChevronLeft />
-                            Previous
-                        </Button>
-                        <p className="text-sm text-muted-foreground" aria-live="polite">
-                            Page {currentPage + 1} of {Math.max(totalPages, 1)}
-                        </p>
-                        <Button
-                            type="button"
-                            variant="outline"
-                            onClick={nextPage}
-                            disabled={currentPage >= totalPages - 1}
-                        >
-                            Next
-                            <ChevronRight />
-                        </Button>
+                        <div className="flex w-full justify-center">
+                            <div className="grid grid-cols-[88px_auto_88px] items-center justify-center gap-4">
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                    className="inline-flex h-8 w-[88px] items-center justify-center gap-1 px-2 leading-none has-[>svg]:px-2"
+                                    onClick={prevPage}
+                                    disabled={currentPage === 0}
+                                >
+                                    <ChevronLeft className="size-4 shrink-0" />
+                                    Previous
+                                </Button>
+                                <span
+                                    className="inline-flex h-8 items-center justify-center justify-self-center whitespace-nowrap px-1 text-center text-sm leading-none text-muted-foreground"
+                                    aria-live="polite"
+                                >
+                                    Page {currentPage + 1} of {Math.max(totalPages, 1)}
+                                </span>
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                    className="inline-flex h-8 w-[88px] items-center justify-center gap-1 px-2 leading-none has-[>svg]:px-2"
+                                    onClick={nextPage}
+                                    disabled={currentPage >= totalPages - 1}
+                                >
+                                    Next
+                                    <ChevronRight className="size-4 shrink-0" />
+                                </Button>
+                            </div>
+                        </div>
                     </nav>
                 </div>
             </main>
