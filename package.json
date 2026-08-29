@@ -8,7 +8,8 @@
     "start": "cross-env NODE_ENV=production node src/server/main.js",
     "build": "vite build",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist"
+    "deploy": "gh-pages -d dist",
+    "db:migrate": "node scripts/migrations/run.js"
   },
   "dependencies": {
     "@auth0/auth0-react": "^2.2.4",
