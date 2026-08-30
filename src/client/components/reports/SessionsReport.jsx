@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useRef, useMemo, memo, useContext } from "react";
 import api from "../../axiosService";
 import { SemesterContext } from "../../context/currentSemester";
-import { Card } from "react-bootstrap";
-import { Tabs, Tab } from "react-bootstrap";
+import { ReportSummaryCard, ReportSummaryGrid, ReportTabs } from "./ReportUI";
 import {
   BarChart,
   Bar,
@@ -16,9 +15,6 @@ import {
   Cell,
   ResponsiveContainer,
 } from "recharts";
-
-import { exportChartAsImage } from "../../services/exportChartAsImage";
-import exportToExcel from "../../services/exportChart";
 
 // Datos de ejemplo para weeklySampleData
 const weeklySampleData = [
@@ -190,131 +186,28 @@ function SessionsReportComponent() {
     [feedbackData]
   );
 
+  const tabs = [
+    { key: "weekly", label: "Sessions by Week", title: "Sessions by Week", description: "Number of tutoring sessions scheduled each week", chart: weeklyChart, data: weeklyData, refEl: weeklyRef, filename: "sessions_by_week", chartType: "bar" },
+    { key: "hourly", label: "Sessions by Hour", title: "Sessions by Hour", description: "Distribution of tutoring sessions throughout the day", chart: hourlyChart, data: hourlyData, refEl: hourlyRef, filename: "sessions_by_hour", chartType: "bar" },
+    { key: "completion", label: "Completion Rate", title: "Session Completion Rate", description: "Breakdown of completed, cancelled, pending, and scheduled sessions", chart: completionChart, data: completionData, refEl: completionRef, filename: "completion_rate", chartType: "pie" },
+    { key: "feedback", label: "Feedback Scores", title: "Feedback Scores Distribution", description: "Distribution of student ratings for tutoring sessions", chart: feedbackChart, data: feedbackData, refEl: feedbackRef, filename: "feedback_scores", chartType: "pie" },
+  ];
+
   return (
-    <div className="container my-4">
-      {/* Cards */}
-      <div className="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 mb-4">
-        <CardSummary title="Total Sessions" value={sessionAmount} change="+12%" />
-        <CardSummary title="Completion Rate" value={`${completionRate}%`} change="+3%" />
-        <CardSummary title="Average Duration" value={`${averageDuration} hr`} change="-2 min" />
-        <CardSummary title="Average Rating" value={`${averageRating}/5`} change="+0.2" />
-      </div>
-
-      {/* Tabs with Charts */}
-      <Tabs
-        defaultActiveKey="weekly"
-        id="report-tabs"
-        className="mb-3"
-        onSelect={(k) => setChartType(k === "weekly" || k === "hourly" ? "bar" : "pie")}
-      >
-        <Tab eventKey="weekly" title="Sessions by Week">
-          <Card>
-            <Card.Body ref={weeklyRef}>
-              <Card.Title>Sessions by Week</Card.Title>
-              <Card.Subtitle className="mb-2 text-muted">
-                Number of tutoring sessions scheduled each week
-              </Card.Subtitle>
-              {weeklyChart}
-            </Card.Body>
-            <ExportButtons
-                data={weeklyData}
-                refEl={weeklyRef}
-                filename="sessions_by_week"
-                chartType={chartType}
-            />
-          </Card>
-        </Tab>
-
-        <Tab eventKey="hourly" title="Sessions by Hour">
-          <Card>
-            <Card.Body ref={hourlyRef}>
-              <Card.Title>Sessions by Hour</Card.Title>
-              <Card.Subtitle className="mb-2 text-muted">
-                Distribution of tutoring sessions throughout the day
-              </Card.Subtitle>
-              {hourlyChart}
-            </Card.Body>
-            <ExportButtons
-                data={hourlyData}
-                refEl={hourlyRef}
-                filename="sessions_by_hour"
-                chartType={chartType}
-              />
-          </Card>
-        </Tab>
-
-        <Tab eventKey="completion" title="Completion Rate">
-          <Card>
-            <Card.Body ref={completionRef}>
-              <Card.Title>Session Completion Rate</Card.Title>
-              <Card.Subtitle className="mb-2 text-muted">
-                Breakdown of completed, cancelled, pending, and scheduled sessions
-              </Card.Subtitle>
-              {completionChart}
-            </Card.Body>
-            <ExportButtons
-                data={completionData}
-                refEl={completionRef}
-                filename="completion_rate"
-                chartType={chartType}
-              />
-          </Card>
-        </Tab>
-
-        <Tab eventKey="feedback" title="Feedback Scores">
-          <Card>
-            <Card.Body ref={feedbackRef}>
-              <Card.Title>Feedback Scores Distribution</Card.Title>
-              <Card.Subtitle className="mb-2 text-muted">
-                Distribution of student ratings for tutoring sessions
-              </Card.Subtitle>
-              {feedbackChart}
-            </Card.Body>
-            <ExportButtons
-                data={feedbackData}
-                refEl={feedbackRef}
-                filename="feedback_scores"
-                chartType={chartType}
-              />
-          </Card>
-        </Tab>
-      </Tabs>
+    <div className="mx-auto my-6 w-full max-w-[1320px]">
+      <ReportSummaryGrid>
+        <ReportSummaryCard title="Total Sessions" value={sessionAmount} change="+12%" period="from last period" />
+        <ReportSummaryCard title="Completion Rate" value={`${completionRate}%`} change="+3%" period="from last period" />
+        <ReportSummaryCard title="Average Duration" value={`${averageDuration} hr`} change="-2 min" period="from last period" />
+        <ReportSummaryCard title="Average Rating" value={`${averageRating}/5`} change="+0.2" period="from last period" />
+      </ReportSummaryGrid>
+      <ReportTabs
+        tabs={tabs}
+        chartType={chartType}
+        onTabChange={(tab) => setChartType(tab.chartType)}
+      />
     </div>
   );
 }
-
-// --- Subcomponents to reuse code ---
-const CardSummary = memo(({ title, value, change }) => (
-  <div className="col">
-    <Card className="h-100">
-      <Card.Body>
-        <Card.Title>{title}</Card.Title>
-        <Card.Text className="display-4">{value}</Card.Text>
-        <div className="small text-muted">{change} from last period</div>
-      </Card.Body>
-    </Card>
-  </div>
-));
-
-const ExportButtons = memo(({ data, refEl, filename, chartType }) => (
-  <>
-  <div className="d-flex justify-content-start align-self-center">
-    <button
-      className="btn btn-outline-primary mb-3"
-      style={{ marginTop: "20px" }}
-      onClick={() => exportToExcel(data, filename, chartType)}
-    >
-      Export Data
-    </button>
-    <button
-      className="btn btn-outline-primary mb-3"
-      style={{ marginLeft: "15px", marginTop: "20px" }}
-      onClick={() => exportChartAsImage(refEl.current, "png", filename)}
-    >
-      Export Chart as Image
-    </button>
-  </div>
-  </>
-));
 
 export default memo(SessionsReportComponent);

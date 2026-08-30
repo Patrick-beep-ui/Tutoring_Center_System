@@ -1,8 +1,7 @@
 import { useState, useEffect, useCallback, useMemo, memo, useRef, useContext } from "react";
-import { Card, Button } from "react-bootstrap";
-import { Tabs, Tab } from "react-bootstrap";
 import api from "../../axiosService";
 import { SemesterContext } from "../../context/currentSemester";
+import { ReportSummaryCard, ReportSummaryGrid, ReportTabs } from "./ReportUI";
 import {
   Bar,
   BarChart,
@@ -16,9 +15,6 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-
-import exportToExcel from "../../services/exportChart"
-import { exportChartAsImage } from "../../services/exportChartAsImage";
 
   // Nueva data
   const attendanceSampleData = [
@@ -198,121 +194,29 @@ const StudentsReport = () => {
     </ResponsiveContainer>
   ), [retentionData]);
 
+  const tabs = [
+    { key: "weekly", label: "Student Attendance", title: "Student Attendance", description: "Weekly attendance and missed sessions", chart: attendanceChart, data: attendanceSampleData, refEl: attendanceRef, filename: "students_attendance", chartType: "bar" },
+    { key: "hourly", label: "Popular Courses", title: "Popular Courses", description: "Most requested tutoring courses", chart: coursesChart, data: popularCourses, refEl: coursesRef, filename: "popular_courses", chartType: "bar" },
+    { key: "completion", label: "Students by Major", title: "Students by Major", description: "Distribution of active students by academic major", chart: <div className="flex min-h-[400px] w-full items-center justify-center">{majorsChart}</div>, data: studentsByMajor, refEl: majorsRef, filename: "students_by_major", chartType: "pie" },
+    { key: "feedback", label: "Retention Rate", title: "Student Retention", description: "Percentage of returning vs. one-time students", chart: retentionChart, data: retentionData, refEl: retentionRef, filename: "students_retention", chartType: "pie" },
+  ];
+
   return (
-    <div className="container my-4">
-      {/* Cards */}
-      <div className="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 mb-4">
-        <CardSummary title="Active Students" value={activeStudents} change="+2" />
-        <CardSummary title="Attendance Rate" value={`${attendanceRate}%`} change="+2%" />
-        <CardSummary title="Avg. Sessions per Student" value={avgSessions} change="+2" />
-        <CardSummary title="Retention Rate" value={`${retentionRate}%`} change="+5%" />
-      </div>
-
-      {/* Tabs with Charts */}
-      <Tabs defaultActiveKey="weekly" id="report-tabs" className="mb-3">
-        <Tab eventKey="weekly" title="Student Attendance" onClick={() => setChartType("bar")}>
-          <Card>
-            <Card.Body ref={attendanceRef}>
-              <Card.Title>Student Attendance</Card.Title>
-              <Card.Subtitle className="mb-2 text-muted">Weekly attendance and missed sessions</Card.Subtitle>
-              {attendanceChart}
-            </Card.Body>
-            <ExportButtons
-              data={attendanceSampleData}
-              refEl={attendanceRef}
-              filename="students_attendance"
-              chartType={chartType}
-            />
-          </Card>
-        </Tab>
-
-        <Tab eventKey="hourly" title="Popular Courses" onClick={() => setChartType("bar")}>
-          <Card>
-            <Card.Body ref={coursesRef}>
-              <Card.Title>Popular Courses</Card.Title>
-              <Card.Subtitle className="mb-2 text-muted">Most requested tutoring courses</Card.Subtitle>
-              {coursesChart}
-            </Card.Body>
-            <ExportButtons
-              data={popularCourses}
-              refEl={coursesRef}
-              filename="popular_courses"
-              chartType={chartType}
-            />
-          </Card>
-        </Tab>
-
-        <Tab eventKey="completion" title="Students by Major" onClick={() => setChartType("pie")}>
-          <Card>
-            <Card.Body ref={majorsRef}>
-              <Card.Title>Students by Major</Card.Title>
-              <Card.Subtitle className="mb-2 text-muted">Distribution of active students by academic major</Card.Subtitle>
-              <div className="h-100 d-flex align-items-center justify-content-center" style={{ minHeight: "400px", width: "100%" }}>
-                {majorsChart}
-              </div>
-            </Card.Body>
-            <ExportButtons
-              data={studentsByMajor}
-              refEl={majorsRef}
-              filename="students_by_major"
-              chartType={chartType}
-            />
-          </Card>
-        </Tab>
-
-        <Tab eventKey="feedback" title="Retention Rate" onClick={() => setChartType("pie")}>
-          <Card>
-            <Card.Body ref={retentionRef}>
-              <Card.Title>Student Retention</Card.Title>
-              <Card.Subtitle className="mb-2 text-muted">Percentage of returning vs. one-time students</Card.Subtitle>
-             {retentionChart}
-            </Card.Body>
-            <ExportButtons
-              data={retentionData}
-              refEl={retentionRef}
-              filename="students_retention"
-              chartType={chartType}
-            />
-          </Card>
-        </Tab>
-      </Tabs>
+    <div className="mx-auto my-6 w-full max-w-[1320px]">
+      <ReportSummaryGrid>
+        <ReportSummaryCard title="Active Students" value={activeStudents} change="+2" />
+        <ReportSummaryCard title="Attendance Rate" value={`${attendanceRate}%`} change="+2%" />
+        <ReportSummaryCard title="Avg. Sessions per Student" value={avgSessions} change="+2" />
+        <ReportSummaryCard title="Retention Rate" value={`${retentionRate}%`} change="+5%" />
+      </ReportSummaryGrid>
+      <ReportTabs
+        tabs={tabs}
+        chartType={chartType}
+        onTabChange={(tab) => setChartType(tab.chartType)}
+      />
     </div>
   );
 };
-
-// --- Subcomponents to reuse code ---
-const CardSummary = memo(({ title, value, change }) => (
-  <div className="col">
-    <Card className="h-100">
-      <Card.Body>
-        <Card.Title>{title}</Card.Title>
-        <Card.Text className="display-4">{value}</Card.Text>
-        <div className="small text-muted"> <span className="text-success">{change}</span> from last month</div>
-      </Card.Body>
-    </Card>
-  </div>
-));
-
-const ExportButtons = memo(({ data, refEl, filename, chartType }) => (
-  <>
-  <div className="d-flex justify-content-start align-self-center">
-    <button
-      className="btn btn-outline-primary mb-3"
-      style={{ marginTop: "20px" }}
-      onClick={() => exportToExcel(data, filename, chartType)}
-    >
-      Export Data
-    </button>
-    <button
-      className="btn btn-outline-primary mb-3"
-      style={{ marginLeft: "15px", marginTop: "20px" }}
-      onClick={() => exportChartAsImage(refEl.current, "png", filename)}
-    >
-      Export Chart as Image
-    </button>
-  </div>
-  </>
-));
 
 const CustomTooltip = memo(({ active, payload, label }) => {
   if (active && payload && payload.length) {

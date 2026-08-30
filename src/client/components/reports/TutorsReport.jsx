@@ -1,8 +1,7 @@
 import { useState, useEffect, useRef, useMemo, memo, useContext } from "react"
-import { Card, Button } from "react-bootstrap"
-import { Tabs, Tab } from "react-bootstrap"
 import api from "../../axiosService";
 import { SemesterContext } from "../../context/currentSemester";
+import { ReportSummaryCard, ReportSummaryGrid, ReportTabs } from "./ReportUI";
 import {
   Bar,
   BarChart,
@@ -16,9 +15,6 @@ import {
   XAxis,
   YAxis,
 } from "recharts"
-
-import exportToExcel from "../../services/exportChart"
-import { exportChartAsImage } from "../../services/exportChartAsImage"
 
 // Example Data
 
@@ -262,124 +258,28 @@ const TutorsReport = () => {
     [availabilityData]
   )
 
+  const tabs = [
+    { key: "weekly", label: "Tutor Performance", title: "Tutor Performance", description: "Sessions conducted and average ratings by tutor", chart: performanceChart, data: performanceData, refEl: performanceRef, filename: "tutors_performance", chartType: "bar" },
+    { key: "hourly", label: "Hours by Tutor", title: "Hours by Tutors", description: "Total tutoring hours provided by each tutor", chart: hoursDataChart, data: hoursData, refEl: hoursRef, filename: "tutors_hours", chartType: "bar" },
+    { key: "completion", label: "Majors Covered", title: "Majors Covered", description: "Distribution of tutoring sessions by subject area", chart: <div className="flex min-h-[400px] w-full items-center justify-center">{majorsDataChart}</div>, data: majorsData, refEl: majorsRef, filename: "tutors_by_major", chartType: "pie" },
+    { key: "feedback", label: "Availability Analysis", title: "Tutor Availability", description: "Distribution of tutor availability throughout the day", chart: <div className="flex min-h-[400px] w-full items-center justify-center">{availabilityDataChart}</div>, data: availabilityData, refEl: availabilityRef, filename: "tutors_availability", chartType: "pie" },
+  ];
+
   return (
-    <div className="container my-4">
-      {/* Cards */}
-      <div className="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 mb-4">
-        <CardSummary title="Active Tutors" value={activeTutors} change="+2"/>
-        <CardSummary title="Avg. Sessions per Tutor" value={avgSessionsPerTutor} change="+3.5"/>
-        <CardSummary title="Avgerage Raiting" value={`${avgRating}/5`} change="+0.1"/>
-        <CardSummary title="Total Hours" value={totalHours} change="+12%"/>
-      </div>
-
-      {/* Tabs with Charts */}
-      <Tabs defaultActiveKey="weekly" id="report-tabs" className="mb-3">
-        <Tab eventKey="weekly" title="Tutor Performance" onClick={() => setChartType("bar")}>
-          <Card>
-            <Card.Body ref={performanceRef}>
-              <Card.Title>Tutor Performance</Card.Title>
-              <Card.Subtitle className="mb-2 text-muted">Sessions conducted and average ratings by tutor</Card.Subtitle>
-              {performanceChart}
-            </Card.Body>
-            <ExportButtons
-                data={performanceData}
-                refEl={performanceRef}
-                filename="tutors_performance"
-                chartType={chartType}
-              />
-          </Card>
-        </Tab>
-
-        <Tab eventKey="hourly" title="Hours by Tutor" onClick={() => setChartType("bar")}>
-          <Card>
-            <Card.Body ref={hoursRef}>
-              <Card.Title>Hours by Tutors</Card.Title>
-              <Card.Subtitle className="mb-2 text-muted">Total tutoring hours provided by each tutor</Card.Subtitle>
-              {/*<div className="h-100" style={{ minHeight: "400px", width: "100%" }}>*/}
-                {hoursDataChart}
-              {/*</div>}*/}
-            </Card.Body>
-            <ExportButtons
-                data={hoursData}
-                refEl={hoursRef}
-                filename="tutors_hours"
-                chartType={chartType}
-              />
-          </Card>
-        </Tab>
-
-        <Tab eventKey="completion" title="Majors Covered" onClick={() => setChartType("pie")}>
-          <Card>
-            <Card.Body ref={majorsRef}>
-              <Card.Title>Majors Covered</Card.Title>
-              <Card.Subtitle className="mb-2 text-muted">Distribution of tutoring sessions by subject area</Card.Subtitle>
-              <div className="h-100 d-flex align-items-center justify-content-center" style={{ minHeight: "400px", width: "100%" }}>
-                {majorsDataChart}
-              </div>
-            </Card.Body>
-            <ExportButtons
-                data={majorsData}
-                refEl={majorsRef}
-                filename="tutors_by_major"
-                chartType={chartType}
-              />
-          </Card>
-        </Tab>
-
-        <Tab eventKey="feedback" title="Availability Analysis" onClick={() => setChartType("pie")}>
-          <Card>
-            <Card.Body ref={availabilityRef}>
-              <Card.Title>Tutor Availability</Card.Title>
-              <Card.Subtitle className="mb-2 text-muted">Distribution of tutor availability throughout the day</Card.Subtitle>
-              <div className="h-100 d-flex align-items-center justify-content-center" style={{ minHeight: "400px", width: "100%" }}>
-                {availabilityDataChart}
-              </div>
-            </Card.Body>
-            <ExportButtons
-              data={availabilityData}
-              refEl={availabilityRef}
-              filename="tutors_availability"
-              chartType={chartType}
-            />
-          </Card>
-        </Tab>
-      </Tabs>
+    <div className="mx-auto my-6 w-full max-w-[1320px]">
+      <ReportSummaryGrid>
+        <ReportSummaryCard title="Active Tutors" value={activeTutors} change="+2" />
+        <ReportSummaryCard title="Avg. Sessions per Tutor" value={avgSessionsPerTutor} change="+3.5" />
+        <ReportSummaryCard title="Avgerage Raiting" value={`${avgRating}/5`} change="+0.1" />
+        <ReportSummaryCard title="Total Hours" value={totalHours} change="+12%" />
+      </ReportSummaryGrid>
+      <ReportTabs
+        tabs={tabs}
+        chartType={chartType}
+        onTabChange={(tab) => setChartType(tab.chartType)}
+      />
     </div>
   )
 }
-
-// --- Subcomponents to reuse code ---
-const CardSummary = memo(({ title, value, change }) => (
-  <div className="col">
-    <Card className="h-100">
-      <Card.Body>
-        <Card.Title>{title}</Card.Title>
-        <Card.Text className="display-4">{value}</Card.Text>
-        <div className="small text-muted"> <span className="text-success">{change}</span> from last month</div>
-      </Card.Body>
-    </Card>
-  </div>
-));
-
-const ExportButtons = memo(({ data, refEl, filename, chartType }) => (
-  <>
-  <div className="d-flex justify-content-start align-self-center">
-    <button
-      className="btn btn-outline-primary mb-3"
-      style={{ marginTop: "20px" }}
-      onClick={() => exportToExcel(data, filename, chartType)}
-    >
-      Export Data
-    </button>
-    <button
-      className="btn btn-outline-primary mb-3"
-      style={{ marginLeft: "15px", marginTop: "20px" }}
-      onClick={() => exportChartAsImage(refEl.current, "png", filename)}
-    >
-      Export Chart as Image
-    </button>
-  </div>
-  </>
-));
 
 export default memo(TutorsReport);
