@@ -3,7 +3,6 @@ import auth from "../authService";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import Header from "../components/Header";
-import '../App.css';
 
 const formatDate = (dateStr) => {
     if (!dateStr) return "—";
@@ -58,26 +57,26 @@ function Semesters() {
     return (
         <>
             <Header />
-            <section className="section semesters-section">
+            <section className="section">
                 <main className="p-4">
-                    <div className="container">
-                        <div className="card mb-4">
-                            <div className="card-header">
-                                <div className="d-flex justify-content-between align-items-center">
-                                    <h2 className="h5 mb-0">Semesters</h2>
-                                    <Link to="/terms/add" className="btn btn-sm btn-outline-primary d-flex align-items-center gap-2">
+                    <div className="mx-auto max-w-7xl px-4">
+                        <div className="mb-4 rounded-lg border border-gray-200 bg-white shadow-sm">
+                            <div className="border-b border-gray-200 px-4 py-3">
+                                <div className="flex items-center justify-between">
+                                    <h2 className="m-0 text-lg font-medium">Semesters</h2>
+                                    <Link to="/terms/add" className="inline-flex items-center gap-2 rounded border border-[var(--blue)] px-2.5 py-1 text-sm text-[var(--blue)] hover:bg-[var(--blue)] hover:text-white">
                                         <i className='bx bx-calendar-plus'></i>
                                         Add Semester
                                     </Link>
                                 </div>
                             </div>
 
-                            <div className="card-body">
+                            <div className="p-4">
                                 {terms.length === 0 ? (
-                                    <p className="text-muted mb-0">No semesters yet. Click "Add Semester" to create the first one.</p>
+                                    <p className="m-0 text-muted-foreground">No semesters yet. Click "Add Semester" to create the first one.</p>
                                 ) : (
-                                    <div className="table-responsive">
-                                        <table className="table table-hover align-middle mb-0">
+                                    <div className="overflow-x-auto">
+                                        <table className="m-0 w-full [&_th]:px-4 [&_th]:py-2 [&_th]:text-left [&_td]:px-4 [&_td]:py-2 [&_td]:align-middle [&_tr]:border-b [&_tr]:border-gray-200 [&_tr:hover]:bg-gray-50">
                                             <thead>
                                                 <tr>
                                                     <th scope="col">ID</th>
@@ -102,18 +101,18 @@ function Semesters() {
                                                         <td>{formatDate(term.start_date)}</td>
                                                         <td>
                                                             {term.is_current
-                                                                ? <span className="badge bg-success">Current</span>
-                                                                : <span className="badge bg-secondary">Past</span>}
+                                                                ? <span className="inline-flex rounded-full bg-green-600 px-3 py-1 text-sm font-normal text-white">Current</span>
+                                                                : <span className="inline-flex rounded-full bg-gray-500 px-3 py-1 text-sm font-normal text-white">Past</span>}
                                                         </td>
                                                         <td>
                                                             {!term.is_current &&
-                                                                <button className="btn btn-sm btn-outline-success" onClick={() => handleSetCurrent(term)}>
+                                                                <button className="rounded border border-green-600 px-2.5 py-1 text-sm text-green-700 hover:bg-green-600 hover:text-white" onClick={() => handleSetCurrent(term)}>
                                                                     Set Current
                                                                 </button>}
                                                         </td>
                                                         <td>
                                                             {!term.is_current &&
-                                                                <i className='bx bx-trash delete'
+                                                                <i className='bx bx-trash cursor-pointer text-lg text-[var(--dark-gray)] transition-colors hover:text-red-600'
                                                                     title="Delete semester"
                                                                     onClick={() => handleDelete(term)}></i>}
                                                         </td>

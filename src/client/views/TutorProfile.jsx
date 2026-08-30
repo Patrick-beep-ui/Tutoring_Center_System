@@ -205,7 +205,7 @@ function TutorProfile() {
             <>
                 <Header />
                 <section className="profile-container section">
-                    <div className="error-message">
+                    <div className="mx-auto max-w-xl rounded-lg border border-red-200 bg-red-50 p-4 text-left text-sm text-red-700">
                         <p>{error}</p>
                     </div>
                 </section>
@@ -267,36 +267,36 @@ function TutorProfile() {
             <Header />
             <section className="profile-container section">
             <Profile tutorId={tutor_id} onImageUpload={handleImageUpload} role={role} />
-                <section className="profile-info">
-                    <div className="user-picture-container">
-                        <label htmlFor="image-upload">
+                <section className="mb-2.5 flex items-center justify-center rounded-[5px] bg-[var(--white)] px-[15px] py-2.5 shadow-[0_2px_4px_rgba(0,0,0,0.1)]">
+                    <div className="group ml-[30px] h-[250px] w-[250px] shrink-0 rounded-full">
+                        <label htmlFor="image-upload" className="relative block h-full w-full cursor-pointer">
                         <img 
                         src={profilePicUrl} 
                         alt={texts.header.profilePictureAlt} 
-                        className="profile-picture" 
+                        className="h-full w-full rounded-full object-cover transition-[filter] duration-100 ease-in-out group-hover:brightness-[30%]"
                         onError={(e) => {
                             e.target.onerror = null; 
                             e.target.src = "/profile/profile.webp"; 
                           }}
                         fetchpriority="high"
                         decoding="async" />
-                        <i class='bx bx-camera camera-label'></i>
+                        <i className="bx bx-camera absolute inset-0 z-10 flex items-center justify-center text-[3.5rem] text-[var(--white)] opacity-0 transition-opacity duration-100 ease-in-out group-hover:opacity-100"></i>
                         </label>
                     </div>
-                    <div className="user-info-container">
+                    <div className="ml-[30px]">
                     {user.map(t =>
-                        <div className="tutor-info" key={t.user_id}>
-                            <div className="tutor-info-data">
-                            <p>
+                        <div className="flex flex-col justify-center p-2.5 text-left" key={t.user_id}>
+                            <div>
+                            <p className="mb-0 text-[1.3rem] font-medium">
                                 {role === 'tutor'
                                     ? t.tutor_name
                                     : `${t.first_name ?? ''} ${t.last_name ?? ''}`}
                             </p>
 
 
-                            <p>{t.tutor_email || t.email}</p>
+                            <p className="mt-0.5 text-sm text-[var(--gray)]">{t.tutor_email || t.email}</p>
                             </div>
-                            <div className="tutor-info-description">
+                            <div className="w-full text-left text-base [&_p]:mb-0.5">
                                 <p> <strong>{texts.profileInfo.idLabel}</strong> {t.tutor_id || t.ku_id}</p>
                                 <p><strong>{texts.profileInfo.majorLabel} </strong>{t.tutor_major || t.Major.major_name}</p>
                                 { role == 'tutor' ? (
@@ -308,23 +308,23 @@ function TutorProfile() {
                             </div>
                         
                             {user.map(t => 
-                    <div className="tutor-sched" key={t.tutor_id}>
+                    <div className="mr-auto mt-[15px] text-left [&>p]:mb-px" key={t.tutor_id}>
                         <p id=""> <strong>{ role == 'tutor' ? (texts.profileInfo.scheduleLabel) : null} </strong>
                             {role === 'tutor' && (
                                 <Popup
-                                    trigger={<i className="bx bx-edit" style={{ cursor: 'pointer', fontSize: '16px', marginLeft: '5px' }} title="Edit schedule"></i>}
+                                    trigger={<i className="bx bx-edit ml-1 cursor-pointer text-base" title="Edit schedule"></i>}
                                     modal
                                     onOpen={openSchedulePopup}
                                 >
                                     {close => (
-                                        <div className="popup-container">
-                                            <h2>Edit Schedule</h2>
-                                            <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
+                                        <div className="p-6 text-left">
+                                            <h2 className="mb-4 text-xl font-semibold text-[var(--blue)]">Edit Schedule</h2>
+                                            <div className="max-h-[400px] overflow-y-auto">
                                                 {scheduleBlocks.map((block, index) => (
-                                                    <div key={index} style={{ border: '1px solid #ddd', borderRadius: '6px', padding: '10px', marginBottom: '10px' }}>
-                                                        <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap', marginBottom: '8px' }}>
+                                                    <div key={index} className="mb-2.5 rounded-md border border-[#ddd] p-2.5">
+                                                        <div className="mb-2 flex flex-wrap gap-1">
                                                             {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"].map(day => (
-                                                                <label key={day} style={{ display: 'flex', alignItems: 'center', gap: '3px', fontSize: '13px' }}>
+                                                                <label key={day} className="flex items-center gap-[3px] text-[13px]">
                                                                     <input
                                                                         type="checkbox"
                                                                         checked={block.days.includes(day)}
@@ -334,31 +334,37 @@ function TutorProfile() {
                                                                 </label>
                                                             ))}
                                                         </div>
-                                                        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                                                            <label style={{ fontSize: '13px' }}>Start:
+                                                        <div className="flex items-center gap-2.5">
+                                                            <label className="text-[13px]">Start:
                                                                 <input type="time" value={block.start_time} onChange={e => updateScheduleBlock(index, 'start_time', e.target.value)} />
                                                             </label>
-                                                            <label style={{ fontSize: '13px' }}>End:
+                                                            <label className="text-[13px]">End:
                                                                 <input type="time" value={block.end_time} onChange={e => updateScheduleBlock(index, 'end_time', e.target.value)} />
                                                             </label>
-                                                            <button className="btn" onClick={() => removeScheduleBlock(index)} style={{ fontSize: '12px' }}>Remove</button>
+                                                            <button
+                                                                type="button"
+                                                                className="cursor-pointer rounded border border-gray-300 bg-gray-100 px-2 py-0.5 text-xs text-gray-700 transition-colors hover:bg-gray-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--blue)] focus-visible:ring-offset-2"
+                                                                onClick={() => removeScheduleBlock(index)}
+                                                            >
+                                                                Remove
+                                                            </button>
                                                         </div>
                                                     </div>
                                                 ))}
                                             </div>
-                                            <button className="btn" onClick={addScheduleBlock} style={{ marginTop: '5px' }}>+ Add Block</button>
-                                            <div style={{ display: 'flex', gap: '10px', marginTop: '15px' }}>
-                                                <button className="btn btn-primary" onClick={() => saveSchedules(close)} disabled={savingSchedules}>
+                                            <button className="mt-1 rounded-md border border-gray-300 bg-gray-100 px-3 py-1.5 text-gray-700 hover:bg-gray-200" onClick={addScheduleBlock}>+ Add Block</button>
+                                            <div className="mt-[15px] flex gap-2.5">
+                                                <button className="rounded-md border border-[var(--blue)] bg-[var(--blue)] px-3 py-1.5 text-white hover:bg-[#252f6b] disabled:pointer-events-none disabled:opacity-50" onClick={() => saveSchedules(close)} disabled={savingSchedules}>
                                                     {savingSchedules ? 'Saving...' : 'Save'}
                                                 </button>
-                                                <button className="btn" onClick={close}>Cancel</button>
+                                                <button className="rounded-md border border-gray-300 bg-gray-100 px-3 py-1.5 text-gray-700 hover:bg-gray-200" onClick={close}>Cancel</button>
                                             </div>
                                         </div>
                                     )}
                                 </Popup>
                             )}
                         </p>
-                        <div className="schedules">
+                        <div className="[&_p]:mb-0.5 [&_p]:text-sm [&_p]:text-[var(--dark-gray)]">
                             {schedules.length > 0 ? (
                                 <div>
                                     {groupSchedulesByTime([...schedules].sort(
@@ -375,16 +381,16 @@ function TutorProfile() {
                         </div>
 
 
-                        <div className="tutor-calendar">
+                        <div className="flex items-center pt-2.5 [&_p]:mb-0 [&_p]:ml-[15px] [&_p]:pb-0">
                             { role == 'tutor' ? 
-                                <Link to={`/calendar/${tutor_id}`}><button className="btn btn-primary">{texts.profileInfo.viewCalendarButton}</button></Link>
+                                <Link to={`/calendar/${tutor_id}`} className="inline-flex items-center rounded-md border border-[var(--blue)] bg-[var(--blue)] px-3 py-1.5 text-white transition-colors hover:bg-[#252f6b] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--blue)] focus-visible:ring-offset-2">{texts.profileInfo.viewCalendarButton}</Link>
                             : null}
                             {session >= 1 ? (
-                            <div class="info">
-                                <div class="info__icon">
+                            <div className="ml-2.5 flex w-80 flex-row items-center justify-start rounded-lg bg-[#D7F1FD] p-[9px] shadow-[0_0_5px_-3px_#111]">
+                                <div className="mr-2 h-5 w-5 -translate-y-0.5 [&_path]:fill-[#509AF8]">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" viewBox="0 0 24 24" height="24" fill="none"><path fill="#393a37" d="m12 1.5c-5.79844 0-10.5 4.70156-10.5 10.5 0 5.7984 4.70156 10.5 10.5 10.5 5.7984 0 10.5-4.7016 10.5-10.5 0-5.79844-4.7016-10.5-10.5-10.5zm.75 15.5625c0 .1031-.0844.1875-.1875.1875h-1.125c-.1031 0-.1875-.0844-.1875-.1875v-6.375c0-.1031.0844-.1875.1875-.1875h1.125c.1031 0 .1875.0844.1875.1875zm-.75-8.0625c-.2944-.00601-.5747-.12718-.7808-.3375-.206-.21032-.3215-.49305-.3215-.7875s.1155-.57718.3215-.7875c.2061-.21032.4864-.33149.7808-.3375.2944.00601.5747.12718.7808.3375.206.21032.3215.49305.3215.7875s-.1155.57718-.3215.7875c-.2061.21032-.4864.33149-.7808.3375z"></path></svg>
                                 </div>
-                                <div class="info__title"> 
+                                <div className="text-sm text-[#0C2A75] [&_a]:text-inherit">
                                     {texts.scheduledSessions.youHaveLabel} <a href={`/scheduled-sessions/${role}/${tutor_id}`}>{session} {texts.scheduledSessions.scheduledSessionsLabel}</a> 
                                 </div> 
                         
@@ -397,8 +403,7 @@ function TutorProfile() {
                             { contextUser.role === 'admin' || contextUser.role === 'dev' ? (
                                 <Link to={`/settings/${tutor_id}`}>
                                 <i 
-                                className="bx bxs-cog"
-                                style={{marginLeft: "10px", cursor: "pointer", fontSize: "24px", marginTop: "5px"}}
+                                className="bx bxs-cog ml-2.5 mt-1 cursor-pointer text-2xl"
                                 >
                                 </i>
                              </Link>
@@ -413,35 +418,36 @@ function TutorProfile() {
 
                 </section>
 
-                <section className="tutor-courses-container">
-                    <div className="tutor-courses-header">
+                <section className="flex flex-wrap items-center justify-center rounded-[5px] bg-[var(--white)] p-2.5 shadow-[0_2px_4px_rgba(0,0,0,0.1)]">
+                    <div className="flex w-full items-center justify-between px-2.5">
                         {(contextUser.role === 'admin' || contextUser.role === 'dev') && (role === 'tutor' || role === 'student') && (
                             <Popup
-                                trigger={<i className="bx bx-edit" style={{ cursor: 'pointer', fontSize: '20px' }} title="Edit courses"></i>}
+                                trigger={<i className="bx bx-edit cursor-pointer text-xl" title="Edit courses"></i>}
                                 modal
                                 onOpen={openCoursePopup}
                             >
                                 {close => (
-                                    <div className="popup-container">
-                                        <h2>Manage {role === 'student' ? 'Student' : 'Tutor'} Courses</h2>
-                                        <div className="classes" style={{ maxHeight: '400px', overflowY: 'auto' }}>
+                                    <div className="p-6 text-left">
+                                        <h2 className="mb-4 text-xl font-semibold text-[var(--blue)]">Manage {role === 'student' ? 'Student' : 'Tutor'} Courses</h2>
+                                        <div className="grid max-h-[400px] grid-cols-[repeat(auto-fill,minmax(140px,1fr))] gap-2.5 overflow-y-auto">
                                             {allCourses.map(course => (
                                                 <div key={course.course_id}>
                                                     <input
                                                         type="checkbox"
+                                                        className="peer hidden"
                                                         id={`course-${course.course_id}`}
                                                         checked={selectedCourseIds.includes(String(course.course_id))}
                                                         onChange={() => handleCourseCheckboxChange(String(course.course_id))}
                                                     />
-                                                    <label htmlFor={`course-${course.course_id}`}>{course.course_name} ({course.course_code})</label>
+                                                    <label className="block cursor-pointer rounded-lg border-2 border-[var(--yellow)] bg-[var(--white)] p-2.5 text-center text-sm text-[var(--black)] transition duration-300 peer-checked:bg-[var(--yellow)] peer-checked:font-semibold" htmlFor={`course-${course.course_id}`}>{course.course_name} ({course.course_code})</label>
                                                 </div>
                                             ))}
                                         </div>
-                                        <div style={{ display: 'flex', gap: '10px', marginTop: '15px' }}>
-                                            <button className="btn btn-primary" onClick={() => saveTutorCourses(close)} disabled={savingCourses}>
+                                        <div className="mt-[15px] flex gap-2.5">
+                                            <button className="rounded-md border border-[var(--blue)] bg-[var(--blue)] px-3 py-1.5 text-white hover:bg-[#252f6b] disabled:pointer-events-none disabled:opacity-50" onClick={() => saveTutorCourses(close)} disabled={savingCourses}>
                                                 {savingCourses ? 'Saving...' : 'Save'}
                                             </button>
-                                            <button className="btn" onClick={close}>Cancel</button>
+                                            <button className="rounded-md border border-gray-300 bg-gray-100 px-3 py-1.5 text-gray-700 hover:bg-gray-200" onClick={close}>Cancel</button>
                                         </div>
                                     </div>
                                 )}
@@ -450,17 +456,17 @@ function TutorProfile() {
                     </div>
 
                     {courses.map(c =>
-                    <div className="tutor-course" key={c.course_id}>
+                    <div key={c.course_id}>
 
-                        <Link to={`/sessions/${role}/${tutor_id}/${c.course_id}`}>
-                            <div className="class-box course-container" id={c.course_id}>
-                                <div className="tutor-course-description">
-                                    <h3>{c.course_name}</h3>
-                                    <p>{c.course_code}</p>
+                        <Link className="no-underline" to={`/sessions/${role}/${tutor_id}/${c.course_id}`}>
+                            <div className="m-2.5 max-w-[250px] flex-[1_1_250px] cursor-pointer rounded-lg border border-[#ddd] bg-white p-2.5 hover:shadow-[0_4px_8px_rgba(0,0,0,0.1)]" id={c.course_id}>
+                                <div className="mb-1.5">
+                                    <h3 className="mb-1 text-[1.1em] text-[var(--blue)]">{c.course_name}</h3>
+                                    <p className="m-0 text-[0.9em]">{c.course_code}</p>
                                 </div>
-                                <div className="tutor-course-data course-tutors">
-                                    <p>{c.completed_sessions || c.qtyOfSessions}</p>
-                                    <p>{texts.tutorCourses.sessionsLabel}</p>
+                                <div>
+                                    <p className="m-0 text-xl">{c.completed_sessions || c.qtyOfSessions}</p>
+                                    <p className="m-0 text-[0.9em] font-normal">{texts.tutorCourses.sessionsLabel}</p>
                                 </div>
                             </div>
                         </Link>

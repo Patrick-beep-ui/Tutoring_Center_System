@@ -63,8 +63,8 @@ function Settings() {
             return (
                 <>
                     <Header />
-                    <section className="profile-container section">
-                        <div className="error-message">
+                    <section className="section">
+                        <div className="rounded-md bg-red-50 p-4 text-red-700">
                             <p>{error}</p>
                         </div>
                     </section>
@@ -75,26 +75,26 @@ function Settings() {
     return( 
     <>
         <Header />
-        <section className="section settings-section">
+        <section className="section">
 
-            <div className="profile-information-container">
-                <form className="profile-information-form" onSubmit={handleSubmit}>
-                    <section className="profile-form-container">
+            <div className="mt-2.5 min-h-[90%] bg-white py-2.5 pl-5 pr-2.5">
+                <form className="flex" onSubmit={handleSubmit}>
+                    <section className="m-2.5 w-1/2 border-r border-[var(--gray)] text-left [&>.profile-form-group]:m-2.5 [&>.profile-form-group]:w-full [&_label]:mb-0 [&_label]:font-medium [&_input]:w-[90%] [&_input]:rounded-[5px] [&_input]:border [&_input]:border-[var(--gray)] [&_input]:p-2">
                         <div className="profile-form-group">
                             <h3>{text.title.header}</h3>
-                            <p className="profile-form-text">{text.title.subheader}</p>
+                            <p className="text-[var(--gray)]">{text.title.subheader}</p>
                         </div>
-                        <div className="profile-form-group profile-picture-form-group">
-                            <div className="profile-picture-container user-picture-container">
+                        <div className="profile-form-group my-5 flex items-center">
+                            <div className="ml-0 flex h-[250px] w-[250px] items-center rounded-full">
                                 <img 
                                     src={`/profile/${userRes.role}${user_id}.webp?${new Date().getTime()}`} 
                                     alt={text["profile-picture"].alt} 
-                                    className="profile-picture" 
+                                    className="h-full w-full rounded-full object-cover"
                                 />
                             </div>
-                            <div className="profile-picture-upload">
-                                <button className="upload-pic-btn">{text["profile-picture"]["upload-button"]}</button>
-                                <p className="profile-form-text">{text["profile-picture"]["upload-note"]}</p>
+                            <div className="ml-[30px]">
+                                <button type="button" className="mb-1 cursor-pointer rounded-[5px] border-0 bg-[var(--blue)] p-2.5 text-[var(--white)]">{text["profile-picture"]["upload-button"]}</button>
+                                <p className="text-[var(--gray)]">{text["profile-picture"]["upload-note"]}</p>
                             </div>
                         </div>
                         <div className="profile-form-group">
@@ -104,8 +104,7 @@ function Settings() {
                              />
                             {(user.role === "dev" || user.role === "admin") ? (
                                 <i 
-                                className="bx bx-pencil cursor-pointer p-2 rounded-md text-white"
-                                style={{marginLeft: "10px", cursor: "pointer", backgroundColor: "#1e2c60"}}
+                                className="bx bx-pencil ml-2.5 cursor-pointer rounded-md bg-[#1e2c60] p-2 text-white"
                                 onClick={() => toggleEdit("first_name")}
                                 />
                             ) : (
@@ -120,8 +119,7 @@ function Settings() {
                               />
                             {(user.role === "dev" || user.role === "admin") ? (
                                 <i 
-                                className="bx bx-pencil cursor-pointer p-2 rounded-md text-white"
-                                style={{marginLeft: "10px", cursor: "pointer", backgroundColor: "#1e2c60"}}
+                                className="bx bx-pencil ml-2.5 cursor-pointer rounded-md bg-[#1e2c60] p-2 text-white"
                                 onClick={() => toggleEdit("last_name")}
                                 />
                             ) : (
@@ -130,15 +128,14 @@ function Settings() {
                         </div>
                     </section>
 
-                    <section className="profile-form-container">
+                    <section className="m-2.5 w-1/2 text-left [&>.profile-form-group]:m-2.5 [&>.profile-form-group]:w-full [&_label]:mb-0 [&_label]:font-medium [&_input]:w-[90%] [&_input]:rounded-[5px] [&_input]:border [&_input]:border-[var(--gray)] [&_input]:p-2">
                         <div className="profile-form-group">
                             <label htmlFor="ku_email">{text.fields["ku-email"]}</label>
                             <input type="email" id="ku_email" name="ku_email" value={userRes?.email || ""} disabled={!editable.email}
                             onChange={(e) => setUserRes({ ...userRes, email: e.target.value })}
                             />
                             <i 
-                                className="bx bx-pencil cursor-pointer p-2 rounded-md text-white"
-                                style={{marginLeft: "10px", cursor: "pointer", backgroundColor: "#1e2c60"}}
+                                className="bx bx-pencil ml-2.5 cursor-pointer rounded-md bg-[#1e2c60] p-2 text-white"
                                 onClick={() => toggleEdit("email")}
                             />
                         </div>
@@ -150,14 +147,13 @@ function Settings() {
                             onChange={(e) => setUserRes({ ...userRes, Contacts: [{ phone_number: e.target.value }] })}
                             />
                             <i 
-                                className="bx bx-pencil cursor-pointer p-2 rounded-md text-white"
-                                style={{marginLeft: "10px", cursor: "pointer", backgroundColor: "#1e2c60"}}
+                                className="bx bx-pencil ml-2.5 cursor-pointer rounded-md bg-[#1e2c60] p-2 text-white"
                                 onClick={() => toggleEdit("phone_number")}
                             />
                         </div>
 
                         <div className="profile-form-group">
-                            <div className="password-form-group">
+                            <div className="mt-[30px]">
                                 <h5>{text["password-section"].header}</h5>
                                 <div className="profile-form-group">
                                     <label htmlFor="password">{text["password-section"]["current-password"]}</label>
@@ -173,9 +169,9 @@ function Settings() {
                                 </div>
                             </div>
                         </div>
-                       <div className="profile-form-group profile-form-btns">
-                        <button className="cancel-btn">{text.buttons.cancel}</button>
-                        <button type="submit">{text.buttons.save}</button>
+                       <div className="profile-form-group float-right mt-[30px]! mb-0! flex w-[300px]! justify-center">
+                        <button type="button" className="m-1 rounded-[5px] border border-[var(--black)] bg-white px-[15px] py-2.5 font-medium text-[var(--black)] transition-colors hover:bg-[var(--dark-gray)] hover:text-white">{text.buttons.cancel}</button>
+                        <button type="submit" className="m-1 cursor-pointer rounded-[5px] border-0 bg-[var(--blue)] px-[15px] py-2.5 text-[var(--white)]">{text.buttons.save}</button>
                        </div>
                     </section>
                 </form>

@@ -3,7 +3,6 @@ import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Header from "../components/Header";
 import TutorsListComponent from "../components/TutorsListComponent";
-import "../App.css";
 
 function CourseTutors() {
     const { course_id } = useParams();

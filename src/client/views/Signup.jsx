@@ -56,15 +56,15 @@ function Signup() {
 
     return (
         <>
-            <section className="sign-up-container">
-                <div className="signup-img">
+            <section className="grid h-full grid-cols-1 md:grid-cols-2">
+                <div className="hidden bg-[url('/img/Keiser%20LAC.jpg')] bg-cover bg-center md:block">
                     
                 </div>
                 <div className="signup-form-container">
-                <form onSubmit={handleSubmit(handleSignUp)} className="form signup-form">
-                    <img src={CAE} alt="Tutoring Center Logo" className="cae-logo signup-cae-logo" />
+                <form onSubmit={handleSubmit(handleSignUp)} className="order-1 flex h-full flex-col items-start justify-center gap-2 bg-white py-[30px] pl-[30px] pr-[50px] max-md:w-full max-md:items-center max-md:p-6 [&_.form-group]:flex [&_.form-group]:w-full [&_.form-group]:flex-col [&_.form-group]:items-start [&_.form-group]:justify-start [&_.form-group]:px-4 [&_input]:w-4/5 [&_input]:rounded-[10px] [&_input]:border [&_input]:border-[var(--gray)] [&_input]:p-2 max-md:[&_input]:w-full [&_select]:w-4/5 [&_select]:rounded-[10px] [&_select]:border [&_select]:border-[var(--gray)] [&_select]:p-2 max-md:[&_select]:w-full">
+                    <img src={CAE} alt="Tutoring Center Logo" className="ml-[15px] h-[50px] w-[50px] max-md:mx-auto max-md:mb-2.5 max-md:block max-md:h-auto max-md:w-[120px]" />
 
-                    <div className="signup-header">
+                    <div className="flex flex-col items-start justify-center px-5 [&>p]:mb-0 [&>p]:pt-5 [&>p]:text-[1.4rem] [&>p]:font-medium [&>span]:text-sm">
                         <p>{texts.signupForm.signupLabel}</p>
                         <span>
                         {texts.signupForm.accountCheckLabel}{" "}
@@ -75,48 +75,48 @@ function Signup() {
                     {formStep === 1 && (
                         <>
                         <div className="form-group">
-                            <label htmlFor="first_name" className="signup-label">
+                            <label htmlFor="first_name" className="text-left text-sm text-[var(--gray)]">
                             {texts.signupForm.firstNameLabel}
                             </label>
                             <input type="text" {...register("first_name", { required: true })} id="first_name" />
-                            {errors.first_name && <span className="signup-error-message">First Name is required</span>}
+                            {errors.first_name && <span className="pl-5 text-left text-sm text-red-600">First Name is required</span>}
                         </div>
 
                         <div className="form-group">
-                            <label htmlFor="last_name" className="signup-label">
+                            <label htmlFor="last_name" className="text-left text-sm text-[var(--gray)]">
                             {texts.signupForm.lastNameLabel}
                             </label>
                             <input type="text" {...register("last_name", { required: true })} id="last_name" />
-                            {errors.last_name && <span className="signup-error-message">Last Name is required</span>}
+                            {errors.last_name && <span className="pl-5 text-left text-sm text-red-600">Last Name is required</span>}
                         </div>
 
                         <div className="form-group">
-                            <label htmlFor="ku-id" className="signup-label">
+                            <label htmlFor="ku-id" className="text-left text-sm text-[var(--gray)]">
                             {texts.signupForm.kuIDLabel}
                             </label>
                             <input type="text" {...register("ku_id", { required: true })} id="ku-id" />
-                            {errors.ku_id && <span className="signup-error-message">KU ID is required</span>}
+                            {errors.ku_id && <span className="pl-5 text-left text-sm text-red-600">KU ID is required</span>}
                         </div>
 
                         <div className="form-group">
-                            <label htmlFor="email" className="signup-label">
+                            <label htmlFor="email" className="text-left text-sm text-[var(--gray)]">
                             {texts.signupForm.kuEmailLabel}
                             </label>
                             <input type="email" {...register("email", { required: true })} id="new-user-email" />
-                            {errors.email && <span className="signup-error-message">Email is required</span>}
-                            {error && <div className="signup-error-message">{error}</div>}
+                            {errors.email && <span className="pl-5 text-left text-sm text-red-600">Email is required</span>}
+                            {error && <div className="pl-5 text-left text-sm text-red-600">{error}</div>}
                         </div>
 
                         <div className="form-group">
-                            <label htmlFor="password" className="signup-label">
+                            <label htmlFor="password" className="text-left text-sm text-[var(--gray)]">
                             {texts.signupForm.passwordLabel}
                             </label>
                             <input type="password" {...register("password_hash", { required: true })} id="new-user-password" />
-                            {errors.password_hash && <span className="signup-error-message">Password is required</span>}
+                            {errors.password_hash && <span className="pl-5 text-left text-sm text-red-600">Password is required</span>}
                         </div>
 
                         <div className="form-group">
-                            <label className="signup-label">Major</label>
+                            <label className="text-left text-sm text-[var(--gray)]">Major</label>
                             <select
                             {...register("major", { required: true })}
                             onChange={(e) => setSelectedMajor(e.target.value)}
@@ -128,11 +128,11 @@ function Signup() {
                                 </option>
                             ))}
                             </select>
-                            {errors.major && <span className="signup-error-message">Major is required</span>}
+                            {errors.major && <span className="pl-5 text-left text-sm text-red-600">Major is required</span>}
                         </div>
 
                         <div className="form-group">
-                            <button type="button" className="btn-sign btn-buy" id="signup-next-btn" onClick={() => setFormStep(2)}>
+                            <button type="button" className="mt-2.5 w-1/2 cursor-pointer rounded-[40px] border-0 bg-[var(--yellow)] p-2.5 text-base text-[var(--white)]" onClick={() => setFormStep(2)}>
                             Next
                             </button>
                         </div>
@@ -150,13 +150,13 @@ function Signup() {
                         />
 
                         <div className="form-group">
-                            <button type="submit" className="btn-sign btn-buy" id="signup-btn"  disabled={loading}>
+                            <button type="submit" className="mt-2.5 w-1/2 cursor-pointer rounded-[40px] border-0 bg-[var(--yellow)] p-2.5 text-base text-[var(--white)] disabled:cursor-not-allowed disabled:opacity-60" disabled={loading}>
                             {loading ? texts.signupForm.signupInButton : texts.signupForm.signupButton}
                             </button>
                         </div>
                         
                         <div className="form-group">
-                        <button type="button" className="btn-sign btn-buy" id="signup-back-btn" onClick={() => setFormStep(1)}>
+                        <button type="button" className="mt-2.5 w-1/2 cursor-pointer rounded-[40px] border-0 bg-[var(--blue)] p-2.5 text-base text-[var(--white)]" onClick={() => setFormStep(1)}>
                             Back
                         </button>
                         </div>

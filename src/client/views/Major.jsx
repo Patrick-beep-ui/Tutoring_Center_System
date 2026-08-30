@@ -75,9 +75,9 @@ function Major() {
         <>
         <h1>Majors</h1>
 
-        <section className="mt-4">
-            <table className="table table-striped">
-                <thead className="table-dark">
+        <section className="mt-6">
+            <table className="w-full border-collapse border border-gray-300 [&_th]:px-4 [&_th]:py-2 [&_th]:text-left [&_td]:px-4 [&_td]:py-2 [&_tr]:border-b [&_tr]:border-gray-200">
+                <thead className="bg-gray-900 text-white">
                     <tr>
                         <th scope="col">ID</th>
                         <th scope="col">Major Name</th>
@@ -86,8 +86,8 @@ function Major() {
                     </tr>
                 </thead>
                 <tbody>
-                    {majors.map(major =>
-                    <tr key={major.major_id}>
+                    {majors.map((major, rowIndex) =>
+                    <tr key={major.major_id} className={rowIndex % 2 === 0 ? "bg-gray-100" : ""}>
                         <td>{major.major_id}</td>
                         <td>
                             {editingId === major.major_id ? (
@@ -100,8 +100,7 @@ function Major() {
                                         if (e.key === "Escape") handleCancelEdit();
                                     }}
                                     autoFocus
-                                    className="form-control form-control-sm"
-                                    style={{ display: "inline-block", width: "auto" }}
+                                    className="inline-block w-auto rounded border border-gray-300 px-2 py-1 text-sm"
                                 />
                             ) : (
                                 major.major_name
@@ -110,18 +109,18 @@ function Major() {
                         <td>
                             {editingId === major.major_id ? (
                                 <>
-                                    <i className='bx bx-check edit' style={{color: 'green', cursor: 'pointer', marginRight: '10px'}}
+                                    <i className='bx bx-check mr-2.5 cursor-pointer text-green-600'
                                         onClick={() => handleSaveEdit(major.major_id)}></i>
-                                    <i className='bx bx-x delete' style={{color: 'red', cursor: 'pointer'}}
+                                    <i className='bx bx-x cursor-pointer text-red-600'
                                         onClick={handleCancelEdit}></i>
                                 </>
                             ) : (
-                                <i className='bx bx-pencil edit' style={{cursor: 'pointer'}}
+                                <i className='bx bx-pencil cursor-pointer'
                                     onClick={() => handleEdit(major)}></i>
                             )}
                         </td>
                         <td>
-                            <i className='bx bx-trash delete' style={{cursor: 'pointer'}}
+                            <i className='bx bx-trash cursor-pointer'
                                 onClick={() => handleDelete(major.major_id, major.major_name)}></i>
                         </td>
                     </tr>    

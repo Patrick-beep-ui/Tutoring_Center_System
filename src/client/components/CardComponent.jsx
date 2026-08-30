@@ -1,16 +1,15 @@
 import React from 'react';
-import "../App.css"
 
 export const Card = ({ children, className }) => {
   return <div className={`card-component ${className}`}>{children}</div>;
 };
 
 export const CardHeader = ({ children }) => {
-  return <div className="card-header">{children}</div>;
+  return <div>{children}</div>;
 };
 
 export const CardTitle = ({ children }) => {
-  return <h3 className="card-title">{children}</h3>;
+  return <h3>{children}</h3>;
 };
 
 export const CardContent = ({ children, className }) => {

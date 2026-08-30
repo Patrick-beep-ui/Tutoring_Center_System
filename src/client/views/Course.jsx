@@ -11,7 +11,6 @@ import { courseNavigationRef } from "../components/courses/courseNavigationRef";
 import Header from "../components/Header";
 import UserNavigators from "../components/UsersNavigators";
 import { SemesterContext } from "../context/currentSemester";
-import '.././App.css';
 
 function ClassName() {
     const { user: contextUser } = useOutletContext();

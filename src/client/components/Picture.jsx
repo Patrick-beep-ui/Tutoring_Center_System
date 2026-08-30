@@ -2,7 +2,6 @@ import React, { useState, useCallback, useRef  } from 'react';
 import Cropper from 'react-easy-crop';
 import { Button, Slider, Typography } from '@mui/material';
 import auth from '../authService';
-import '.././App.css';
 import texts from "../texts/tutorProfile.json";
 
 const Profile = ({ tutorId, onImageUpload, role }) => {
@@ -148,7 +147,7 @@ const Profile = ({ tutorId, onImageUpload, role }) => {
                           backgroundColor: 'primary.dark', 
                       }
                   }}
-                    className="save-picture-btn">{texts.camerasLabel.saveButton}</Button>
+                    >{texts.camerasLabel.saveButton}</Button>
                     <Button onClick={handleCancel} 
                     sx={{
                       backgroundColor: 'red',
