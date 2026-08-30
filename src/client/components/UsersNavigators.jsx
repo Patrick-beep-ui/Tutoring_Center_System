@@ -29,19 +29,19 @@ const UserNavigators = ({
 
     const navigationClassName = compact
         ? "grid w-full shrink-0 grid-cols-1 gap-x-5 gap-y-4 border-y border-border bg-muted/40 px-6 py-3 text-left sm:grid-cols-2 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,1.2fr)_minmax(0,1fr)_minmax(0,1fr)]"
-        : "users-navigation";
+        : "flex flex-row items-center justify-center gap-[30px] bg-[#f4f4f4] px-9 pb-5 pt-9";
     const itemClassName = compact
         ? "flex min-w-0 flex-col gap-1.5"
-        : "users-navigation-item";
+        : "flex w-80 flex-col";
     const labelClassName = compact
         ? "text-xs font-semibold text-[var(--primary)]"
-        : "navigation-item-label";
+        : "mb-1 block text-left";
     const selectClassName = compact
         ? "h-10 w-full cursor-pointer rounded-md border border-input bg-card px-3 text-sm text-foreground outline-none transition-[color,box-shadow] focus:border-ring focus:ring-[3px] focus:ring-ring/20 disabled:cursor-not-allowed disabled:bg-muted disabled:text-muted-foreground"
-        : "navigation-item-select";
+        : "h-[50px] w-[255px] cursor-pointer appearance-none rounded-[5px] px-2.5 text-lg font-normal text-[#574f4f] [background-image:url('/src/client/assets/expand-arrow.png')] [background-position:right_15px_center] [background-repeat:no-repeat] [background-size:20px] [&_option]:p-1.5 [&_option]:text-lg";
     const inputClassName = compact
         ? "h-10 w-full rounded-md border border-input bg-card px-3 text-sm text-foreground outline-none transition-[color,box-shadow] placeholder:text-muted-foreground focus:border-ring focus:ring-[3px] focus:ring-ring/20"
-        : "navigation-item-input";
+        : "h-[50px] w-[255px] appearance-none rounded-[5px] px-2.5 text-lg font-normal text-[#574f4f]";
 
 
     useEffect(() => {

@@ -1,5 +1,4 @@
 import React, { useState, useCallback, memo, useEffect } from 'react';
-import { Navbar, Nav } from 'react-bootstrap';
 import axios from "axios";
 import auth from '../authService';
 import { useNavigate, useLocation, Link } from "react-router-dom";
@@ -22,6 +21,7 @@ const navbarClass = [
 
 const brandClass = [
   'box-border flex w-full items-center justify-center whitespace-nowrap text-[1.25rem] text-white! no-underline',
+  'cursor-pointer border-0 bg-transparent',
   'mt-0! mr-0 mb-0! ml-0 pt-6 pr-4 pb-4! pl-4',
   'max-[991.98px]:mb-1! max-[991.98px]:pt-5 max-[991.98px]:pb-[14px]!',
   'max-[991.98px]:border-b max-[991.98px]:border-b-[rgba(255,255,255,0.12)]',
@@ -37,7 +37,7 @@ const accountNavClass = [
 ].join(' ');
 
 const navRowClass = [
-  'box-border flex! min-h-12 w-full min-w-0 shrink-0 items-center border-0! border-l-[3px]!',
+  'box-border flex! min-h-12 w-full min-w-0 shrink-0 cursor-pointer items-center border-0! border-l-[3px]!',
   'pt-0! pr-4 pb-0! pl-4 text-sm font-normal text-white! no-underline',
   '[transition:background-color_0.18s_ease,border-color_0.18s_ease]',
   'hover:text-white!',
@@ -217,25 +217,27 @@ function SideBar({ user }) {
         id="primary-sidebar"
         className={`${sidebarClass} ${isSidebarOpen ? sidebarOpenClass : sidebarClosedClass}`}
       >
-        <Navbar expand={false} className={navbarClass}>
+        <nav className={navbarClass} aria-label="Primary navigation">
           {/* ---- Logo ---- */}
-          <Navbar.Brand
+          <button
+            type="button"
             onClick={() => setIsSidebarOpen(v => !v)}
             className={brandClass}
+            aria-label="Toggle navigation"
           >
             <img
               src="/img/Picture1.svg"
               alt="CAE-logo"
               className="block h-auto w-16 max-[991.98px]:w-[52px]"
             />
-          </Navbar.Brand>
+          </button>
 
           {/* ---- Primary navigation items ---- */}
-          <Nav className={primaryNavClass}>
+          <div className={primaryNavClass}>
             {texts.header.sidebar[0]["links"]
               .filter(link => (link.role ? link.role.includes(user.role) : true))
               .map((link, index) => (
-                <Nav.Link
+                <a
                   key={index}
                   href={link.url}
                   aria-current={currentPath === link.url ? 'page' : undefined}
@@ -243,18 +245,18 @@ function SideBar({ user }) {
                 >
                   <i className={`${link.icon} ${navIconClass}`}></i>
                   <p className={navLabelClass}>{link.label}</p>
-                </Nav.Link>
+                </a>
               ))}
-          </Nav>
+          </div>
 
           {/* ---- Account actions (Settings / Logout) ---- */}
-          <Nav className={accountNavClass}>
+          <div className={accountNavClass}>
             {texts.header.sidebar[0]["settings"].map((setting, index) =>
               setting.label === "Logout" ? (
-                <Nav.Link key={index} onClick={logout} className={`${navRowClass} ${inactiveNavRowClass}`}>
+                <button type="button" key={index} onClick={logout} className={`${navRowClass} ${inactiveNavRowClass}`}>
                   <i className={`${setting.icon} ${navIconClass}`} />
                   <p className={navLabelClass}>{setting.label}</p>
-                </Nav.Link>
+                </button>
               ) : (
                 <Link
                   key={index}
@@ -267,8 +269,8 @@ function SideBar({ user }) {
                 </Link>
               )
             )}
-          </Nav>
-        </Navbar>
+          </div>
+        </nav>
       </div>
     </>
   );
