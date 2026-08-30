@@ -13,6 +13,12 @@ const Box = ({ session, onDelete }) => {
     const [showAlert, setShowAlert] = useState(false);
     const [isloading, setIsloading] = useState(false);
     const navigate = useNavigate();
+    const statusTone = {
+        scheduled: { border: "border-t-[#009dff]", badge: "bg-[#009dff]" },
+        completed: { border: "border-t-[#00c522]", badge: "bg-[#00c522]" },
+        pending: { border: "border-t-orange-500", badge: "bg-orange-500" },
+        canceled: { border: "border-t-[#dc143c]", badge: "bg-[#dc143c]" },
+    }[type] ?? { border: "border-t-red-600", badge: "bg-red-600" };
 
     const deleteSession = useCallback(async () => {
         setIsloading(true);
@@ -49,12 +55,12 @@ const Box = ({ session, onDelete }) => {
     const handleCancelAlert = useCallback(() => setShowAlert(false), []);
 
     return (
-        <div className={`box_element ${type}`}>
-            <Link to={`/session/details/${session.session_id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-            <div className="session-card-content">
-                <div className="session-header">
-                    <h2 className="session-title">{session.course_name}</h2>
-                    <span className={`status-tag ${type}`}>
+        <div className={`h-auto min-h-[100px] w-[350px] max-w-full rounded-xl border-t-[5px] bg-white p-[15px] shadow-[2px_4px_10px_rgba(0,0,0,0.1)] [&_strong]:text-[13px] [&_strong]:text-[#333] ${statusTone.border}`}>
+            <Link to={`/session/details/${session.session_id}`} className="text-inherit no-underline">
+            <div className="h-40">
+                <div className="flex items-center justify-between">
+                    <h2 className="block max-w-full truncate whitespace-nowrap text-left text-[17px]">{session.course_name}</h2>
+                    <span className={`rounded-xl px-2.5 py-[3px] text-[11px] text-white ${statusTone.badge}`}>
                     {session.session_status === "completed"
                         ? "Completed"
                         : session.session_status === "pending"
@@ -65,29 +71,28 @@ const Box = ({ session, onDelete }) => {
                     </span>
                 </div>
 
-                <p className="session-time">
-                    <FaClock className="clock-icon" /> {session.session_duration} | {session.session_date?.slice(5)}
+                <p className="my-2.5 flex items-center gap-1 text-[13px] text-[#555]">
+                    <FaClock className="text-[#555]" /> {session.session_duration} | {session.session_date?.slice(5)}
                 </p>
 
-                <div className="session-details">
-                    <div className="tutor">
+                <div className="my-[15px] flex items-center justify-between text-center">
+                    <div className="flex-1 text-[10px]">
                         <strong>{session.tutor_name}</strong>
                         <p>Tutor</p>
                     </div>
-                    <div className="divider"></div>
-                    <div className="student">
+                    <div className="h-[30px] w-px bg-[#ddd]"></div>
+                    <div className="flex-1 text-[10px]">
                         <strong>{session.student_name}</strong>
                         <p>Student</p>
                     </div>
                 </div>
 
-                <div className="feedback">
+                <div className="flex items-center gap-2.5 [&>p]:mb-0">
                     <p>Feedback:</p>
-                    <div className="stars">
+                    <div className="flex gap-1">
                         {[...Array(5)].map((_, index) => (
                         <FaStar
                             key={index}
-                            className="star-icon"
                             style={{
                             color: index < session.rating ? "#ffc107" : "#e4e5e9" // gold if filled, gray otherwise
                             }}
@@ -95,8 +100,8 @@ const Box = ({ session, onDelete }) => {
                         ))}
                     </div>
 
-                    <div className="edit-btns" style={{marginLeft: 'auto', paddingTop: '10px', paddingRight: '10px', display: 'flex', gap: '15px'}}>
-                        <i className='bx bxs-pencil edit' style={{color: 'gray'}}
+                    <div className="ml-auto flex gap-[15px] pr-2.5 pt-2.5">
+                        <i className='bx bxs-pencil edit text-gray-500'
                         onClick={(e) => {
                             e.preventDefault();
                             e.stopPropagation(); 
@@ -104,7 +109,7 @@ const Box = ({ session, onDelete }) => {
                             
                           }}
                           ></i> 
-                        <i className='bx bxs-trash delete'style={{color: 'gray'}}
+                        <i className='bx bxs-trash text-gray-500'
                         onClick={(e) => {
                             e.preventDefault();
                             e.stopPropagation(); 

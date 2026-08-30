@@ -5,9 +5,9 @@ import { Link } from "react-router-dom";
 const SessionTable = ({ session, isEditable, tutorId, source, role }) => {
 
     return(
-        <div className="table-container" style={{marginBottom: '10px'}}>
-            <table className="table table-striped" style={{marginBottom: '0px'}}>
-                <thead className="table-dark">
+        <div className="mb-2.5 mt-2.5 max-h-[730px] overflow-y-auto rounded-[10px] border border-[#ddd] shadow-[0_2px_5px_rgba(0,0,0,0.1)] [&::-webkit-scrollbar]:w-0">
+            <table className="mb-0 w-full border-collapse border border-gray-300 [&_thead]:sticky [&_thead]:top-0 [&_th]:px-4 [&_th]:py-2 [&_th]:text-left [&_td]:px-4 [&_td]:py-2 [&_tr]:border-b [&_tr]:border-gray-200">
+                <thead className="bg-gray-900 text-white">
                     <tr>
                         <th scope="col">Session ID</th>
                         <th scope="col">Tutor</th>
@@ -19,7 +19,7 @@ const SessionTable = ({ session, isEditable, tutorId, source, role }) => {
                 </thead>
                 <tbody>
                     {session.map(s =>
-                    <tr key={uuid()}>
+                    <tr key={uuid()} className="even:bg-gray-100">
                         <td>{s.session_id}</td>
                         <td>{s.tutor_name}</td>
                         <td>{s.student}</td>

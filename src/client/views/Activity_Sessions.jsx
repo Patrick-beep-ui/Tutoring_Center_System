@@ -4,8 +4,6 @@ import SessionFilters from "../components/SessionFilters.jsx";
 import api from "../axiosService.js";
 import { SemesterContext } from "../context/currentSemester";
 
-import "../App.css";
-
 const DEFAULT_FILTERS = {
     search: "",
     status: [],
@@ -124,17 +122,23 @@ const Activity_Sessions = () => {
                 resultCount={filteredSessions.length}
                 totalCount={sessions.length}
             />
-            <div className="sessions-grid">
+            <div className="grid grid-cols-[repeat(auto-fit,minmax(310px,1fr))] gap-5 p-5">
                 {filteredSessions.length > 0 ? (
                     filteredSessions.map((session) => (
                         <SessionCard key={session.session_id} session={session} onDelete={removeSessionFromState}/>
                     ))
                 ) : (
                     sessions.length > 0 && (
-                        <div className="no-results">
-                            <i className="bx bx-search-alt" style={{ fontSize: '48px', color: '#ccc' }}></i>
-                            <p>No sessions match your filters.</p>
-                            <button className="btn" onClick={() => setFilters(DEFAULT_FILTERS)}>Clear Filters</button>
+                        <div className="col-[1/-1] flex flex-col items-center justify-center gap-3 px-5 py-[60px] text-[#888]">
+                            <i className="bx bx-search-alt text-5xl text-[#ccc]"></i>
+                            <p className="m-0 text-base">No sessions match your filters.</p>
+                            <button
+                                type="button"
+                                className="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-base text-gray-700 shadow-sm transition-colors hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--blue)] focus-visible:ring-offset-2"
+                                onClick={() => setFilters(DEFAULT_FILTERS)}
+                            >
+                                Clear Filters
+                            </button>
                         </div>
                     )
                 )}

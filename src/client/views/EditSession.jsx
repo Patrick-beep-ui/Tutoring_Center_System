@@ -47,28 +47,17 @@ function EditSession() {
 return(
    <>
     <Header/>
-    <section className="edit-section-container">
-        <div className="edit-card" style={{position: 'relative'}}>
+    <section className="flex items-start justify-center pt-20">
+        <div className="relative max-w-[900px] items-center rounded-2xl border border-[var(--gray)] bg-[var(--white)] px-[9%] py-0.5 shadow-[0_4px_12px_rgba(0,0,0,0.08)] transition hover:-translate-y-0.5 hover:shadow-[0_6px_16px_rgba(0,0,0,0.12)]">
             <button
-            style={{
-                position: 'absolute',
-                top: '10px',
-                left: '10px',
-                zIndex: 10,
-                border: '1px solid #949494',
-                padding: '5px 10px',
-                borderRadius: '20px',
-                fontSize: '12px',
-                fontWeight: 700,
-                color: '#000',
-                
-              }}
+              type="button"
+              className="absolute left-2.5 top-2.5 z-10 rounded-[20px] border border-[#949494] px-2.5 py-1 text-xs font-bold text-black"
               onClick={navigateTo}
               >
-                <i className="bx bx-left-arrow-alt" style={{fontSize: '22px'}}></i>
+                <i className="bx bx-left-arrow-alt text-[22px]"></i>
               </button>
-            <h1 className="edit-card-title">{source == 'scheduled' ? 'Complete Session' : 'Edit Session'}</h1>
-            <div className="edit-card-content">
+            <h1 className="inline-block border-b-2 border-[var(--yellow)] text-[1.4rem] font-black text-[var(--blue)]">{source == 'scheduled' ? 'Complete Session' : 'Edit Session'}</h1>
+            <div>
                 <EditSessionForm 
                 session={session} 
                 session_id={session_id} 
