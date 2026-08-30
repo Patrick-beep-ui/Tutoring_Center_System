@@ -22,7 +22,7 @@ const Activity_Feedback =() =>{
 
     return (
     <>
-            <div className="feedbacks-grid">
+            <div className="grid grid-cols-[repeat(auto-fit,minmax(310px,1fr))] gap-5 p-5">
                 {feedbacks.map((feedback) => (
                     <FeedbackCard key={feedback.feedback_id} feedback={feedback} />
                 ))}

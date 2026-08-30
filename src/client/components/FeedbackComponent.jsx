@@ -34,8 +34,8 @@ const FeedbackForm = ({sessionId, userId}) => {
   };
 
   return (
-    <div className="feedback-form">
-      <h2>Provide Feedback</h2>
+    <div className="mt-8 rounded-lg bg-[var(--white)] p-8 text-left shadow-[0_4px_6px_rgba(0,0,0,0.1)] max-md:w-[90%] max-md:p-6 [&_label]:mb-2 [&_label]:block [&_label]:font-medium [&_label]:text-[var(--black)] [&_input]:mb-4 [&_input]:w-full [&_input]:rounded [&_input]:border [&_input]:border-[var(--gray)] [&_input]:p-3 [&_input]:text-base [&_input]:text-[var(--black)] [&_input:focus]:border-[var(--blue)] [&_input:focus]:outline-none [&_textarea]:mb-4 [&_textarea]:w-full [&_textarea]:rounded [&_textarea]:border [&_textarea]:border-[var(--gray)] [&_textarea]:p-3 [&_textarea]:text-base [&_textarea]:text-[var(--black)] [&_textarea:focus]:border-[var(--blue)] [&_textarea:focus]:outline-none [&_form_p]:mt-[-0.75rem] [&_form_p]:text-sm [&_form_p]:text-red-600">
+      <h2 className="mb-4 text-2xl font-semibold text-[var(--blue)] max-md:text-xl">Provide Feedback</h2>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div>
           <label htmlFor="rating">Rating (1-5)</label>
@@ -58,7 +58,7 @@ const FeedbackForm = ({sessionId, userId}) => {
           {errors.feedback && <p>{errors.feedback.message}</p>}
         </div>
 
-        <button type="submit">Submit Feedback</button>
+        <button type="submit" className="cursor-pointer rounded border-0 bg-[var(--blue)] px-6 py-3 text-base font-medium text-[var(--white)] transition-colors hover:bg-[var(--yellow)] hover:text-[var(--black)]">Submit Feedback</button>
       </form>
     </div>
   );

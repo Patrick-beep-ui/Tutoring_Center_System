@@ -1,7 +1,5 @@
 import { useState, useCallback } from "react";
 import Header from "../components/Header";
-
-import "../App.css";
 import Mini_Nav from "../components/Mini_Nav.jsx";
 import Activity_Alerts from "./Activity_Alerts.jsx";
 import Activity_Tutors from "./Activity_Tutors.jsx";
@@ -14,23 +12,23 @@ const Activity = () => {
     return (
         <>
             <Header />
-                <section className="activity-container">
+                <section className="ml-[var(--sidebar-content-offset)] h-screen w-[calc(100%-var(--sidebar-content-offset))] overflow-y-auto p-5 max-[991.98px]:ml-0 max-[991.98px]:w-full">
                 <Mini_Nav 
                     setSelectedSection={setSelectedSection} 
                     selectedSection={selectedSection} 
                 />
 
 
-                    <div style={{ display: selectedSection === 'sessions' ? 'block' : 'none' }}>
+                    <div className={selectedSection === 'sessions' ? 'block' : 'hidden'}>
                         <Activity_Sessions />
                     </div>
-                    <div style={{ display: selectedSection === 'feedback' ? 'block' : 'none' }}>
+                    <div className={selectedSection === 'feedback' ? 'block' : 'hidden'}>
                         <Activity_Feedback />
                     </div>
-                    <div style={{ display: selectedSection === 'tutors' ? 'block' : 'none' }}>
+                    <div className={selectedSection === 'tutors' ? 'block' : 'hidden'}>
                         <Activity_Tutors />
                     </div>
-                    <div style={{ display: selectedSection === 'alerts' ? 'block' : 'none' }}>
+                    <div className={selectedSection === 'alerts' ? 'block' : 'hidden'}>
                         <Activity_Alerts />
                     </div>
                 </section>

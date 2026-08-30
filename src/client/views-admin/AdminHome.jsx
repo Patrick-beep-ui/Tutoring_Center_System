@@ -1,6 +1,5 @@
 import { useState, useEffect, useContext } from "react";
 import Header from "../components/Header";
-import "../App.css";
 
 import StatBox from "../components/StatBox.jsx";
 import ActivityCard from "../components/ActivityCard";
@@ -76,20 +75,20 @@ const AdminHome = () => {
         <>
             <Header />
 
-            <div className="dashboard">
-                <div className="stats-grid">
+            <div className="mr-[30px] ml-[var(--sidebar-content-offset)] flex flex-col gap-5 pt-[100px] max-[991.98px]:ml-0">
+                <div className="grid grid-cols-1 gap-[15px] sm:grid-cols-2 xl:grid-cols-4">
                     <StatBox title="New Students" value="28" subtitle="+12% from last month" color="green" />
                     <StatBox title="Active Tutors" value="6" subtitle="+2 from last week" color="green" />
                     <StatBox title="Sessions Today" value="8" subtitle="2 scheduled" />
                     <StatBox title="Completion Rate" value="92%" subtitle="-3% from last week" color="red" />
                 </div>
 
-                <div className="content-grid">
-                    <div className="activities">
-                        <h3 className= "h3-title">Recent Activities</h3>
-                        <div className="activities-list">
+                <div className="grid grid-cols-1 gap-5 xl:grid-cols-[2fr_1fr]">
+                    <div className="m-[19px] rounded-[10px] bg-white p-5 shadow-[0_2px_5px_rgba(0,0,0,0.1)]">
+                        <h3 className="mb-5 text-left text-2xl font-semibold">Recent Activities</h3>
+                        <div className="max-h-[480px] overflow-y-auto pr-1">
                             {activitiesWindow === "fallback" && activities.length > 0 && (
-                                <p className="activities-fallback">No recent activity in the past week — showing latest.</p>
+                                <p className="mb-2.5 text-sm text-amber-700">No recent activity in the past week — showing latest.</p>
                             )}
                             {activities.length > 0 ? (
                                 activities.map((a, i) => (
@@ -102,7 +101,7 @@ const AdminHome = () => {
                                     />
                                 ))
                             ) : (
-                                <p className="activities-empty">No recent activity yet.</p>
+                                <p className="py-4 text-center italic text-gray-500">No recent activity yet.</p>
                             )}
                         </div>
                     </div>

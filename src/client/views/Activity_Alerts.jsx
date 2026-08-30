@@ -4,7 +4,6 @@ import Header from "../components/Header.jsx";
 import api from "../axiosService";
 import { alertCategoryLabel } from "../services/alertLabels";
 import { SemesterContext } from "../context/currentSemester";
-import "../App.css";
 
 const severityToType = (severity) => {
     switch (severity) {
@@ -52,10 +51,10 @@ const Activity_Alerts = () => {
     return (
         <>
             <Header />
-            <section className="activity-container">
-                <h1 className="page-title">System Alerts</h1>
+            <section className="ml-[var(--sidebar-content-offset)] h-screen w-[calc(100%-var(--sidebar-content-offset))] overflow-y-auto p-5 max-[991.98px]:ml-0 max-[991.98px]:w-full">
+                <h1 className="my-[30px] mb-[25px] text-left text-[22px] text-[#333]">System Alerts</h1>
                 {window === "fallback" && alerts.length > 0 && (
-                    <p className="activities-fallback">No recent activity in the past week — showing latest.</p>
+                    <p className="mb-2.5 text-sm text-amber-700">No recent activity in the past week — showing latest.</p>
                 )}
                 {alerts.length > 0 ? (
                     alerts.map(a => (
@@ -68,7 +67,7 @@ const Activity_Alerts = () => {
                         />
                     ))
                 ) : (
-                    <p className="text-muted">No alerts yet.</p>
+                    <p className="text-muted-foreground">No alerts yet.</p>
                 )}
             </section>
         </>

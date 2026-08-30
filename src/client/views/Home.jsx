@@ -3,7 +3,6 @@ import { v4 as uuid } from "uuid";
 import { Link, useNavigate } from "react-router-dom";
 import { Toaster, toast } from 'sonner';
 import Header from "../components/Header";
-import "../App.css";
 import texts from "../texts/sessions.json";
 import { exportToCSV } from "../services/exportCSV";
 import api from "../axiosService";
@@ -73,41 +72,41 @@ function Home() {
     return (
         <>
             <Header />
-            <section className="sessions-container section">
-                <div className="week-navigation">
-                    <button onClick={goToPreviousWeek} disabled={currentWeek === 1} className="weeks-btn" >&#9665;</button>
+            <section className="section [&>h1]:font-medium">
+                <div>
+                    <button onClick={goToPreviousWeek} disabled={currentWeek === 1} className="mx-2.5 bg-[var(--blue)] p-1.5 text-white disabled:bg-[var(--gray)]" >&#9665;</button>
                     <span>Week {currentWeek}</span>
-                    <button onClick={goToNextWeek} disabled={currentWeek === 17} className="weeks-btn" >&#9655;</button>
+                    <button onClick={goToNextWeek} disabled={currentWeek === 17} className="mx-2.5 bg-[var(--blue)] p-1.5 text-white disabled:bg-[var(--gray)]" >&#9655;</button>
                 </div>
 
-                <div className="table-container">
-                    <table className="table table-striped">
-                        <thead className="bg-light">
+                <div className="mt-2.5 max-h-[730px] overflow-y-auto rounded-[10px] border border-[#ddd] shadow-[0_2px_5px_rgba(0,0,0,0.1)] [&::-webkit-scrollbar]:w-0">
+                    <table className="w-full border-collapse border-spacing-0">
+                        <thead className="sticky top-0 bg-white">
                             <tr>
-                                <th scope="col">{texts.table.TutorColumHeader}</th>
-                                <th scope="col">{texts.table.StudentColumHeader}</th>
-                                <th scope="col">{texts.table.CoursesColumHeader}</th>
-                                <th scope="col">{texts.table.HoursColumHeader}</th>
+                                <th className="rounded-tl-[10px] bg-[var(--blue)] p-[15px] text-[var(--white)]" scope="col">{texts.table.TutorColumHeader}</th>
+                                <th className="bg-[var(--blue)] p-[15px] text-[var(--white)]" scope="col">{texts.table.StudentColumHeader}</th>
+                                <th className="bg-[var(--blue)] p-[15px] text-[var(--white)]" scope="col">{texts.table.CoursesColumHeader}</th>
+                                <th className="rounded-tr-[10px] bg-[var(--blue)] p-[15px] text-[var(--white)]" scope="col">{texts.table.HoursColumHeader}</th>
                             </tr>
                         </thead>
                         <tbody>
                             {filteredSessions.map(s => (
-                                <tr key={uuid()} className="session-info-row" onClick={() => redirect(s.session_id)} id={s.session_id} style={{ cursor: 'pointer' }}>
-                                    <td><Link to={`/profile/tutor/${s.tutor_id}`} onClick={handleLinkClick}>{s.tutor_name}</Link></td>
-                                    <td>{s.student_name}</td>
-                                    <td>{s.course_name}</td>
-                                    <td>{s.total_hours}</td>
+                                <tr key={uuid()} className="cursor-pointer [&:last-child_td]:border-b-0" onClick={() => redirect(s.session_id)} id={s.session_id}>
+                                    <td className="border-b border-[#ddd] p-2.5 font-medium text-[#777676]"><Link to={`/profile/tutor/${s.tutor_id}`} onClick={handleLinkClick}>{s.tutor_name}</Link></td>
+                                    <td className="border-b border-[#ddd] p-2.5 font-medium text-[#777676]">{s.student_name}</td>
+                                    <td className="border-b border-[#ddd] p-2.5 font-medium text-[#777676]">{s.course_name}</td>
+                                    <td className="border-b border-[#ddd] p-2.5 font-medium text-[#777676]">{s.total_hours}</td>
                                 </tr>
                             ))}
                         </tbody>
                     </table>
                 </div>
 
-                <button onClick={handleExportCSV} className="export-csv sessions-csv">
+                <button onClick={handleExportCSV} className="mt-5 cursor-pointer rounded-[15px] border-0 bg-[var(--blue)] p-2.5 text-base text-[var(--white)] hover:text-[var(--yellow)]">
                     Export this Session Week to CSV
                 </button>
 
-                <section className="home-links">
+                <section className="hidden w-full justify-around">
                     <div>
                         <Link to={'/tutors'}>See All Tutors</Link>
                     </div>

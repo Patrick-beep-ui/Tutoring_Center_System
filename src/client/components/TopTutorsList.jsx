@@ -1,5 +1,3 @@
-import "../App.css"
-
 const formatDate = (dateStr) => {
     if (!dateStr) return "";
     const [y, m, d] = dateStr.split("-").map(Number);
@@ -28,21 +26,21 @@ const TopTutorsList = ({ tutors, window: rankWindow, semesterCode }) => {
     }
 
     return (
-        <div className="top-tutors">
+        <div className="m-[19px] rounded-[15px] bg-white p-5 shadow-[0_2px_5px_rgba(0,0,0,0.1)]">
             <h3>Top Tutors</h3>
             <p>{subtitle}</p>
             {tutors.length > 0 ? (
-                <ol>
+                <ol className="list-none p-0">
                     {tutors.map((tutor, index) => (
-                        <li key={tutor.tutor_name}>
-                            <span className="top-tutor-rank">#{index + 1}</span>
-                            <span className="top-tutor-name">{tutor.tutor_name}</span>
-                            <span className="top-tutor-hours">{formatHours(tutor.total_hours)}</span>
+                        <li key={tutor.tutor_name} className="mx-[30px] my-[15px] flex items-center gap-2.5 rounded-[15px] border border-[var(--gray)] bg-[#f9f9f9] px-5 py-2.5 text-left">
+                            <span className="min-w-[2.5ch] font-bold text-[var(--blue)]">#{index + 1}</span>
+                            <span className="min-w-0 flex-1">{tutor.tutor_name}</span>
+                            <span className="whitespace-nowrap font-bold text-[var(--blue)]">{formatHours(tutor.total_hours)}</span>
                         </li>
                     ))}
                 </ol>
             ) : (
-                <p className="top-tutors-empty">No completed sessions were recorded for this period.</p>
+                <p className="italic text-[var(--dark-gray)]">No completed sessions were recorded for this period.</p>
             )}
         </div>
     );
