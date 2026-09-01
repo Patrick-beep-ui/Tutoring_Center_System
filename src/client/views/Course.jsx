@@ -8,6 +8,7 @@ import { Switch } from "@/components/ui/switch";
 import auth from "../authService";
 import CourseGrid from "../components/courses/CourseGrid";
 import { courseNavigationRef } from "../components/courses/courseNavigationRef";
+import UsersCourseAutocomplete from "../components/courses/UsersCourseAutocomplete";
 import Header from "../components/Header";
 import UserNavigators from "../components/UsersNavigators";
 import { SemesterContext } from "../context/currentSemester";
@@ -27,8 +28,7 @@ function ClassName() {
 
     // Filter states
     const [programFilter, setProgramFilter] = useState(courseNavigationRef.current.programFilter);
-    const [courseFilter, setCourseFilter] = useState(courseNavigationRef.current.courseFilter);
-    const [idFilter, setIdFilter] = useState(courseNavigationRef.current.idFilter);
+    const [selectedCourse, setSelectedCourse] = useState(courseNavigationRef.current.selectedCourse ?? null);
     const [offeredOnly, setOfferedOnly] = useState(true);
 
     // Pagination states
@@ -40,11 +40,10 @@ function ClassName() {
     useEffect(() => {
         courseNavigationRef.current = {
             programFilter,
-            courseFilter,
-            idFilter,
+            selectedCourse,
             currentPage,
         };
-    }, [programFilter, courseFilter, idFilter, currentPage]);
+    }, [programFilter, selectedCourse, currentPage]);
 
     // Fetch majors and students on mount
     useEffect(() => {
@@ -98,26 +97,14 @@ function ClassName() {
             filtered = filtered.filter(c => major && c.major_id === major.major_id);
         }
 
-        // Course filter: match against name or code (search box)
-        if (courseFilter !== "all" && courseFilter !== "") {
-            const q = courseFilter.toLowerCase();
-            filtered = filtered.filter(c =>
-                c.course_name.toLowerCase().includes(q) ||
-                c.course_code.toLowerCase().includes(q)
-            );
+        // Selected course: show only that exact course
+        if (selectedCourse) {
+            filtered = filtered.filter(c => c.course_id === selectedCourse.course_id);
         }
-
-        // ID filter
-        if (idFilter !== "") {
-            filtered = filtered.filter(c =>
-                c.course_code.toLowerCase().includes(idFilter.toLowerCase())
-            );
-        }
-
 
         setFilteredCourses(filtered);
         setCurrentPage(0); // Reset pagination on filter change
-    }, [programFilter, courseFilter, idFilter, offeredOnly, courses, majors]);
+    }, [programFilter, selectedCourse, offeredOnly, courses, majors]);
 
     // Handle responsive items per page
     useEffect(() => {
@@ -191,18 +178,36 @@ function ClassName() {
                     <div className="shrink-0 border-b border-border bg-muted/30 [&>section]:gap-y-3 [&>section]:border-0 [&>section]:bg-transparent [&>section]:px-5 [&>section]:py-3 [&_input]:h-9 [&_label]:text-foreground [&_select]:h-9">
                         <UserNavigators
                             programFilter={programFilter}
-                            courseFilter={courseFilter}
-                            idFilter={idFilter}
                             setProgramFilter={setProgramFilter}
-                            setCourseFilter={setCourseFilter}
-                            setIdFilter={setIdFilter}
                             majors={majors}
                             courses={courses}
                             students={students}
-                            isInputSearch={true}
                             compact
-                            IdLabel="Code"
-                            IdPlaceholder="Type Course Code"
+                            renderCourseFields={() => (
+                                <>
+                                    <div className="flex min-w-0 flex-col gap-1.5">
+                                        <label className="text-xs font-semibold text-[var(--primary)]">Course</label>
+                                        <UsersCourseAutocomplete
+                                            selectField="name"
+                                            value={selectedCourse?.course_name ?? ""}
+                                            onSelect={setSelectedCourse}
+                                            options={courses}
+                                            placeholder="Search by course name…"
+                                        />
+                                    </div>
+                                    <div className="flex min-w-0 flex-col gap-1.5">
+                                        <label className="text-xs font-semibold text-[var(--primary)]">Code</label>
+                                        <UsersCourseAutocomplete
+                                            selectField="code"
+                                            showNameInCode={false}
+                                            value={selectedCourse?.course_code ?? ""}
+                                            onSelect={setSelectedCourse}
+                                            options={courses}
+                                            placeholder="Search by course code…"
+                                        />
+                                    </div>
+                                </>
+                            )}
                         />
                     </div>
 
