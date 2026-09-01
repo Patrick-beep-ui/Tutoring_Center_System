@@ -1,8 +1,20 @@
 // @vitest-environment node
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import safeQuery from '../safeQuery.js';
 
 describe('safeQuery', () => {
+  let errorSpy;
+
+  beforeEach(() => {
+    // The function logs failed queries via console.error; silence it during
+    // these tests so expected error paths do not clutter CI output.
+    errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    errorSpy.mockRestore();
+  });
+
   it('resolves with the promise result on success', async () => {
     const result = await safeQuery(Promise.resolve({ id: 1 }));
     expect(result).toEqual({ id: 1 });

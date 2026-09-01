@@ -1,5 +1,5 @@
 // @vitest-environment node
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import jwt from 'jsonwebtoken';
 import { generateToken } from '../jwt.js';
 
@@ -7,6 +7,17 @@ const SECRET = process.env.SECRET_KEY;
 
 describe('generateToken', () => {
   const user = { user_id: 7, email: 't@example.com', role: 'tutor' };
+
+  let logSpy;
+
+  beforeEach(() => {
+    // generateToken logs to the console; silence it during tests.
+    logSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    logSpy.mockRestore();
+  });
 
   it('produces a token carrying the user payload fields', () => {
     const token = generateToken(user);

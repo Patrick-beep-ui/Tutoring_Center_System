@@ -1,5 +1,5 @@
 // @vitest-environment node
-import { describe, it, expect, beforeAll, vi } from 'vitest';
+import { describe, it, expect, beforeAll, beforeEach, afterEach, vi } from 'vitest';
 import express from 'express';
 import request from 'supertest';
 import jwt from 'jsonwebtoken';
@@ -123,10 +123,20 @@ describe('GET /catalog (integration: jwtAuth + semesterScope + catalog controlle
 
 describe('isAdmin role gating (integration: jwtAuth + isAdmin)', () => {
   let adminApp;
+  let logSpy;
   beforeAll(() => {
     adminApp = express();
     adminApp.use(express.json());
     adminApp.post('/admin-only', jwtAuth, isAdmin, (req, res) => res.status(201).json({ ok: true }));
+  });
+
+  beforeEach(() => {
+    // isAdmin logs each request via console.log; silence it during tests.
+    logSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    logSpy.mockRestore();
   });
 
   it('returns 401 when no token is provided', async () => {
