@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import auth from "../authService";
 import CAE from "../assets/CAE.jpg";
@@ -68,7 +68,7 @@ function Signup() {
                         <p>{texts.signupForm.signupLabel}</p>
                         <span>
                         {texts.signupForm.accountCheckLabel}{" "}
-                        <a href="/login">{texts.signupForm.loginLink}</a>
+                        <Link to="/login">{texts.signupForm.loginLink}</Link>
                         </span>
                     </div>
 

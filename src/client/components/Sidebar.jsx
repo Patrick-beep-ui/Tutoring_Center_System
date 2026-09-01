@@ -237,15 +237,15 @@ function SideBar({ user }) {
             {texts.header.sidebar[0]["links"]
               .filter(link => (link.role ? link.role.includes(user.role) : true))
               .map((link, index) => (
-                <a
+                <Link
                   key={index}
-                  href={link.url}
+                  to={link.url}
                   aria-current={currentPath === link.url ? 'page' : undefined}
                   className={`${navRowClass} ${currentPath === link.url ? activeNavRowClass : inactiveNavRowClass}`}
                 >
                   <i className={`${link.icon} ${navIconClass}`}></i>
                   <p className={navLabelClass}>{link.label}</p>
-                </a>
+                </Link>
               ))}
           </div>
 
