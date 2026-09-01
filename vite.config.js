@@ -15,5 +15,10 @@ export default defineConfig({ // This should match your GitHub Pages repository 
   build: {
     outDir: 'dist',
   },
+  test: {
+    environment: 'jsdom',
+    globals: true,
+    setupFiles: ['./src/client/test/setup.js'],
+  },
 });
 

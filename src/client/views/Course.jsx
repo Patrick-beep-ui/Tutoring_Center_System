@@ -12,6 +12,7 @@ import UsersCourseAutocomplete from "../components/courses/UsersCourseAutocomple
 import Header from "../components/Header";
 import UserNavigators from "../components/UsersNavigators";
 import { SemesterContext } from "../context/currentSemester";
+import { matchesCourseFilters } from "../lib/courseFilters";
 import '.././App.css';
 
 function ClassName() {
@@ -85,22 +86,9 @@ function ClassName() {
 
     // Filter courses whenever filters or courses/majors change
     useEffect(() => {
-        let filtered = [...courses];
-
-        if (offeredOnly) {
-            filtered = filtered.filter(c => c.offered === 1 || c.offered === true);
-        }
-
-        // Program filter: map major_name to major_id
-        if (programFilter !== "all") {
-            const major = majors.find(m => m.major_name === programFilter);
-            filtered = filtered.filter(c => major && c.major_id === major.major_id);
-        }
-
-        // Selected course: show only that exact course
-        if (selectedCourse) {
-            filtered = filtered.filter(c => c.course_id === selectedCourse.course_id);
-        }
+        const filtered = courses.filter(c =>
+            matchesCourseFilters(c, { programFilter, offeredOnly, selectedCourse, majors })
+        );
 
         setFilteredCourses(filtered);
         setCurrentPage(0); // Reset pagination on filter change
