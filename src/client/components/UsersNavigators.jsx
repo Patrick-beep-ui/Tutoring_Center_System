@@ -15,6 +15,9 @@ const UserNavigators = ({
     students = [],
     allCourses = [],
     autocomplete = false,
+    autocompleteAllRoles = false,
+    hideCourse = false,
+    renderCourseFields = null,
     isInputSearch = false,
     compact = false,
     IdLabel = "ID",
@@ -67,47 +70,56 @@ const UserNavigators = ({
                     ))}
                 </select>
             </div>
-            <div className={itemClassName}>
-                <label className={labelClassName}>Course</label>
-                {autocomplete && (viewerRole === "admin" || viewerRole === "dev") ? (
-                    <UsersCourseAutocomplete
-                        value={courseFilter}
-                        onChange={setCourseFilter}
-                        options={allCourses}
-                    />
-                ) : isInputSearch ? (
-                    <input
-                        className={inputClassName}
-                        type="text"
-                        value={courseFilter === "all" ? "" : courseFilter}
-                        placeholder="Search Course"
-                        onChange={(e) => setCourseFilter(e.target.value)}
-                    />
-                ) : (
-                    <select
-                        className={selectClassName}
-                        value={courseFilter}
-                        onChange={(e) => setCourseFilter(e.target.value)}
-                    >
-                        <option value="all">All Courses</option>
-                        <option value="user-courses">My Courses</option>
-                        {courses.map(course => (
-                            <option key={course.id} value={course.course_code}>{course.course_name}</option>
-                        ))}
-                    </select>
-                )}
-            </div>
+            {renderCourseFields ? (
+                renderCourseFields()
+            ) : (
+                <>
+                    {!hideCourse && (
+                        <div className={itemClassName}>
+                            <label className={labelClassName}>Course</label>
+                            {autocompleteAllRoles ||
+                            (autocomplete && (viewerRole === "admin" || viewerRole === "dev")) ? (
+                                <UsersCourseAutocomplete
+                                    value={courseFilter}
+                                    onChange={setCourseFilter}
+                                    options={allCourses}
+                                />
+                            ) : isInputSearch ? (
+                                <input
+                                    className={inputClassName}
+                                    type="text"
+                                    value={courseFilter === "all" ? "" : courseFilter}
+                                    placeholder="Search Course"
+                                    onChange={(e) => setCourseFilter(e.target.value)}
+                                />
+                            ) : (
+                                <select
+                                    className={selectClassName}
+                                    value={courseFilter}
+                                    onChange={(e) => setCourseFilter(e.target.value)}
+                                >
+                                    <option value="all">All Courses</option>
+                                    <option value="user-courses">My Courses</option>
+                                    {courses.map(course => (
+                                        <option key={course.id} value={course.course_code}>{course.course_name}</option>
+                                    ))}
+                                </select>
+                            )}
+                        </div>
+                    )}
 
-            <div className={itemClassName}>
-                <label className={labelClassName}>{IdLabel}</label>
-                <input
-                    type="text"
-                    className={inputClassName}
-                    placeholder={IdPlaceholder}
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                />
-            </div>
+                    <div className={itemClassName}>
+                        <label className={labelClassName}>{IdLabel}</label>
+                        <input
+                            type="text"
+                            className={inputClassName}
+                            placeholder={IdPlaceholder}
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                    </div>
+                </>
+            )}
             <div className={itemClassName}>
                 <label className={labelClassName}>Semester</label>
                 {canChangeSemester ? (

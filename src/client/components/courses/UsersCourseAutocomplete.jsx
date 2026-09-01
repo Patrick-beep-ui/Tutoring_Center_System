@@ -3,14 +3,27 @@ import { CheckIcon } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
-function UsersCourseAutocomplete({ value, onChange, options, placeholder = "Search all courses…" }) {
+function UsersCourseAutocomplete({
+    value,
+    onChange,
+    onSelect,
+    options,
+    selectField = "code",
+    showNameInCode = true,
+    placeholder = "Search all courses…",
+}) {
+    const fieldValue = (course) =>
+        selectField === "name" ? course.course_name : course.course_code;
+
+    const isCodeMode = selectField === "code";
+
     const [query, setQuery] = useState(value && value !== "all" ? value : "");
     const [open, setOpen] = useState(false);
     const [highlighted, setHighlighted] = useState(0);
     const [isTyping, setIsTyping] = useState(false);
     const containerRef = useRef(null);
 
-    const selectedCourse = options.find((o) => o.course_code === value);
+    const selectedCourse = options.find((o) => fieldValue(o) === value);
 
     useEffect(() => {
         if (value && value !== "all") {
@@ -54,16 +67,18 @@ function UsersCourseAutocomplete({ value, onChange, options, placeholder = "Sear
     }, []);
 
     const selectCourse = (course) => {
-        setQuery(course.course_code);
+        setQuery(fieldValue(course));
         setIsTyping(false);
-        onChange(course.course_code);
+        onSelect?.(course);
+        onChange?.(fieldValue(course));
         setOpen(false);
     };
 
     const clear = () => {
         setQuery("");
         setIsTyping(false);
-        onChange("all");
+        onChange?.("all");
+        onSelect?.(null);
         setOpen(false);
     };
 
@@ -91,11 +106,15 @@ function UsersCourseAutocomplete({ value, onChange, options, placeholder = "Sear
     const selectClassName =
         "h-10 w-full cursor-pointer rounded-md border border-input bg-card px-3 text-sm text-foreground outline-none transition-[color,box-shadow] focus:border-ring focus:ring-[3px] focus:ring-ring/20 disabled:cursor-not-allowed disabled:bg-muted disabled:text-muted-foreground";
 
-    const isSelected = (course) => value && value !== "all" && course.course_code === value;
+    const isSelected = (course) => value && value !== "all" && fieldValue(course) === value;
 
     const displayValue =
         !isTyping && !open && selectedCourse
-            ? `${selectedCourse.course_code} — ${selectedCourse.course_name}`
+            ? isCodeMode
+                ? showNameInCode
+                    ? `${selectedCourse.course_code} — ${selectedCourse.course_name}`
+                    : selectedCourse.course_code
+                : selectedCourse.course_name
             : query;
 
     return (
@@ -109,7 +128,10 @@ function UsersCourseAutocomplete({ value, onChange, options, placeholder = "Sear
                     setQuery(e.target.value);
                     setIsTyping(true);
                     setOpen(true);
-                    if (e.target.value.trim() === "") onChange("all");
+                    if (e.target.value.trim() === "") {
+                        onChange?.("all");
+                        onSelect?.(null);
+                    }
                 }}
                 onFocus={() => setOpen(true)}
                 onKeyDown={onInputKeyDown}
@@ -134,8 +156,17 @@ function UsersCourseAutocomplete({ value, onChange, options, placeholder = "Sear
                                 )}
                             >
                                 <span className="flex min-w-0 items-baseline gap-2">
-                                    <span className="font-medium">{course.course_code}</span>
-                                    <span className="truncate text-muted-foreground">{course.course_name}</span>
+                                    {isCodeMode ? (
+                                        <>
+                                            <span className="font-medium">{course.course_code}</span>
+                                            <span className="truncate text-muted-foreground">{course.course_name}</span>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <span className="font-medium">{course.course_name}</span>
+                                            <span className="truncate text-muted-foreground">{course.course_code}</span>
+                                        </>
+                                    )}
                                 </span>
                                 {isSelected(course) && (
                                     <span className="absolute right-2 flex size-3.5 items-center justify-center">
