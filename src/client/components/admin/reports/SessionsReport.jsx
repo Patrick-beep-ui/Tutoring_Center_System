@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo, memo, useContext } from "react";
-import api from "../../axiosService";
-import { SemesterContext } from "../../context/currentSemester";
+import api from "../../../axiosService";
+import { SemesterContext } from "../../../context/currentSemester";
 import { Card } from "react-bootstrap";
 import { Tabs, Tab } from "react-bootstrap";
 import {
@@ -17,8 +17,8 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-import { exportChartAsImage } from "../../services/exportChartAsImage";
-import exportToExcel from "../../services/exportChart";
+import { exportChartAsImage } from "../../../services/exportChartAsImage";
+import exportToExcel from "../../../services/exportChart";
 
 // Datos de ejemplo para weeklySampleData
 const weeklySampleData = [

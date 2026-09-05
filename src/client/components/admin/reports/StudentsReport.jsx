@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback, useMemo, memo, useRef, useContext } from "react";
 import { Card, Button } from "react-bootstrap";
 import { Tabs, Tab } from "react-bootstrap";
-import api from "../../axiosService";
-import { SemesterContext } from "../../context/currentSemester";
+import api from "../../../axiosService";
+import { SemesterContext } from "../../../context/currentSemester";
 import {
   Bar,
   BarChart,
@@ -17,8 +17,8 @@ import {
   YAxis,
 } from "recharts";
 
-import exportToExcel from "../../services/exportChart"
-import { exportChartAsImage } from "../../services/exportChartAsImage";
+import exportToExcel from "../../../services/exportChart"
+import { exportChartAsImage } from "../../../services/exportChartAsImage";
 
   // Nueva data
   const attendanceSampleData = [
