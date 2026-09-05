@@ -1,7 +1,7 @@
 import { useState, useEffect, memo, useContext } from "react";
 import { useOutletContext } from "react-router-dom";
-import { SemesterContext } from "../context/currentSemester";
-import UsersCourseAutocomplete from "./courses/UsersCourseAutocomplete";
+import { SemesterContext } from "../../../context/currentSemester";
+import UsersCourseAutocomplete from "../../courses/UsersCourseAutocomplete";
 
 const UserNavigators = ({
     programFilter = "all",

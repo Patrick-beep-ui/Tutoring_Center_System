@@ -10,7 +10,7 @@ import CourseGrid from "../components/courses/CourseGrid";
 import { courseNavigationRef } from "../components/courses/courseNavigationRef";
 import UsersCourseAutocomplete from "../components/courses/UsersCourseAutocomplete";
 import Header from "../components/Header";
-import UserNavigators from "../components/UsersNavigators";
+import UserNavigators from "../components/users/admin/UsersNavigators";
 import { SemesterContext } from "../context/currentSemester";
 import { matchesCourseFilters } from "../lib/courseFilters";
 import '.././App.css';

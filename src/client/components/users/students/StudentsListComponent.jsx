@@ -1,10 +1,10 @@
-import UserNavigators from "./UsersNavigators";
+import UserNavigators from "../admin/UsersNavigators";
 import { useState, useEffect, useCallback, memo, useContext } from "react";
 import { useOutletContext } from "react-router-dom";
-import UsersDataTable from "@/components/UsersDataTable";
-import { exportToCSV } from "../services/exportCSV";
-import auth from "../authService";
-import { SemesterContext } from "../context/currentSemester";
+import UsersDataTable from "@/components/users/admin/UsersDataTable";
+import { exportToCSV } from "../../../services/exportCSV";
+import auth from "../../../authService";
+import { SemesterContext } from "../../../context/currentSemester";
 
 const StudentsListComponent = ({active = true, majors, userCourses, onExportReady}) => {
     const [students, setStudents] = useState([]);

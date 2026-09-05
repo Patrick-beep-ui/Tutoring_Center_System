@@ -1,5 +1,5 @@
 import { DataTable } from "@/components/shared/DataTable";
-import { studentColumns, tutorColumns } from "@/components/UsersTableColumns";
+import { studentColumns, tutorColumns } from "@/components/users/admin/UsersTableColumns";
 
 const columnsByUserType = {
   student: studentColumns,

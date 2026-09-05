@@ -1,9 +1,9 @@
 import React, { useState, useCallback, useRef  } from 'react';
 import Cropper from 'react-easy-crop';
 import { Button, Slider, Typography } from '@mui/material';
-import auth from '../authService';
-import '.././App.css';
-import texts from "../texts/tutorProfile.json";
+import auth from '../../../authService';
+import '../../../App.css';
+import texts from "../../../texts/tutorProfile.json";
 
 const Profile = ({ tutorId, onImageUpload, role }) => {
     const [imageSrc, setImageSrc] = useState(null);
