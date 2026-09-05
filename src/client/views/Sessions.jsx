@@ -1,7 +1,7 @@
 import { useState, useEffect, useContext } from "react";
 import { useParams } from "react-router-dom";
 import { Link, useOutletContext} from "react-router-dom";
-import SessionTable from "../components/SessionTable";
+import SessionTable from "../components/sessions/SessionTable";
 import Header from "../components/Header";
 import { useLayout } from "../context/Layout.jsx";
 import auth from "../authService.js";

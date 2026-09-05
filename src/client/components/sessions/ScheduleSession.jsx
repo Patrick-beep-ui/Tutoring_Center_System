@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useForm } from "react-hook-form"
 import { useOutletContext } from "react-router-dom";
 import { toast } from 'sonner';
-import auth from "../authService";
+import auth from "../../authService";
 
 const ScheduleSession = (props) => {
     const {register, handleSubmit, formState: { errors }, setValue } = useForm({model: "onChange"});

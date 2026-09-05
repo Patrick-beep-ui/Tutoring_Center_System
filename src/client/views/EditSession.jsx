@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate, useParams, useLocation, useOutletContext } from "react-router-dom";
 import Header from "../components/Header";
-import EditSessionForm from "../components/EditSessionForm";    
+import EditSessionForm from "../components/sessions/EditSessionForm";    
 import auth from "../authService";
 
 function EditSession() {

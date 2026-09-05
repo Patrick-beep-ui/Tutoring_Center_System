@@ -8,8 +8,8 @@ import 'reactjs-popup/dist/index.css';
 import ScheduleSession from './ScheduleSession';
 import { ics } from 'ics';
 import { createEvent } from 'ics';
-import auth from '../authService';
-import { SemesterContext } from '../context/currentSemester';
+import auth from '../../authService';
+import { SemesterContext } from '../../context/currentSemester';
 
 const localizer = momentLocalizer(moment);
 

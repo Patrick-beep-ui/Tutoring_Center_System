@@ -1,10 +1,10 @@
 import { FaClock, FaStar } from "react-icons/fa";// Import icons
 import {useState, useCallback} from "react";
 import { Link } from "react-router-dom";
-import ConfirmAlert from "./ui-snippets/ConfirmAlert";
-import LoadingSpinner from "./ui-snippets/LoadingSpinner";
+import ConfirmAlert from "../ui-snippets/ConfirmAlert";
+import LoadingSpinner from "../ui-snippets/LoadingSpinner";
 import { toast } from 'sonner';
-import api from "../axiosService";
+import api from "../../axiosService";
 import { useNavigate } from "react-router-dom";
 
 

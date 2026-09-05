@@ -1,9 +1,9 @@
 import { useForm } from "react-hook-form";
 import { toast } from 'sonner';
 import { useState, useCallback, useEffect } from "react";
-import LoadingSpinner from "./ui-snippets/LoadingSpinner";
-import ConfirmAlert from "./ui-snippets/ConfirmAlert";
-import auth from "../authService";
+import LoadingSpinner from "../ui-snippets/LoadingSpinner";
+import ConfirmAlert from "../ui-snippets/ConfirmAlert";
+import auth from "../../authService";
 
 const EditSessionForm = ({ session, session_id, tutor_id, navigate, source, userRole }) => {
     const { register, handleSubmit, formState: { errors }, watch } = useForm({ mode: "onChange" });

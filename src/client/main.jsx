@@ -43,7 +43,7 @@ import Signup from "./views/Signup";
 import Graph from "./components/Chart";
 import SideBar from "./components/Sidebar";
 import Header from "./components/Header";
-import MyCalendar from "./components/Calendar";
+import MyCalendar from "./components/sessions/Calendar";
 import Test from "./views/Test";
 import AdminHome from "./views-admin/AdminHome.jsx";
 
