@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import auth from '../authService';
+import auth from '../../authService';
 import { useNavigate } from 'react-router-dom';
 
 const FeedbackForm = ({sessionId, userId}) => {
