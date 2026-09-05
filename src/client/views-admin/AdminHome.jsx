@@ -2,9 +2,9 @@ import { useState, useEffect, useContext } from "react";
 import Header from "../components/Header";
 import "../App.css";
 
-import StatBox from "../components/StatBox.jsx";
-import ActivityCard from "../components/ActivityCard";
-import TopTutorsList from "../components/TopTutorsList.jsx";
+import StatBox from "../components/admin/activity/StatBox.jsx";
+import ActivityCard from "../components/admin/activity/ActivityCard";
+import TopTutorsList from "../components/admin/activity/TopTutorsList.jsx";
 import api from "../axiosService";
 import { alertCategoryLabel } from "../services/alertLabels";
 import { SemesterContext } from "../context/currentSemester";

@@ -1,5 +1,5 @@
 
-import "../App.css"
+import "../../../App.css"
 
 const ActivityCard = ({ time, title, description, tag }) => {
     return (
