@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import auth from "../authService";
+import auth from "../../authService";
 
 function CourseSelector({ majorId, register, errors, getValues, setValue }) {
   const [courses, setCourses] = useState([]);
