@@ -1,8 +1,8 @@
 import { useState, useCallback } from "react";
-import Header from "../components/Header";
+import Header from "../components/shared/Header";
 
 import "../App.css";
-import Mini_Nav from "../components/Mini_Nav.jsx";
+import Mini_Nav from "../components/admin/activity/Mini_Nav.jsx";
 import Activity_Alerts from "./Activity_Alerts.jsx";
 import Activity_Tutors from "./Activity_Tutors.jsx";
 import Activity_Sessions from "./Activity_Sessions.jsx";

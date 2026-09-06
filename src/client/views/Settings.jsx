@@ -1,4 +1,4 @@
-import Header from "../components/Header";
+import Header from "../components/shared/Header";
 import { useParams, useOutletContext } from "react-router-dom";
 import settingsText from "../texts/settings.json";
 import { memo, useState, useEffect, useCallback } from "react";

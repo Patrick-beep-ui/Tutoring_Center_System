@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form"
 import { Link, useNavigate, useParams, useLocation } from "react-router-dom";
 import { toast } from 'sonner';
-import Header from "../components/Header";
+import Header from "../components/shared/Header";
 import LoadingSpinner from "../components/ui-snippets/LoadingSpinner"; 
 import auth from "../authService";
 

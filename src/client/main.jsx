@@ -40,10 +40,10 @@ import TutorsReport from "./views-admin/ReportsView.jsx";
 import Login from "./views/Login";
 import Signup from "./views/Signup";
 
-import Graph from "./components/Chart";
-import SideBar from "./components/Sidebar";
-import Header from "./components/Header";
-import MyCalendar from "./components/Calendar";
+import Graph from "./components/admin/reports/widgets/Chart";
+import SideBar from "./components/shared/Sidebar";
+import Header from "./components/shared/Header";
+import MyCalendar from "./components/sessions/Calendar";
 import Test from "./views/Test";
 import AdminHome from "./views-admin/AdminHome.jsx";
 
@@ -55,13 +55,13 @@ import Activity_Alerts from "./views/Activity_Alerts.jsx";
 import Activity_Sessions from "./views/Activity_Sessions.jsx";
 
 //Contexts
-import Auth from "./components/Auth";
+import Auth from "./components/auth/Auth";
 import { LayoutProvider } from './context/Layout';
 import { SemesterProvider } from './context/currentSemester'; 
 
 //import App from "./App";
 
-import EmailForm from "./components/Email.jsx";
+import EmailForm from "./components/shared/Email.jsx";
 import Activity_Feedback from "./views/Activity_Feedback.jsx";
 
 // Server Responses
