@@ -2,7 +2,7 @@ import { useForm } from "react-hook-form";
 import { useNavigate, Link } from "react-router-dom";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
-import auth from "../authService";
+import auth from "../../authService";
 
 function AddSemester() {
     const { register, handleSubmit, formState: {errors}} = useForm({mode: "onChange"});

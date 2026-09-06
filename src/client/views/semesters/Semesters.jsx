@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
-import auth from "../authService";
+import auth from "../../authService";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
-import Header from "../components/shared/Header";
-import '../App.css';
+import Header from "../../components/shared/Header";
+import '../../App.css';
 
 const formatDate = (dateStr) => {
     if (!dateStr) return "—";
