@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useOutletContext } from "react-router-dom";
-import auth from "../authService";
+import auth from "../../authService";
 
-import Header from "../components/shared/Header";
-import TutorsListComponent from "../components/users/tutors/TutorsListComponent";
-import StudentsListComponent from "../components/users/students/StudentsListComponent";
-import UserTypeSelector from "../components/users/admin/UserTypeSelector";
-import { Button } from "../components/ui/button";
+import Header from "../../components/shared/Header";
+import TutorsListComponent from "../../components/users/tutors/TutorsListComponent";
+import StudentsListComponent from "../../components/users/students/StudentsListComponent";
+import UserTypeSelector from "../../components/users/admin/UserTypeSelector";
+import { Button } from "../../components/ui/button";
 
 function Users() { 
     const [majors, setMajors] = useState([]);

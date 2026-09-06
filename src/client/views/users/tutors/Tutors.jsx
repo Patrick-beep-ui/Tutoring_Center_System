@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
-import auth from "../authService";
+import auth from "../../../authService";
 import {v4 as uuid} from "uuid";
 import { Link } from "react-router-dom";
 import { Toaster, toast } from 'sonner';
-import Header from "../components/shared/Header";
+import Header from "../../../components/shared/Header";
 
 function Tutors() {
     const [tutors, setTutor] = useState([]);

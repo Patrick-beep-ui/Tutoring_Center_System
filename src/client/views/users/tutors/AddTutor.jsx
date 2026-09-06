@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useForm, useFieldArray  } from "react-hook-form"
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from 'sonner';
-import auth from "../authService";
+import auth from "../../../authService";
 
 function AddTutor() {
     const { register, handleSubmit, control, formState: { errors } } = useForm({ mode: "onChange" });

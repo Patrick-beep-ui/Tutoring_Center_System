@@ -13,12 +13,12 @@ import RequireRoleAndCheck from "./wrappers/RequireRoleAndCheck.jsx";
 //Views
 import MainDashboard from "./views/MainDashboard";
 import Home from "./views/home/Home";
-import Tutors from "./views/Tutors";
-import AddTutor from "./views/AddTutor";
+import Tutors from "./views/users/tutors/Tutors";
+import AddTutor from "./views/users/tutors/AddTutor";
 import ClassName from "./views/courses/Course";
 import CourseTutors from "./views/courses/CourseTutors";
 import AddClass from "./views/courses/AddClass";
-import TutorProfile from "./views/TutorProfile";
+import TutorProfile from "./views/users/tutors/TutorProfile";
 import Major from "./views/majors/Major";
 import AddMajor from "./views/majors/AddMajor";
 import Semesters from "./views/semesters/Semesters";
@@ -34,7 +34,7 @@ import Feedback from "./views/Feedback.jsx";
 import ThanksFeedback from "./views/ThanksFeedback.jsx";
 
 // Admin Views
-import Users from "./views-admin/User";
+import Users from "./views/users/User";
 import TutorsReport from "./views-admin/ReportsView.jsx";
 
 import Login from "./views/auth/Login";
