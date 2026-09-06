@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext } from "react";
-import Header from "../components/Header";
+import Header from "../components/shared/Header";
 import "../App.css";
 
 import StatBox from "../components/admin/activity/StatBox.jsx";

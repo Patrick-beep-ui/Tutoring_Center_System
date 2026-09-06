@@ -2,7 +2,7 @@
 
 // EmailForm.jsx Testing Component
 import { useState } from 'react';
-import auth from '../authService';
+import auth from '../../authService';
 
 const EmailForm = () => {
   const [to, setTo] = useState('');

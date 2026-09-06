@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, memo, useContext } from "react";
 import { useParams, useOutletContext } from "react-router-dom";
 import { Link } from "react-router-dom";
-import Header from "../components/Header";
+import Header from "../components/shared/Header";
 import Profile from "../components/users/tutors/Picture";
 import texts from "../texts/tutorProfile.json"
 import auth from "../authService";

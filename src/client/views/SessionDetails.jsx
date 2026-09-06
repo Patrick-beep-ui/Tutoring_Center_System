@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useParams, useOutletContext, Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import Header from "../components/Header";
+import Header from "../components/shared/Header";
 import Popup from "reactjs-popup";
 import "../App.css";
 import auth from "../authService";

@@ -1,9 +1,9 @@
 import React, { useState, useCallback, memo, useEffect } from 'react';
 import { Navbar, Nav } from 'react-bootstrap';
 import axios from "axios";
-import auth from '../authService';
+import auth from '../../authService';
 import { useNavigate, useLocation, Link } from "react-router-dom";
-import texts from "../texts/layout.json";
+import texts from "../../texts/layout.json";
 
 // ---------------------------------------------------------------------------
 // SideBar — role-filtered navigation rail (desktop) / drawer (mobile).

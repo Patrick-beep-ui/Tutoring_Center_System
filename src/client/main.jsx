@@ -41,8 +41,8 @@ import Login from "./views/Login";
 import Signup from "./views/Signup";
 
 import Graph from "./components/admin/reports/widgets/Chart";
-import SideBar from "./components/Sidebar";
-import Header from "./components/Header";
+import SideBar from "./components/shared/Sidebar";
+import Header from "./components/shared/Header";
 import MyCalendar from "./components/sessions/Calendar";
 import Test from "./views/Test";
 import AdminHome from "./views-admin/AdminHome.jsx";
@@ -61,7 +61,7 @@ import { SemesterProvider } from './context/currentSemester';
 
 //import App from "./App";
 
-import EmailForm from "./components/Email.jsx";
+import EmailForm from "./components/shared/Email.jsx";
 import Activity_Feedback from "./views/Activity_Feedback.jsx";
 
 // Server Responses

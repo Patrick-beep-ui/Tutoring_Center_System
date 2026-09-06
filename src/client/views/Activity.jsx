@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import Header from "../components/Header";
+import Header from "../components/shared/Header";
 
 import "../App.css";
 import Mini_Nav from "../components/admin/activity/Mini_Nav.jsx";

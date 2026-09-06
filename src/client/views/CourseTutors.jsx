@@ -1,7 +1,7 @@
 import { useParams, useLocation, Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import Header from "../components/Header";
+import Header from "../components/shared/Header";
 import TutorsListComponent from "../components/users/tutors/TutorsListComponent";
 import "../App.css";
 

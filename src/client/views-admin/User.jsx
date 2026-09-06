@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import auth from "../authService";
 
-import Header from "../components/Header";
+import Header from "../components/shared/Header";
 import TutorsListComponent from "../components/users/tutors/TutorsListComponent";
 import StudentsListComponent from "../components/users/students/StudentsListComponent";
 import UserTypeSelector from "../components/users/admin/UserTypeSelector";

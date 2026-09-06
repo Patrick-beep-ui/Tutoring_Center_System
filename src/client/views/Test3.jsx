@@ -1,4 +1,4 @@
-import EmailForm from "../components/Email";
+import EmailForm from "../components/shared/Email";
 
 const Test = () => {
     return(

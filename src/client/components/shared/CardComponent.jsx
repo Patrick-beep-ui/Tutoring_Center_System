@@ -1,5 +1,5 @@
 import React from 'react';
-import "../App.css"
+import "../../App.css"
 
 export const Card = ({ children, className }) => {
   return <div className={`card-component ${className}`}>{children}</div>;

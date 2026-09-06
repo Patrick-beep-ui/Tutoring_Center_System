@@ -1,5 +1,5 @@
 
-import "../App.css";
+import "../../../App.css";
 
 
 const AlertBox = ({ title, message, type, details }) => {

@@ -2,7 +2,7 @@ import { useState, useEffect, useContext, useCallback, useMemo } from "react";
 import { v4 as uuid } from "uuid";
 import { Link, useNavigate } from "react-router-dom";
 import { Toaster, toast } from 'sonner';
-import Header from "../components/Header";
+import Header from "../components/shared/Header";
 import "../App.css";
 import texts from "../texts/sessions.json";
 import { exportToCSV } from "../services/exportCSV";

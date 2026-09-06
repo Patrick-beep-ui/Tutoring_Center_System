@@ -1,7 +1,7 @@
 import React, { memo } from "react";
 import { Link, useOutletContext } from "react-router-dom";
 import SideBar from "./Sidebar";
-import texts from "../texts/layout.json";
+import texts from "../../texts/layout.json";
 
 const Header = () => {
     const { user } = useOutletContext();

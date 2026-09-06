@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import Header from "../components/Header";
+import Header from "../components/shared/Header";
 import Graph from "../components/admin/reports/widgets/Chart";
 import ReportCard from "../components/admin/reports/widgets/ReportCard";
 import PieChart from "../components/admin/reports/widgets/PieChart";
