@@ -3,7 +3,7 @@ import {
   PieChart, Pie, Cell,
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from "recharts";
-import auth from "../authService";
+import auth from "../../authService";
 
 const COLORS = ["#8884d8", "#82ca9d", "#ffc658"];
 

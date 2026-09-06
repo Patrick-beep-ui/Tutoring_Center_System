@@ -11,7 +11,7 @@ import CheckUser from "./wrappers/CheckUser.jsx";
 import RequireRoleAndCheck from "./wrappers/RequireRoleAndCheck.jsx";
 
 //Views
-import MainDashboard from "./views/MainDashboard";
+import MainDashboard from "./views/_legacy/MainDashboard";
 import Home from "./views/home/Home";
 import Tutors from "./views/users/tutors/Tutors";
 import AddTutor from "./views/users/tutors/AddTutor";
@@ -44,7 +44,7 @@ import Graph from "./components/admin/reports/widgets/Chart";
 import SideBar from "./components/shared/Sidebar";
 import Header from "./components/shared/Header";
 import MyCalendar from "./components/sessions/Calendar";
-import Test from "./views/Test";
+import Test from "./views/_legacy/Test";
 import AdminHome from "./views/home/AdminHome.jsx";
 
 
