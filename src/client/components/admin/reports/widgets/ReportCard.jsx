@@ -1,5 +1,5 @@
 import React from "react";
-import texts from "../texts/report.json";
+import texts from "../../../../texts/report.json";
 
 const ReportCard = ({ value, count }) => {
   const card = texts.cards[value] || texts.cards.default; // default is a fallback value

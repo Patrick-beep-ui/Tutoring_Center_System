@@ -40,7 +40,7 @@ import TutorsReport from "./views-admin/ReportsView.jsx";
 import Login from "./views/Login";
 import Signup from "./views/Signup";
 
-import Graph from "./components/Chart";
+import Graph from "./components/admin/reports/widgets/Chart";
 import SideBar from "./components/Sidebar";
 import Header from "./components/Header";
 import MyCalendar from "./components/sessions/Calendar";

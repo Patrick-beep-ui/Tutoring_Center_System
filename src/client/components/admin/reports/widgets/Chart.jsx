@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from 'react';
-import auth from '../authService';
-import { SemesterContext } from '../context/currentSemester';
+import auth from '../../../../authService';
+import { SemesterContext } from '../../../../context/currentSemester';
 import {
   Chart as ChartJS,
   CategoryScale,
