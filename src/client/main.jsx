@@ -11,58 +11,58 @@ import CheckUser from "./wrappers/CheckUser.jsx";
 import RequireRoleAndCheck from "./wrappers/RequireRoleAndCheck.jsx";
 
 //Views
-import MainDashboard from "./views/MainDashboard";
-import Home from "./views/Home";
-import Tutors from "./views/Tutors";
-import AddTutor from "./views/AddTutor";
-import ClassName from "./views/Course";
-import CourseTutors from "./views/CourseTutors";
-import AddClass from "./views/AddClass";
-import TutorProfile from "./views/TutorProfile";
-import Major from "./views/Major";
-import AddMajor from "./views/AddMajor";
-import Semesters from "./views/Semesters";
-import AddSemester from "./views/AddSemester";
-import Session from "./views/Sessions";
-import AddSession from "./views/AddSession";
-import Report from "./views/Report";
-import ScheduledSessions from "./views/ScheduledSessions";
-import EditSession from "./views/EditSession";
-import SessionDetails from "./views/SessionDetails";
-import Settings  from "./views/Settings";
-import Feedback from "./views/Feedback.jsx";
-import ThanksFeedback from "./views/ThanksFeedback.jsx";
+import MainDashboard from "./views/_legacy/MainDashboard";
+import Home from "./views/home/Home";
+import Tutors from "./views/users/tutors/Tutors";
+import AddTutor from "./views/users/tutors/AddTutor";
+import ClassName from "./views/courses/Course";
+import CourseTutors from "./views/courses/CourseTutors";
+import AddClass from "./views/courses/AddClass";
+import TutorProfile from "./views/users/tutors/TutorProfile";
+import Major from "./views/majors/Major";
+import AddMajor from "./views/majors/AddMajor";
+import Semesters from "./views/semesters/Semesters";
+import AddSemester from "./views/semesters/AddSemester";
+import Session from "./views/sessions/Sessions";
+import AddSession from "./views/sessions/AddSession";
+import Report from "./views/admin/reports/Report";
+import ScheduledSessions from "./views/sessions/ScheduledSessions";
+import EditSession from "./views/sessions/EditSession";
+import SessionDetails from "./views/sessions/SessionDetails";
+import Settings  from "./views/settings/Settings";
+import Feedback from "./views/feedback/Feedback.jsx";
+import ThanksFeedback from "./views/feedback/ThanksFeedback.jsx";
 
 // Admin Views
-import Users from "./views-admin/User";
-import TutorsReport from "./views-admin/ReportsView.jsx";
+import Users from "./views/users/User";
+import TutorsReport from "./views/admin/reports/ReportsView.jsx";
 
-import Login from "./views/Login";
-import Signup from "./views/Signup";
+import Login from "./views/auth/Login";
+import Signup from "./views/auth/Signup";
 
-import Graph from "./components/Chart";
-import SideBar from "./components/Sidebar";
-import Header from "./components/Header";
-import MyCalendar from "./components/Calendar";
-import Test from "./views/Test";
-import AdminHome from "./views-admin/AdminHome.jsx";
+import Graph from "./components/admin/reports/widgets/Chart";
+import SideBar from "./components/shared/Sidebar";
+import Header from "./components/shared/Header";
+import MyCalendar from "./components/sessions/Calendar";
+import Test from "./views/_legacy/Test";
+import AdminHome from "./views/home/AdminHome.jsx";
 
 
 //Implementation
-import Activity from "./views/Activity";
-import Activity_Tutors from "./views/Activity_Tutors.jsx";
-import Activity_Alerts from "./views/Activity_Alerts.jsx";
-import Activity_Sessions from "./views/Activity_Sessions.jsx";
+import Activity from "./views/admin/activity/Activity";
+import Activity_Tutors from "./views/admin/activity/Activity_Tutors.jsx";
+import Activity_Alerts from "./views/admin/activity/Activity_Alerts.jsx";
+import Activity_Sessions from "./views/admin/activity/Activity_Sessions.jsx";
 
 //Contexts
-import Auth from "./components/Auth";
+import Auth from "./components/auth/Auth";
 import { LayoutProvider } from './context/Layout';
 import { SemesterProvider } from './context/currentSemester'; 
 
 //import App from "./App";
 
-import EmailForm from "./components/Email.jsx";
-import Activity_Feedback from "./views/Activity_Feedback.jsx";
+import EmailForm from "./components/shared/Email.jsx";
+import Activity_Feedback from "./views/admin/activity/Activity_Feedback.jsx";
 
 // Server Responses
 import NotFound from "./views/server_responses/NotFound.jsx";
