@@ -29,7 +29,7 @@ import Report from "./views/admin/reports/Report";
 import ScheduledSessions from "./views/sessions/ScheduledSessions";
 import EditSession from "./views/sessions/EditSession";
 import SessionDetails from "./views/sessions/SessionDetails";
-import Settings  from "./views/Settings";
+import Settings  from "./views/settings/Settings";
 import Feedback from "./views/feedback/Feedback.jsx";
 import ThanksFeedback from "./views/feedback/ThanksFeedback.jsx";
 

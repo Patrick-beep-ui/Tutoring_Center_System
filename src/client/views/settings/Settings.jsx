@@ -1,8 +1,8 @@
-import Header from "../components/shared/Header";
+import Header from "../../components/shared/Header";
 import { useParams, useOutletContext } from "react-router-dom";
-import settingsText from "../texts/settings.json";
+import settingsText from "../../texts/settings.json";
 import { memo, useState, useEffect, useCallback } from "react";
-import api from "../axiosService";
+import api from "../../axiosService";
 
 function Settings() {
     const [userRes, setUserRes] = useState({});
