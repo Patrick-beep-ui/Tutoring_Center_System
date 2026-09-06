@@ -1,6 +1,6 @@
 import React, { useEffect, useState, memo } from "react";
 import { Outlet, useNavigate, useOutletContext } from "react-router-dom";
-import auth from "../authService";
+import auth from "../../authService";
 
 const Auth = () => {
     const [isLoading, setIsLoading] = useState(true);

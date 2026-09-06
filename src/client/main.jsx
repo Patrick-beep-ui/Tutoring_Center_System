@@ -55,7 +55,7 @@ import Activity_Alerts from "./views/Activity_Alerts.jsx";
 import Activity_Sessions from "./views/Activity_Sessions.jsx";
 
 //Contexts
-import Auth from "./components/Auth";
+import Auth from "./components/auth/Auth";
 import { LayoutProvider } from './context/Layout';
 import { SemesterProvider } from './context/currentSemester'; 
 
