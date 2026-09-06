@@ -1,6 +1,6 @@
 import { useState, useEffect, memo } from "react";
-import FeedbackCard from "../components/feedback/FeedbackCard.jsx";
-import api from "../axiosService";
+import FeedbackCard from "../../../components/feedback/FeedbackCard.jsx";
+import api from "../../../axiosService";
 
 const Activity_Feedback =() =>{
     const [feedbacks, setFeedbacks] = useState([]);

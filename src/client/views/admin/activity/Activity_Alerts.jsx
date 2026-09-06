@@ -1,10 +1,10 @@
 import { useState, useEffect, useContext } from "react";
-import AlertBox from "../components/shared/alerts/AlertBox.jsx";
-import Header from "../components/shared/Header.jsx";
-import api from "../axiosService";
-import { alertCategoryLabel } from "../services/alertLabels";
-import { SemesterContext } from "../context/currentSemester";
-import "../App.css";
+import AlertBox from "../../../components/shared/alerts/AlertBox.jsx";
+import Header from "../../../components/shared/Header.jsx";
+import api from "../../../axiosService";
+import { alertCategoryLabel } from "../../../services/alertLabels";
+import { SemesterContext } from "../../../context/currentSemester";
+import "../../../App.css";
 
 const severityToType = (severity) => {
     switch (severity) {

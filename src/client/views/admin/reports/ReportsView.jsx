@@ -1,12 +1,12 @@
 import { memo, useContext } from 'react';
 import { FaSearch, FaBell, FaDownload, FaCalendarAlt, FaSyncAlt } from 'react-icons/fa';
 import { Tab } from '@headlessui/react';
-import Header from '../components/shared/Header';
-import SessionsReport from "../components/admin/reports/SessionsReport";
-import TutorsReport from "../components/admin/reports/TutorsReport";
-import StudentsReport from "../components/admin/reports/StudentsReport";
-import DepartmentReport from "../components/admin/reports/DepartmentReports";
-import { SemesterContext } from '../context/currentSemester';
+import Header from '../../../components/shared/Header';
+import SessionsReport from "../../../components/admin/reports/SessionsReport";
+import TutorsReport from "../../../components/admin/reports/TutorsReport";
+import StudentsReport from "../../../components/admin/reports/StudentsReport";
+import DepartmentReport from "../../../components/admin/reports/DepartmentReports";
+import { SemesterContext } from '../../../context/currentSemester';
 
 function ReportsPage() {
   const { semesters, selectedSemesterId, setSelectedSemesterId } = useContext(SemesterContext);

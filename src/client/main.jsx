@@ -25,7 +25,7 @@ import Semesters from "./views/semesters/Semesters";
 import AddSemester from "./views/semesters/AddSemester";
 import Session from "./views/sessions/Sessions";
 import AddSession from "./views/sessions/AddSession";
-import Report from "./views/Report";
+import Report from "./views/admin/reports/Report";
 import ScheduledSessions from "./views/sessions/ScheduledSessions";
 import EditSession from "./views/sessions/EditSession";
 import SessionDetails from "./views/sessions/SessionDetails";
@@ -35,7 +35,7 @@ import ThanksFeedback from "./views/ThanksFeedback.jsx";
 
 // Admin Views
 import Users from "./views/users/User";
-import TutorsReport from "./views-admin/ReportsView.jsx";
+import TutorsReport from "./views/admin/reports/ReportsView.jsx";
 
 import Login from "./views/auth/Login";
 import Signup from "./views/auth/Signup";
@@ -45,14 +45,14 @@ import SideBar from "./components/shared/Sidebar";
 import Header from "./components/shared/Header";
 import MyCalendar from "./components/sessions/Calendar";
 import Test from "./views/Test";
-import AdminHome from "./views-admin/AdminHome.jsx";
+import AdminHome from "./views/home/AdminHome.jsx";
 
 
 //Implementation
-import Activity from "./views/Activity";
-import Activity_Tutors from "./views/Activity_Tutors.jsx";
-import Activity_Alerts from "./views/Activity_Alerts.jsx";
-import Activity_Sessions from "./views/Activity_Sessions.jsx";
+import Activity from "./views/admin/activity/Activity";
+import Activity_Tutors from "./views/admin/activity/Activity_Tutors.jsx";
+import Activity_Alerts from "./views/admin/activity/Activity_Alerts.jsx";
+import Activity_Sessions from "./views/admin/activity/Activity_Sessions.jsx";
 
 //Contexts
 import Auth from "./components/auth/Auth";
@@ -62,7 +62,7 @@ import { SemesterProvider } from './context/currentSemester';
 //import App from "./App";
 
 import EmailForm from "./components/shared/Email.jsx";
-import Activity_Feedback from "./views/Activity_Feedback.jsx";
+import Activity_Feedback from "./views/admin/activity/Activity_Feedback.jsx";
 
 // Server Responses
 import NotFound from "./views/server_responses/NotFound.jsx";

@@ -1,5 +1,5 @@
 
-import TutorBox from "../components/users/tutors/TutorBox.jsx";
+import TutorBox from "../../../components/users/tutors/TutorBox.jsx";
 
 
 const Activity_Tutors = () =>{

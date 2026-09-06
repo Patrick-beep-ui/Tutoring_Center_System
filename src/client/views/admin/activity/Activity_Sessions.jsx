@@ -1,10 +1,10 @@
 import { useState, useEffect, useMemo, memo, useCallback, useContext } from "react";
-import SessionCard from "../components/sessions/SessionCard.jsx";
-import SessionFilters from "../components/sessions/SessionFilters.jsx";
-import api from "../axiosService.js";
-import { SemesterContext } from "../context/currentSemester";
+import SessionCard from "../../../components/sessions/SessionCard.jsx";
+import SessionFilters from "../../../components/sessions/SessionFilters.jsx";
+import api from "../../../axiosService.js";
+import { SemesterContext } from "../../../context/currentSemester";
 
-import "../App.css";
+import "../../../App.css";
 
 const DEFAULT_FILTERS = {
     search: "",

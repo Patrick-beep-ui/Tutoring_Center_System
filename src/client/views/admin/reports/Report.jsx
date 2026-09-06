@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useContext } from "react";
-import Header from "../components/shared/Header";
-import Graph from "../components/admin/reports/widgets/Chart";
-import ReportCard from "../components/admin/reports/widgets/ReportCard";
-import PieChart from "../components/admin/reports/widgets/PieChart";
-import auth from "../authService";
-import { SemesterContext } from "../context/currentSemester";
+import Header from "../../../components/shared/Header";
+import Graph from "../../../components/admin/reports/widgets/Chart";
+import ReportCard from "../../../components/admin/reports/widgets/ReportCard";
+import PieChart from "../../../components/admin/reports/widgets/PieChart";
+import auth from "../../../authService";
+import { SemesterContext } from "../../../context/currentSemester";
 
 function Report() {
     const [report, setReport] = useState([
