@@ -1,10 +1,10 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import auth from "../authService";
-import CAE from "../assets/CAE.jpg";
-import texts from "../texts/login.json"
-import CourseSelector from "../components/courses/UserCoursesSelector";
+import auth from "../../authService";
+import CAE from "../../assets/CAE.jpg";
+import texts from "../../texts/login.json"
+import CourseSelector from "../../components/courses/UserCoursesSelector";
 
 function Signup() {
     const { register, handleSubmit, formState: { errors }, getValues, setValue } = useForm();

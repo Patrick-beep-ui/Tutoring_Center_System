@@ -37,8 +37,8 @@ import ThanksFeedback from "./views/ThanksFeedback.jsx";
 import Users from "./views-admin/User";
 import TutorsReport from "./views-admin/ReportsView.jsx";
 
-import Login from "./views/Login";
-import Signup from "./views/Signup";
+import Login from "./views/auth/Login";
+import Signup from "./views/auth/Signup";
 
 import Graph from "./components/admin/reports/widgets/Chart";
 import SideBar from "./components/shared/Sidebar";

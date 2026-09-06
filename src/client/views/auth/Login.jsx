@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import axios from "axios";
-import auth from "../authService";
-import CAE from "../assets/CAE.jpg";
-import texts from "../texts/login.json"
+import auth from "../../authService";
+import CAE from "../../assets/CAE.jpg";
+import texts from "../../texts/login.json"
 
 export default function Login() {
     const [isLoginForm, setIsLoginForm] = useState(true); // State to track whether login form is active
