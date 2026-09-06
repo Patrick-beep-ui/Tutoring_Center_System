@@ -12,12 +12,12 @@ import RequireRoleAndCheck from "./wrappers/RequireRoleAndCheck.jsx";
 
 //Views
 import MainDashboard from "./views/MainDashboard";
-import Home from "./views/Home";
+import Home from "./views/home/Home";
 import Tutors from "./views/Tutors";
 import AddTutor from "./views/AddTutor";
-import ClassName from "./views/Course";
-import CourseTutors from "./views/CourseTutors";
-import AddClass from "./views/AddClass";
+import ClassName from "./views/courses/Course";
+import CourseTutors from "./views/courses/CourseTutors";
+import AddClass from "./views/courses/AddClass";
 import TutorProfile from "./views/TutorProfile";
 import Major from "./views/Major";
 import AddMajor from "./views/AddMajor";

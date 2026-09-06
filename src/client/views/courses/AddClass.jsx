@@ -3,8 +3,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { toast } from 'sonner';
 import { useState, memo, useEffect } from "react";
-import LoadingSpinner from "../components/ui-snippets/LoadingSpinner";
-import auth from "../authService";
+import LoadingSpinner from "../../components/ui-snippets/LoadingSpinner";
+import auth from "../../authService";
 
 function AddClass() {
     const { register, handleSubmit, formState: {errors}} = useForm({mode: "onChange"});

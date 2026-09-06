@@ -5,15 +5,15 @@ import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import auth from "../authService";
-import CourseGrid from "../components/courses/CourseGrid";
-import { courseNavigationRef } from "../components/courses/courseNavigationRef";
-import UsersCourseAutocomplete from "../components/courses/UsersCourseAutocomplete";
-import Header from "../components/shared/Header";
-import UserNavigators from "../components/users/admin/UsersNavigators";
-import { SemesterContext } from "../context/currentSemester";
-import { matchesCourseFilters } from "../lib/courseFilters";
-import '.././App.css';
+import auth from "../../authService";
+import CourseGrid from "../../components/courses/CourseGrid";
+import { courseNavigationRef } from "../../components/courses/courseNavigationRef";
+import UsersCourseAutocomplete from "../../components/courses/UsersCourseAutocomplete";
+import Header from "../../components/shared/Header";
+import UserNavigators from "../../components/users/admin/UsersNavigators";
+import { SemesterContext } from "../../context/currentSemester";
+import { matchesCourseFilters } from "../../lib/courseFilters";
+import '../../App.css';
 
 function ClassName() {
     const { user: contextUser } = useOutletContext();
