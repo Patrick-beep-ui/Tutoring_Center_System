@@ -30,8 +30,8 @@ import ScheduledSessions from "./views/sessions/ScheduledSessions";
 import EditSession from "./views/sessions/EditSession";
 import SessionDetails from "./views/sessions/SessionDetails";
 import Settings  from "./views/Settings";
-import Feedback from "./views/Feedback.jsx";
-import ThanksFeedback from "./views/ThanksFeedback.jsx";
+import Feedback from "./views/feedback/Feedback.jsx";
+import ThanksFeedback from "./views/feedback/ThanksFeedback.jsx";
 
 // Admin Views
 import Users from "./views/users/User";

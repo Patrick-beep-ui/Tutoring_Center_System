@@ -1,6 +1,6 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
-import FeedbackForm from '../components/feedback/FeedbackComponent';
+import FeedbackForm from '../../components/feedback/FeedbackComponent';
 
 function Feedback() {
     const { sessionId, userId } = useParams(); 
