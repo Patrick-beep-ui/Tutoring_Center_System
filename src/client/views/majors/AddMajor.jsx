@@ -2,7 +2,7 @@ import { useForm } from "react-hook-form";
 import { useNavigate, Link } from "react-router-dom";
 import { useCallback } from "react";
 import { toast } from "sonner";
-import auth from "../authService";
+import auth from "../../authService";
 
 function AddMajor() {
     const { register, handleSubmit, formState: {errors}} = useForm({mode: "onChange"});

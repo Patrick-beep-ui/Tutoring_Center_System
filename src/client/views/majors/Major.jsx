@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import auth from "../authService";
+import auth from "../../authService";
 import { Link, useNavigate } from "react-router-dom";
 import {v4 as uuid} from "uuid";
 import { toast } from "sonner";
