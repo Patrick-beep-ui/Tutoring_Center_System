@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate, useParams, useLocation, useOutletContext } from "react-router-dom";
-import Header from "../components/shared/Header";
-import EditSessionForm from "../components/sessions/EditSessionForm";    
-import auth from "../authService";
+import Header from "../../components/shared/Header";
+import EditSessionForm from "../../components/sessions/EditSessionForm";    
+import auth from "../../authService";
 
 function EditSession() {
     const {session_id, tutor_id} = useParams();

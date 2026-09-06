@@ -1,10 +1,10 @@
 import { useState, useEffect, useContext } from "react";
 import { useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
-import SessionTable from "../components/sessions/SessionTable";
-import Header from "../components/shared/Header";
-import auth from "../authService";
-import { SemesterContext } from "../context/currentSemester";
+import SessionTable from "../../components/sessions/SessionTable";
+import Header from "../../components/shared/Header";
+import auth from "../../authService";
+import { SemesterContext } from "../../context/currentSemester";
 
 
 function ScheduledSessions() {
