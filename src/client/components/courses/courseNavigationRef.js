@@ -1,7 +1,7 @@
 export const courseNavigationRef = {
     current: {
         programFilter: "all",
-        courseFilter: "all",
+        selectedCourse: null,
         idFilter: "",
         currentPage: 0,
     },
