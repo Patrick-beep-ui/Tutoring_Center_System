@@ -13,7 +13,6 @@ import Header from "../../components/shared/Header";
 import UserNavigators from "../../components/users/admin/UsersNavigators";
 import { SemesterContext } from "../../context/currentSemester";
 import { matchesCourseFilters } from "../../lib/courseFilters";
-import '../../App.css';
 
 function ClassName() {
     const { user: contextUser } = useOutletContext();

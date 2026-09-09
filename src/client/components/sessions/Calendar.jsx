@@ -123,13 +123,19 @@ const MyCalendar = () => {
         closeOnDocumentClick
         className="custom-popup session-detail-popup"
     >
-            <div className="popup-calendar-msg">
+            <div className="p-1">
                 <strong>{event.title}</strong><br />
                 <p>{moment(event.start).format('h:mm a')} – {moment(event.end).format('h:mm a')}</p>
                 <em>Start: {event.start.toString()}</em><br />
                 <em>End: {event.end.toString()}</em>
                 {isTutor() || student ? (
-                    <button className="btn btn-primary" onClick={() => generateICSFile(event)}>Remind me</button>
+                    <button
+                        type="button"
+                        className="my-2.5 block rounded-md border border-[var(--blue)] bg-[var(--blue)] px-3 py-1.5 text-white transition-colors hover:border-[#252f6b] hover:bg-[#252f6b] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--blue)] focus-visible:ring-offset-2"
+                        onClick={() => generateICSFile(event)}
+                    >
+                        Remind me
+                    </button>
                 ) : (null)}
             </div>
         </Popup>
@@ -153,7 +159,7 @@ const MyCalendar = () => {
             {close => (
                 
                 eventsForDay.length > 0 ? (
-                    <div className="popup-cell-msg">
+                    <div className="flex max-h-[80vh] h-full w-full flex-col overflow-y-auto bg-transparent px-9 py-8 max-md:px-7 max-md:py-6 max-[580px]:px-6 max-[580px]:py-5 [&>strong]:mb-5 [&>strong]:block [&>strong]:shrink-0 [&>strong]:border-b-2 [&>strong]:border-[var(--yellow)] [&>strong]:pb-2.5 [&>strong]:text-center [&>strong]:text-2xl [&>strong]:font-semibold [&>strong]:text-[var(--blue)] [&>ul]:mb-6 [&>ul]:max-h-40 [&>ul]:shrink-0 [&>ul]:list-none [&>ul]:overflow-y-auto [&>ul]:p-0 [&>ul>li]:mb-2.5 [&>ul>li]:rounded-lg [&>ul>li]:border [&>ul>li]:border-[#e9ecef] [&>ul>li]:border-l-4 [&>ul>li]:border-l-[var(--blue)] [&>ul>li]:bg-[#f8f9fa] [&>ul>li]:px-[18px] [&>ul>li]:py-3.5 [&>ul>li]:text-sm [&>ul>li:hover]:bg-[#e9ecef] [&>ul>li>p]:mt-1 [&>ul>li>p]:text-sm [&>ul>li>p]:font-medium [&>ul>li>p]:text-[var(--dark-gray)]">
                         <strong>Sessions Scheduled Today: </strong><br />
                         <ul>
                             {eventsForDay.map(event => (
@@ -164,16 +170,16 @@ const MyCalendar = () => {
                             ))}
                         </ul>
 
-                        <div className="schedule-session-container">
+                        <div className="flex min-h-0 flex-1 flex-col border-t border-[#e9ecef] pt-5">
                             <ScheduleSession tutor_id={tutor_id} selectedDate={formattedDate} onSubmit={close} />
                         </div>
 
                     </div>
 
                 ) : (
-                    <div className="popup-cell-msg">
+                    <div className="flex max-h-[80vh] h-full w-full flex-col overflow-y-auto bg-transparent px-9 py-8 max-md:px-7 max-md:py-6 max-[580px]:px-6 max-[580px]:py-5 [&>strong]:mb-5 [&>strong]:block [&>strong]:shrink-0 [&>strong]:border-b-2 [&>strong]:border-[var(--yellow)] [&>strong]:pb-2.5 [&>strong]:text-center [&>strong]:text-2xl [&>strong]:font-semibold [&>strong]:text-[var(--blue)]">
                         <strong>No Session Scheduled for Today</strong><br />
-                        <div className="schedule-session-container">
+                        <div className="flex min-h-0 flex-1 flex-col border-t border-[#e9ecef] pt-5">
                             <ScheduleSession tutor_id={tutor_id} selectedDate={formattedDate} onSubmit={close} />
                         </div>
                     </div>
@@ -198,7 +204,12 @@ const MyCalendar = () => {
                 dateCellWrapper: props => <Cell {...props} sessions={sessions} />
             }}
         />
-        <Link to={`/profile/tutor/${tutor_id}`}><button className="btn btn-primary calendar-return-btn">Go Back</button></Link>
+        <Link
+            to={`/profile/tutor/${tutor_id}`}
+            className="mt-5 inline-flex items-center rounded-md border border-[var(--blue)] bg-[var(--blue)] px-3 py-1.5 text-white transition-colors hover:border-[#252f6b] hover:bg-[#252f6b] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--blue)] focus-visible:ring-offset-2"
+        >
+            Go Back
+        </Link>
         </>
     );
 }

@@ -16,32 +16,32 @@ const Box = ({ feedback }) => {
       }, [feedback.rating]);
 
     return (
-        <div className={`box_element feedback-box`} style={{ borderColor: '#459bf8' }}>
-            <div className="session-card-content" style={{ height: '180px' }}>
-                <div className="session-header">
-                    <h2 className="session-title">{`SID: ${feedback.session_id}`}</h2>
-                    <span className={`status-tag`} style={{ backgroundColor: color, fontSize: '12px' }}>
-                    {`${feedback.rating}`} <FaStar className="star-icon" />
+        <div className="h-auto min-h-[100px] w-[350px] max-w-full rounded-xl border-t-[5px] border-t-[#459bf8] bg-white p-[15px] shadow-[2px_4px_10px_rgba(0,0,0,0.1)] [&_strong]:text-[13px] [&_strong]:text-[#333]">
+            <div className="h-[180px]">
+                <div className="flex items-center justify-between">
+                    <h2 className="block max-w-full truncate whitespace-nowrap text-left text-[17px]">{`SID: ${feedback.session_id}`}</h2>
+                    <span className="rounded-xl px-2.5 py-[3px] text-xs text-white" style={{ backgroundColor: color }}>
+                    {`${feedback.rating}`} <FaStar className="text-yellow-400" />
                     </span>
                 </div>
 
-                <p className="session-time">
-                    <FaBook className="clock-icon" /> {feedback.course_name}
+                <p className="my-2.5 flex items-center gap-1 text-[13px] text-[#555]">
+                    <FaBook className="text-[#555]" /> {feedback.course_name}
                 </p>
-                <div className="feedback-text" style={{ backgroundColor: "#f5f5f5", padding: "10px", borderRadius: "5px", margin: "10px 0" }}>
-                    <p style={{marginBottom: '0px', fontSize: '12px'}}>
+                <div className="my-2.5 rounded-[5px] bg-[#f5f5f5] p-2.5">
+                    <p className="mb-0 text-xs">
                         {feedback.feedback_text && feedback.feedback_text.length > MAX_LENGTH
                         ? feedback.feedback_text.substring(0, MAX_LENGTH) + "..."
                         : feedback.feedback_text}
                     </p>
                 </div>
-                <div className="session-details">
-                    <div className="tutor">
+                <div className="my-[15px] flex items-center justify-between text-center">
+                    <div className="flex-1 text-[10px]">
                         <strong>{feedback.tutor_name}</strong>
                         <p>Tutor</p>
                     </div>
-                    <div className="divider"></div>
-                    <div className="student">
+                    <div className="h-[30px] w-px bg-[#ddd]"></div>
+                    <div className="flex-1 text-[10px]">
                         <strong>{feedback.student_name}</strong>
                         <p>Student</p>
                     </div>

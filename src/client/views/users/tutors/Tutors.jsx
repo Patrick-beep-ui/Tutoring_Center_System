@@ -27,10 +27,10 @@ function Tutors() {
     return(
         <>
         <Header/>
-        <section className="section tutors-container">
-            <div className="tutors-table-container">
-            <table className="table table-striped table align-middle mb-0">
-                <thead className="table-dark">
+        <section className="section">
+            <div className="mt-1 max-h-[700px] overflow-y-auto rounded-[10px] border border-[#ddd] shadow-[0_2px_5px_rgba(0,0,0,0.1)] [&::-webkit-scrollbar]:w-0">
+            <table className="w-full border-collapse border border-gray-300 align-middle [&_thead]:sticky [&_thead]:top-0 [&_th]:px-4 [&_th]:py-2 [&_th]:text-left [&_td]:px-4 [&_td]:py-2 [&_tr]:border-b [&_tr]:border-gray-200">
+                <thead className="bg-gray-900 text-white">
                     <tr>
                         <th scope="col">Name</th>
                         <th scope="col">ID</th>
@@ -41,26 +41,26 @@ function Tutors() {
                 <tbody>
 
                     {tutors.map(student =>
-                    <tr key={uuid()}> 
+                    <tr key={uuid()} className="even:bg-gray-100">
                         <td>
-                            <div className="d-flex align-items-center">
+                            <div className="flex items-center">
                             <Link to={`/profile/tutor/${student.id}`}>
                                 <img src={`/profile/tutor${student.id}.jpg`} alt={``} 
                                 style={{width: '45px', height: '45px'}}
-                                class="rounded-circle"/>
+                                className="rounded-full"/>
                             </Link>
-                                <div className="ms-3 tutor-name-cell">
-                                    <p className="fw-bold mb-1" id="tutor-name">{student.tutor_name}</p>
-                                    <p className="text-muted mb-0">{student.tutor_email}</p>
+                                <div className="ms-4 p-2.5">
+                                    <p className="font-bold mb-1" id="tutor-name">{student.tutor_name}</p>
+                                    <p className="text-muted-foreground mb-0">{student.tutor_email}</p>
                                 </div>
                             </div>
                         </td>
                         <td>{student.tutor_id}</td>
                         <td>
-                        <p className="fw-normal mb-1">{student.tutor_major}</p>
+                        <p className="font-normal mb-1">{student.tutor_major}</p>
                         </td>
                         <td>
-                            <div className="ms-3 tutor-schedule-cell">
+                            <div className="ms-4 tutor-schedule-cell">
                                 <p>None</p>
                             </div>
                         </td>
@@ -76,7 +76,7 @@ function Tutors() {
             */}
 
 
-    {<Link className="link add-tutors-link" to={'/tutors/add'}>Add Tutor</Link>}
+    {<Link className="mt-5 inline-block" to={'/tutors/add'}>Add Tutor</Link>}
     </section>
 
 

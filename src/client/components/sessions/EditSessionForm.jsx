@@ -91,7 +91,7 @@ const EditSessionForm = ({ session, session_id, tutor_id, navigate, source, user
 
     return (
         <>
-        <form onSubmit={handleSubmit(processData)} className="form-container edit-session-form">
+        <form onSubmit={handleSubmit(processData)} className="flex w-full max-w-[600px] flex-col gap-px px-5 pb-5 pt-[15px] text-left [&_section]:mb-[15px] [&_label]:cursor-default [&_label]:pl-0 [&_label]:font-medium [&_input]:w-full [&_input]:rounded-lg [&_input]:border [&_input]:border-[var(--gray)] [&_input]:bg-white [&_input]:p-2 [&_input]:text-[0.95rem] [&_input:focus]:border-[var(--blue)] [&_input:focus]:outline-none [&_select]:w-full [&_select]:rounded-lg [&_select]:border [&_select]:border-[var(--gray)] [&_select]:bg-white [&_select]:p-2 [&_select]:text-[0.95rem] [&_select:focus]:border-[var(--blue)] [&_select:focus]:outline-none [&_textarea]:rounded-lg [&_textarea]:border [&_textarea]:border-[var(--gray)] [&_textarea]:bg-white [&_textarea]:p-1.5 [&_textarea]:text-[0.95rem] [&_textarea:focus]:border-[var(--blue)] [&_textarea:focus]:outline-none">
             {isAdmin ? (
                 <>
                     <section>
@@ -121,7 +121,7 @@ const EditSessionForm = ({ session, session_id, tutor_id, navigate, source, user
                         <label>Course: </label>
                         <p>{session.course_name}</p>
                     </section>
-                    <section style={{display: 'flex', gap: '110px'}}>
+                    <section className="flex gap-[110px]">
                         <div>
                             <label>Scheduled By: </label>
                             <p>{session.scheduled_by}</p>
@@ -133,7 +133,7 @@ const EditSessionForm = ({ session, session_id, tutor_id, navigate, source, user
                     </section>
                 </>
             )}
-            <div className="datetime-data">
+            <div className="flex gap-5 max-md:flex-col max-md:gap-3 [&_section]:flex-1">
                 <section>
                     <label>Date: </label>
                     <input type="date" {...register("session_date")} defaultValue={session.session_date} />
@@ -147,22 +147,22 @@ const EditSessionForm = ({ session, session_id, tutor_id, navigate, source, user
                 <label>Duration: </label>
                 <input type="number" {...register("session_hours")} defaultValue={session.session_durarion} />
             </section>
-            <section className="session-topics-container">
+            <section>
                 <label>Topics: </label>
-                <textarea cols="30" rows="10" {...register("topics")} defaultValue={session.session_topics}></textarea>
+                <textarea className="h-[60px] w-full" cols="30" rows="10" {...register("topics")} defaultValue={session.session_topics}></textarea>
             </section>
-            <section className="session-feedback-container">
+            <section className="mb-1! w-full">
                 <label>Feedback: </label>
-                <textarea cols="30" rows="10" {...register("feedback")}>{session.session_feedback}</textarea>
+                <textarea className="h-[100px] w-full" cols="30" rows="10" {...register("feedback")}>{session.session_feedback}</textarea>
             </section>
-            <section className="edit-session-btn-container">
-                <button type="submit">
+            <section className="mb-0!">
+                <button type="submit" className="mt-5 self-start rounded-lg border-0 bg-[var(--blue)] px-[18px] py-2 text-sm font-semibold text-[var(--white)] transition-colors hover:bg-[var(--yellow)] hover:text-[var(--black)]">
                     {isloading ? <LoadingSpinner /> : 'Save'}
                 </button>
                 {source == 'scheduled' ? (
                     <button 
                     type="button"
-                    style={{marginLeft: '20px', backgroundColor: '#DC143C'}}
+                    className="ml-5 mt-5 self-start rounded-lg border-0 bg-[#DC143C] px-[18px] py-2 text-sm font-semibold text-white hover:bg-red-800"
                     onClick={handleCancelClick}
                     >Cancel Session</button>
                 ) : (null)}
@@ -179,7 +179,7 @@ const EditSessionForm = ({ session, session_id, tutor_id, navigate, source, user
                 cols="30" 
                 rows="5" 
                 placeholder="Message for the student (optional)"
-                style={{padding: '10px',}}
+                className="p-2.5"
                 value={cancelMessage}
                 onChange={(e) => setCancelMessage(e.target.value)}
                 ></textarea>}

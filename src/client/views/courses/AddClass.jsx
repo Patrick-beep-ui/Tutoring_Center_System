@@ -50,11 +50,11 @@ function AddClass() {
     }, []);
 
     return (
-  <div className="add-class-page">
-    <h1 className="bg-blue">Add Class</h1>
+  <div className="min-h-screen bg-[var(--blue)] p-8 font-poppins text-center">
+    <h1 className="mt-4 text-center text-3xl font-bold text-[var(--white)]">Add Class</h1>
 
-    <section className="mt-4 add">
-      <form onSubmit={handleSubmit(processData)} className="form-container">
+    <section className="mt-8 flex justify-center">
+      <form onSubmit={handleSubmit(processData)} className="w-full max-w-[380px] rounded-2xl bg-[var(--white)] p-8 text-left text-[var(--black)] shadow-[0_4px_20px_rgba(0,0,0,0.15)] [&_label]:mb-1.5 [&_label]:block [&_label]:font-medium [&_input]:mb-4 [&_input]:w-full [&_input]:rounded-lg [&_input]:border-0 [&_input]:bg-[#f0f0f0] [&_input]:p-[0.8rem] [&_input]:text-[0.95rem] [&_input]:text-[var(--black)] [&_input:focus]:outline-2 [&_input:focus]:outline-[var(--yellow)] [&_select]:mb-4 [&_select]:w-full [&_select]:rounded-lg [&_select]:border-0 [&_select]:bg-[#f0f0f0] [&_select]:p-[0.8rem] [&_select]:text-[0.95rem] [&_span]:mt-1.5 [&_span]:block [&_span]:text-sm [&_span]:text-red-500">
         <section>
           <label>Course Name</label>
           <input type="text" {...register("class_name", { required: true })} />
@@ -86,12 +86,12 @@ function AddClass() {
           {errors.major_id && <span>This field is required</span>}
         </section>
 
-        <button type="submit"> {isLoading ? <LoadingSpinner /> : 'Save Course'}</button>
+        <button type="submit" className="w-full cursor-pointer rounded-lg bg-[var(--yellow)] p-[0.9rem] font-semibold text-[var(--black)] transition duration-300 hover:-translate-y-0.5 hover:bg-[#d99a28]"> {isLoading ? <LoadingSpinner /> : 'Save Course'}</button>
       </form>
     </section>
 
     <div>
-      <Link to={"/classes"}>Go Back</Link>
+      <Link to={"/classes"} className="mt-4 inline-block rounded-lg border-2 border-[var(--yellow)] px-4 py-2.5 font-medium text-[var(--yellow)] no-underline transition duration-300 hover:bg-[var(--yellow)] hover:text-[var(--black)]">Go Back</Link>
     </div>
   </div>
 );

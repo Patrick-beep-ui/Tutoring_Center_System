@@ -88,11 +88,11 @@ function AddSemester() {
         }
     }, [navigate, sourceId, copyCourses, copyTutors, copyStudents, copySchedules]);
 
-    return(<div className="add-semester-page">
-        <h1>Add Semester</h1>
+    return(<div className="min-h-screen bg-[var(--blue)] p-8 font-poppins text-center">
+        <h1 className="mt-4 text-center text-3xl font-bold text-[var(--white)]">Add Semester</h1>
 
-        <section className="mt-4 add">
-        <form onSubmit={handleSubmit(processData)} className="form-container">
+        <section className="mt-8 flex justify-center">
+        <form onSubmit={handleSubmit(processData)} className="w-full max-w-[480px] rounded-2xl bg-[var(--white)] p-8 text-left text-[var(--black)] shadow-[0_4px_20px_rgba(0,0,0,0.15)] [&>section>label]:mb-1.5 [&>section>label]:block [&>section>label]:font-medium [&>section>input]:mb-4 [&>section>input]:w-full [&>section>input]:rounded-lg [&>section>input]:border-0 [&>section>input]:bg-[#f0f0f0] [&>section>input]:p-[0.8rem] [&>section>input]:text-[0.95rem] [&>section>input:focus]:outline-2 [&>section>input:focus]:outline-[var(--yellow)] [&>section>select]:mb-4 [&>section>select]:w-full [&>section>select]:rounded-lg [&>section>select]:border-0 [&>section>select]:bg-[#f0f0f0] [&>section>select]:p-[0.8rem] [&>section>select]:text-[0.95rem] [&>section>span]:mt-1.5 [&>section>span]:block [&>section>span]:text-sm [&>section>span]:text-red-500">
             <section>
                 <label>Term: </label>
                 <select {...register("semester_type", {required: true})}>
@@ -124,9 +124,9 @@ function AddSemester() {
             </section>
 
             {terms.length > 0 && (
-                <section className="border rounded p-3 mt-3 copy-roster-options">
-                    <label className="fw-bold">Copy rosters from:</label>
-                    <select value={sourceId} onChange={(e) => setSourceId(e.target.value)} className="form-select my-2">
+                <section className="mt-4 rounded-md border border-border p-4">
+                    <label className="font-bold">Copy rosters from:</label>
+                    <select value={sourceId} onChange={(e) => setSourceId(e.target.value)} className="my-2">
                         <option value="">Don't copy anything</option>
                         {terms.map(t => {
                             const rc = t.roster_counts || { courses: 0, tutors: 0, students: 0, schedules: 0 };
@@ -139,33 +139,34 @@ function AddSemester() {
                     </select>
 
                     {sourceId && (
-                        <div className="copy-option-list">
+                        <div className="mt-2.5 flex flex-col gap-1.5">
                             {[
                                 { id: "copyCourses", label: "Courses offered", state: copyCourses, set: setCopyCourses },
                                 { id: "copyTutors", label: "Tutor roster (with their course assignments)", state: copyTutors, set: setCopyTutors },
                                 { id: "copyStudents", label: "Student roster (with their course enrollments)", state: copyStudents, set: setCopyStudents },
                                 { id: "copySchedules", label: "Tutor schedules", state: copySchedules, set: setCopySchedules }
                             ].map(({ id, label, state, set }) => (
-                                <label className={`copy-option ${state ? 'is-included' : 'is-excluded'}`} key={id} htmlFor={id}>
+                                <label className={`mb-0 flex cursor-pointer items-center gap-2.5 rounded-md px-3 py-2 transition-[background-color,opacity] ${state ? 'bg-[rgba(25,45,100,0.06)]' : 'bg-transparent opacity-55'}`} key={id} htmlFor={id}>
                                     <input type="checkbox" id={id}
+                                        className="m-0 h-4 w-4 shrink-0 cursor-pointer p-0 accent-[var(--blue)]"
                                         checked={state} onChange={(e) => set(e.target.checked)} />
-                                    <span className="copy-option-text">{label}</span>
-                                    <span className="copy-state-badge">{state ? "Included" : "Excluded"}</span>
+                                    <span className={`min-w-0 flex-1 font-medium leading-[1.35] ${state ? '' : 'line-through'}`}>{label}</span>
+                                    <span className={`shrink-0 whitespace-nowrap rounded-full px-2.5 py-0.5 text-[0.72rem] font-bold uppercase tracking-[0.04em] ${state ? 'bg-[var(--blue)] text-[var(--white)]' : 'border border-[var(--gray)] bg-transparent text-[var(--dark-gray)]'}`}>{state ? "Included" : "Excluded"}</span>
                                 </label>
                             ))}
-                            <small className="text-muted">After copying you can clean up or re-assign courses from each tutor/student profile.</small>
+                            <small className="text-muted-foreground">After copying you can clean up or re-assign courses from each tutor/student profile.</small>
                         </div>
                     )}
                 </section>
             )}
 
-            <button type="submit" disabled={submitting}>{submitting ? "Saving..." : "Submit"}</button>
+            <button type="submit" className="w-full cursor-pointer rounded-lg bg-[var(--yellow)] p-[0.9rem] font-semibold text-[var(--black)] transition duration-300 hover:-translate-y-0.5 hover:bg-[#d99a28] disabled:cursor-not-allowed disabled:opacity-60" disabled={submitting}>{submitting ? "Saving..." : "Submit"}</button>
 
         </form>
         </section>
 
         <div>
-            <Link to={"/semesters"}>See Semesters</Link>
+            <Link to={"/semesters"} className="mt-4 inline-block rounded-lg border-2 border-[var(--yellow)] px-4 py-2.5 font-medium text-[var(--yellow)] no-underline transition duration-300 hover:bg-[var(--yellow)] hover:text-[var(--black)]">See Semesters</Link>
         </div>
         </div>
     )

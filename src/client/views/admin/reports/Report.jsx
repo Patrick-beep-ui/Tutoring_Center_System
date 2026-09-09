@@ -45,17 +45,17 @@ function Report() {
         <>
         <Header/>
 
-        <section className="report-container section">
-            <section className="counters">
+        <section className="section flex flex-col justify-around overflow-auto">
+            <section className="grid grid-cols-[repeat(auto-fit,minmax(230px,auto))] gap-8 pt-5">
                 {Object.entries(report).map(([key, value]) => (
             <ReportCard key={key} value={key} count={value} />
           ))}
             </section>
-            <section className="graphs">
-                <div className="sessions-graph">
+            <section className="grid w-full grid-cols-1 gap-2 md:grid-cols-2">
+                <div className="mt-3 w-[98%] rounded-[5px] border border-[var(--gray)] shadow-[0_2px_4px_rgba(0,0,0,0.1)]">
                     <Graph/>
                 </div>
-                <div className="sessions-graph pie-chart"> 
+                <div className="mt-3 w-[98%] rounded-[5px] border border-[var(--gray)] shadow-[0_2px_4px_rgba(0,0,0,0.1)] [&_canvas]:h-1/2! [&_canvas]:w-[500px]! [&_canvas]:p-5">
                     <PieChart data={sessions}/>
                 </div>
                 <div>
