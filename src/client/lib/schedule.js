@@ -125,12 +125,23 @@ export function popularBlocks(schedules, { limit = 5 } = {}) {
 }
 
 const PALETTE = [
-  "#2563eb", "#16a34a", "#dc2626", "#d97706", "#7c3aed",
-  "#0891b2", "#db2777", "#4d7c0f", "#9333ea", "#ea580c",
+  "#192d64", "#eeaf32", "#2f7a3d", "#1e6e7a", "#35719a",
+  "#4a4a9e", "#6b4bb0", "#a83e7e", "#96442e", "#5e5e5e",
 ];
 
 export function tutorColor(seed) {
   let h = 0;
   for (const ch of String(seed)) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
   return PALETTE[h % PALETTE.length];
+}
+
+const srgbToLinear = (c) => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4);
+
+export function tutorTextColor(seed) {
+  const hex = tutorColor(seed);
+  const [r, g, b] = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255);
+  const lum = 0.2126 * srgbToLinear(r) + 0.7152 * srgbToLinear(g) + 0.0722 * srgbToLinear(b);
+  const onWhite = 1.05 / (lum + 0.05);
+  const onDark = (lum + 0.05) / 0.05;
+  return onWhite >= onDark ? "#ffffff" : "#333333";
 }

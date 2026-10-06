@@ -1,6 +1,6 @@
 import { useMemo, memo } from "react";
 import { Link } from "react-router-dom";
-import { DAY_ORDER, formatTime12h, tutorColor } from "@/lib/schedule";
+import { DAY_ORDER, formatTime12h, tutorColor, tutorTextColor } from "@/lib/schedule";
 
 const TutorScheduleGrid = ({ schedules, timeRows }) => {
 
@@ -93,8 +93,8 @@ const TutorScheduleGrid = ({ schedules, timeRows }) => {
                                                         <Link
                                                             key={s.schedule_id ?? `${s.id}-${day}-${row.start}`}
                                                             to={`/profile/tutor/${s.id}`}
-                                                            className="flex items-center gap-1.5 rounded-[6px] border px-2 py-1 text-[12px] leading-tight text-white transition-opacity hover:opacity-85"
-                                                            style={{ backgroundColor: tutorColor(s.id) }}
+                                                            className="flex items-center gap-1.5 rounded-[6px] border px-2 py-1 text-[12px] leading-tight transition-opacity hover:opacity-85"
+                                                            style={{ backgroundColor: tutorColor(s.id), color: tutorTextColor(s.id) }}
                                                             title={tooltipOf(s)}
                                                         >
                                                             <i className="bx bx-time-five text-[12px]"></i>
