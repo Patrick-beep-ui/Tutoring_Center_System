@@ -119,8 +119,8 @@ function Tutors() {
             <Header />
             <section className="section">
                 <div className="mx-5 mb-4 flex flex-wrap items-center justify-between gap-3">
-                    <div>
-                        <h1 className="mb-0.5 text-[20px] font-bold text-[#222]">Tutor Schedules</h1>
+                    <div className="flex flex-col items-start">
+                        <h1 className="mb-1 text-[28px] font-bold text-[#222]">Tutor Schedules</h1>
                         <p className="m-0 text-[13px] text-[#666]">
                             Weekly availability overview{tutors.length > 0 ? ` · ${tutors.length} tutors in the tutor roster` : ""}
                         </p>
@@ -136,11 +136,13 @@ function Tutors() {
                     </div>
                 )}
 
+                { /*
                 <div className="mb-4 flex flex-wrap gap-3 px-5 max-md:px-2.5">
                     <StatChip icon="bx-group" label="Tutors with schedules" value={totalCount} />
                     <StatChip icon="bx-calendar-check" label="Currently matching" value={resultCount} />
                     <StatChip icon="bx-time" label="Weekly hours covered" value={totalWeeklyHours.toFixed(1)} />
                 </div>
+                */}
 
                 <TutorScheduleFilters
                     filters={filters}

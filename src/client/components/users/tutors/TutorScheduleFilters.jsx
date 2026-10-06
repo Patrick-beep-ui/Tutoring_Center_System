@@ -67,6 +67,16 @@ const TutorScheduleFilters = ({
                     />
                 </div>
 
+                <div className="mt-3 flex flex-col gap-1">
+                    <label className="text-[11px] font-semibold uppercase tracking-[0.5px] text-[#666]">Major</label>
+                    <select className={SELECT_CLS} value={filters.majors[0] || ""} onChange={(e) => onFilterChange({ ...filters, majors: e.target.value ? [e.target.value] : [] })}>
+                        <option value="">All Majors</option>
+                        {majors.map(({ major_name }) => (
+                            <option key={major_name} value={major_name}>{major_name}</option>
+                        ))}
+                    </select>
+                </div>
+
                 <div className="flex flex-col gap-1">
                     <label className="text-[11px] font-semibold uppercase tracking-[0.5px] text-[#666]">Course</label>
                     <select className={SELECT_CLS} value={filters.course} onChange={handleCourseChange}>
@@ -104,30 +114,10 @@ const TutorScheduleFilters = ({
                 )}
             </div>
 
-            <div className="mt-3 flex flex-wrap items-center gap-2">
-                <span className="text-[11px] font-semibold uppercase tracking-[0.5px] text-[#666]">Major:</span>
-                {majors.map(({ major_name }) => {
-                    const active = filters.majors.includes(major_name);
-                    return (
-                        <button
-                            key={major_name}
-                            type="button"
-                            className={`cursor-pointer rounded-[20px] border-2 px-3.5 py-1.5 text-xs font-semibold transition-all ${
-                                active
-                                    ? "border-[#0a84ff] bg-[#0a84ff] text-white"
-                                    : "border-[#ddd] bg-white text-[#555] hover:bg-[#f0f0f0]"
-                            }`}
-                            onClick={() => toggleMajor(major_name)}
-                        >
-                            {major_name}
-                        </button>
-                    );
-                })}
-            </div>
-
-            <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
-                <div className="flex flex-wrap gap-2">
+            <div className="mt-5 flex flex-col gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                     <span className="text-[11px] font-semibold uppercase tracking-[0.5px] text-[#666]">Popular blocks:</span>
+                    <br/>
                     {popularBlocks.map((b) => (
                         <button
                             key={`${b.value_start}-${b.value_end}`}
@@ -144,7 +134,7 @@ const TutorScheduleFilters = ({
                     ))}
                 </div>
 
-                <span className="whitespace-nowrap text-[13px] text-[#888]">
+                <span className="text-[13px] text-[#888] mt-3">
                     Showing {resultCount} of {totalCount} tutors with schedules
                 </span>
             </div>
