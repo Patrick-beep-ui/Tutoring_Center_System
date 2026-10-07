@@ -4,10 +4,10 @@ import exportToExcel from "../../../services/exportChart";
 import { exportChartAsImage } from "../../../services/exportChartAsImage";
 
 const tabClass = ({ selected }) => [
-  "-mb-px rounded-t-md border px-4 py-2 text-sm font-medium transition-colors",
+  "-mb-px cursor-pointer rounded-t-md border px-4 py-2 text-sm font-medium transition-colors",
   "focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
   selected
-    ? "border-border border-b-card bg-card text-foreground"
+    ? "border-border border-b-card bg-card text-foreground hover:bg-muted"
     : "border-transparent text-muted-foreground hover:border-border hover:bg-muted hover:text-foreground",
 ].join(" ");
 
@@ -30,17 +30,17 @@ export const ReportSummaryCard = memo(({ title, value, change, period = "from la
 ));
 
 const ExportButtons = memo(({ data, refEl, filename, chartType }) => (
-  <div className="flex flex-wrap items-center gap-4 px-4 pb-4 pt-1">
+  <div className="flex flex-wrap items-center justify-center gap-4 px-4 pb-4 pt-1">
     <button
       type="button"
-      className="inline-flex min-h-9 items-center justify-center rounded-md border border-primary bg-transparent px-3 py-1.5 text-sm font-medium text-primary transition-colors hover:bg-primary hover:text-primary-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+      className="inline-flex min-h-9 cursor-pointer items-center justify-center rounded-md border border-primary bg-transparent px-3 py-1.5 text-sm font-medium text-primary transition-colors hover:bg-primary hover:text-primary-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
       onClick={() => exportToExcel(data, filename, chartType)}
     >
       Export Data
     </button>
     <button
       type="button"
-      className="inline-flex min-h-9 items-center justify-center rounded-md border border-primary bg-transparent px-3 py-1.5 text-sm font-medium text-primary transition-colors hover:bg-primary hover:text-primary-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+      className="inline-flex min-h-9 cursor-pointer items-center justify-center rounded-md border border-primary bg-transparent px-3 py-1.5 text-sm font-medium text-primary transition-colors hover:bg-primary hover:text-primary-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
       onClick={() => exportChartAsImage(refEl.current, "png", filename)}
     >
       Export Chart as Image
@@ -65,8 +65,10 @@ export function ReportTabs({ tabs, chartType, onTabChange }) {
             className="rounded-md border border-border bg-card text-left text-card-foreground shadow-sm focus:outline-none"
           >
             <div ref={tab.refEl} className="min-w-0 p-4">
-              <h3 className="mb-2 text-xl font-medium">{tab.title}</h3>
-              <p className="mb-2 text-sm text-muted-foreground">{tab.description}</p>
+              <div className="text-center">
+                <h3 className="mb-2 text-xl font-medium">{tab.title}</h3>
+                <p className="mb-2 text-sm text-muted-foreground">{tab.description}</p>
+              </div>
               {tab.chart}
             </div>
             <ExportButtons

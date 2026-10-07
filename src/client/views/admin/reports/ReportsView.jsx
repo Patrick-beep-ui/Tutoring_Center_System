@@ -24,7 +24,7 @@ function ReportsPage() {
                   <h2 className="text-xl font-medium">Analytics Dashboard</h2>
                   <div className="flex flex-wrap items-center gap-2">
                     <select
-                      className="h-9 w-auto rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                      className="h-9 w-auto cursor-pointer rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors enabled:hover:border-ring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
                       aria-label="Select semester"
                       value={selectedSemesterId ?? ""}
                       onChange={(e) => setSelectedSemesterId(Number(e.target.value))}
@@ -36,15 +36,15 @@ function ReportsPage() {
                         </option>
                       ))}
                     </select>
-                    <button type="button" className="inline-flex h-9 items-center gap-2 rounded-md border border-border bg-transparent px-3 text-sm font-medium text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                    <button type="button" className="inline-flex h-9 cursor-pointer items-center gap-2 rounded-md border border-border bg-transparent px-3 text-sm font-medium text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
                       <FaCalendarAlt className="text-lg" />
                       Date Range
                     </button>
-                    <button type="button" className="inline-flex h-9 items-center gap-2 rounded-md border border-border bg-transparent px-3 text-sm font-medium text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                    <button type="button" className="inline-flex h-9 cursor-pointer items-center gap-2 rounded-md border border-border bg-transparent px-3 text-sm font-medium text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
                       <FaDownload className="text-lg" />
                       Export
                     </button>
-                    <button type="button" className="inline-flex h-9 items-center gap-2 rounded-md border border-border bg-transparent px-3 text-sm font-medium text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                    <button type="button" className="inline-flex h-9 cursor-pointer items-center gap-2 rounded-md border border-border bg-transparent px-3 text-sm font-medium text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
                       <FaSyncAlt className="text-lg" />
                       Refresh
                     </button>
@@ -59,9 +59,9 @@ function ReportsPage() {
                   <Tab
                       key={tab}
                       className={({ selected }) =>
-                        `rounded-md border px-4 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring
+                        `cursor-pointer rounded-md border px-4 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring
                         ${selected 
-                          ? "border-border bg-card text-foreground shadow-sm"
+                          ? "border-border bg-card text-foreground shadow-sm hover:bg-muted"
                           : "border-transparent text-muted-foreground hover:bg-card/70 hover:text-foreground"}`
                       }
                     >

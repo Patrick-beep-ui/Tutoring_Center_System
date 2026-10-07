@@ -455,23 +455,25 @@ function TutorProfile() {
                         )}
                     </div>
 
-                    {courses.map(c =>
-                    <div key={c.course_id}>
+                    <div className="grid w-full grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-5 p-2.5">
+                        {courses.map(c =>
+                        <div key={c.course_id} className="min-w-0">
 
-                        <Link className="no-underline" to={`/sessions/${role}/${tutor_id}/${c.course_id}`}>
-                            <div className="m-2.5 max-w-[250px] flex-[1_1_250px] cursor-pointer rounded-lg border border-[#ddd] bg-white p-2.5 hover:shadow-[0_4px_8px_rgba(0,0,0,0.1)]" id={c.course_id}>
-                                <div className="mb-1.5">
-                                    <h3 className="mb-1 text-[1.1em] text-[var(--blue)]">{c.course_name}</h3>
-                                    <p className="m-0 text-[0.9em]">{c.course_code}</p>
+                            <Link className="block h-full no-underline" to={`/sessions/${role}/${tutor_id}/${c.course_id}`}>
+                                <div className="h-full w-full cursor-pointer rounded-lg border border-[#ddd] bg-white p-2.5 hover:shadow-[0_4px_8px_rgba(0,0,0,0.1)]" id={c.course_id}>
+                                    <div className="mb-1.5">
+                                        <h3 className="mb-1 text-[1.1em] text-[var(--blue)]">{c.course_name}</h3>
+                                        <p className="m-0 text-[0.9em]">{c.course_code}</p>
+                                    </div>
+                                    <div>
+                                        <p className="m-0 text-xl">{c.completed_sessions ?? c.qtyOfSessions ?? 0}</p>
+                                        <p className="m-0 text-[0.9em] font-normal">{texts.tutorCourses.sessionsLabel}</p>
+                                    </div>
                                 </div>
-                                <div>
-                                    <p className="m-0 text-xl">{c.completed_sessions || c.qtyOfSessions}</p>
-                                    <p className="m-0 text-[0.9em] font-normal">{texts.tutorCourses.sessionsLabel}</p>
-                                </div>
-                            </div>
-                        </Link>
+                            </Link>
+                        </div>
+                        )}
                     </div>
-                    )}
                 </section>
             </section>
         </>

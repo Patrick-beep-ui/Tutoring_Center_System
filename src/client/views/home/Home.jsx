@@ -2,7 +2,6 @@
 // Additionally, it is stored like this in case we decide to have multiple home pages in the future, such as a student home page and a tutor home page.
 
 import { useState, useEffect, useContext, useCallback, useMemo } from "react";
-import { v4 as uuid } from "uuid";
 import { Link, useNavigate } from "react-router-dom";
 import { Toaster, toast } from 'sonner';
 import Header from "../../components/shared/Header";
@@ -77,9 +76,9 @@ function Home() {
             <Header />
             <section className="section [&>h1]:font-medium">
                 <div>
-                    <button onClick={goToPreviousWeek} disabled={currentWeek === 1} className="mx-2.5 bg-[var(--blue)] p-1.5 text-white disabled:bg-[var(--gray)]" >&#9665;</button>
+                    <button type="button" aria-label="Previous week" onClick={goToPreviousWeek} disabled={currentWeek === 1} className="mx-2.5 cursor-pointer border-0 bg-[var(--blue)] p-1.5 text-white transition-colors enabled:hover:bg-[#3153a4] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--blue)] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:bg-[var(--gray)]" >&#9665;</button>
                     <span>Week {currentWeek}</span>
-                    <button onClick={goToNextWeek} disabled={currentWeek === 17} className="mx-2.5 bg-[var(--blue)] p-1.5 text-white disabled:bg-[var(--gray)]" >&#9655;</button>
+                    <button type="button" aria-label="Next week" onClick={goToNextWeek} disabled={currentWeek === 17} className="mx-2.5 cursor-pointer border-0 bg-[var(--blue)] p-1.5 text-white transition-colors enabled:hover:bg-[#3153a4] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--blue)] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:bg-[var(--gray)]" >&#9655;</button>
                 </div>
 
                 <div className="mt-2.5 max-h-[730px] overflow-y-auto rounded-[10px] border border-[#ddd] shadow-[0_2px_5px_rgba(0,0,0,0.1)] [&::-webkit-scrollbar]:w-0">
@@ -93,8 +92,24 @@ function Home() {
                             </tr>
                         </thead>
                         <tbody>
-                            {filteredSessions.map(s => (
-                                <tr key={uuid()} className="cursor-pointer [&:last-child_td]:border-b-0" onClick={() => redirect(s.session_id)} id={s.session_id}>
+                            {filteredSessions.length === 0 ? (
+                                <tr>
+                                    <td colSpan="4" className="p-6 text-center text-[#777676]">No sessions scheduled for this week.</td>
+                                </tr>
+                            ) : filteredSessions.map(s => (
+                                <tr
+                                    key={s.session_id}
+                                    className="cursor-pointer transition-colors hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--blue)] [&:last-child_td]:border-b-0"
+                                    onClick={() => redirect(s.session_id)}
+                                    onKeyDown={(event) => {
+                                        if (event.target === event.currentTarget && (event.key === "Enter" || event.key === " ")) {
+                                            event.preventDefault();
+                                            redirect(s.session_id);
+                                        }
+                                    }}
+                                    tabIndex={0}
+                                    id={s.session_id}
+                                >
                                     <td className="border-b border-[#ddd] p-2.5 font-medium text-[#777676]"><Link to={`/profile/tutor/${s.tutor_id}`} onClick={handleLinkClick}>{s.tutor_name}</Link></td>
                                     <td className="border-b border-[#ddd] p-2.5 font-medium text-[#777676]">{s.student_name}</td>
                                     <td className="border-b border-[#ddd] p-2.5 font-medium text-[#777676]">{s.course_name}</td>
