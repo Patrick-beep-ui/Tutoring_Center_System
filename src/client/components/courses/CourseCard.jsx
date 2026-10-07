@@ -65,8 +65,8 @@ function CourseCard({ course, isAdmin, offered, onToggleRoster }) {
                         variant="ghost"
                         className={
                             offered
-                                ? "h-6 rounded-full border border-destructive/15 bg-destructive/5 px-2.5 text-[10px] font-medium text-destructive shadow-none hover:border-destructive/25 hover:bg-destructive/10 hover:text-destructive"
-                                : "h-6 rounded-full border border-success/15 bg-success/5 px-2.5 text-[10px] font-medium text-success shadow-none hover:border-success/25 hover:bg-success/10 hover:text-success"
+                                ? "h-6 cursor-pointer rounded-full border border-destructive/15 bg-destructive/5 px-2.5 text-[10px] font-medium text-destructive shadow-none hover:border-destructive/25 hover:bg-destructive/10 hover:text-destructive"
+                                : "h-6 cursor-pointer rounded-full border border-success/15 bg-success/5 px-2.5 text-[10px] font-medium text-success shadow-none hover:border-success/25 hover:bg-success/10 hover:text-success"
                         }
                         onClick={() => onToggleRoster(course)}
                     >

@@ -196,15 +196,15 @@ function SessionDetails() {
               const formattedTime = `${hours % 12 || 12}:${minutes.toString().padStart(2, '0')}${hours >= 12 ? 'pm' : 'am'}`;
 
               return (
-                <div className="h-fit w-[450px] rounded-[17px_17px_27px_27px] border border-gray-200 bg-white shadow-[0_187px_75px_rgba(0,0,0,0.01),0_105px_63px_rgba(0,0,0,0.05),0_47px_47px_rgba(0,0,0,0.09),0_12px_26px_rgba(0,0,0,0.1)]" key={c.comment_id}>
+                <div className="h-fit w-full max-w-[450px] rounded-[17px_17px_27px_27px] border border-gray-200 bg-white shadow-[0_187px_75px_rgba(0,0,0,0.01),0_105px_63px_rgba(0,0,0,0.05),0_47px_47px_rgba(0,0,0,0.09),0_12px_26px_rgba(0,0,0,0.1)]" key={c.comment_id}>
                   <span className="relative flex h-[50px] w-full items-center border-b border-[#f1f1f1] pl-5 text-[13px] font-bold text-[#47484b] after:absolute after:bottom-[-1px] after:h-px after:w-[8ch] after:bg-[#47484b] after:content-['']">Comments</span>
                   <div className="grid grid-cols-[35px_1fr] gap-5 p-5">
                     <div className="m-0 grid h-fit w-[35px] grid-cols-[auto] rounded-[5px] bg-[#f1f1f1] [&_hr]:m-auto [&_hr]:h-px [&_hr]:w-4/5 [&_hr]:border-0 [&_hr]:bg-[#dfe1e6]">
-                      <button type="button" className="relative flex h-[35px] w-[35px] items-center justify-center rounded-[5px] border-0 bg-[#d43737] text-[var(--white)] outline-none transition-colors hover:bg-[#f5356e]" onClick={() => {
+                      <button type="button" aria-label="Delete comment" className="relative flex h-[35px] w-[35px] cursor-pointer items-center justify-center rounded-[5px] border-0 bg-[#d43737] text-[var(--white)] transition-colors hover:bg-[#f5356e] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--blue)] focus-visible:ring-offset-2" onClick={() => {
                         setIsRemoveOpen(true)
                         setCommentToRemove(c.comment_id)
                       }}>
-                      <i className='bx bx-trash'></i>
+                      <i className='bx bx-trash' aria-hidden="true"></i>
                       </button>
                       <hr />
                     </div>
@@ -231,18 +231,22 @@ function SessionDetails() {
             })}
           </div>
 
-          <button type="button" className="mt-10 rounded-md border border-[var(--blue)] bg-[var(--blue)] px-3 py-1.5 text-white transition-colors hover:bg-[#252f6b]" onClick={addComment}>Add Comment</button>
+          <button type="button" className="mt-10 cursor-pointer rounded-md border border-[var(--blue)] bg-[var(--blue)] px-3 py-1.5 text-white transition-colors hover:border-[#3153a4] hover:bg-[#3153a4] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--blue)] focus-visible:ring-offset-2" onClick={addComment}>Add Comment</button>
 
-          <Popup open={isOpen} onClose={() => setIsOpen(false)} className="custom-popup add-comment-popup">
+          <Popup open={isOpen} onClose={() => setIsOpen(false)} className="custom-popup add-comment-popup" contentStyle={{ width: "min(90vw, 36rem)", maxWidth: "36rem", padding: 0 }}>
             <div className="flex max-h-[80vh] h-full w-full flex-col overflow-y-auto bg-transparent px-9 py-8 max-md:px-7 max-md:py-6 max-[580px]:px-6 max-[580px]:py-5">
               <strong className="mb-5 block shrink-0 border-b-2 border-[var(--yellow)] pb-2.5 text-center text-2xl font-semibold text-[var(--blue)]">Add Comment</strong>
               <form onSubmit={handleSubmit(processData)} className="flex flex-col gap-4">
               <input type="hidden" {...register("user_id")} value={user.user_id} />
                 <section className="flex flex-col gap-1">
-                  <textarea cols="30" rows="10" className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-[var(--blue)] focus:outline-none focus:ring-2 focus:ring-blue-100" {...register("content", { required: true })}></textarea>
-                  {errors.content && <span className="text-sm text-red-600">This field is required</span>}
+                  <label htmlFor="comment-content" className="text-sm font-medium text-gray-700">Comment</label>
+                  <textarea id="comment-content" cols="30" rows="10" aria-invalid={Boolean(errors.content)} aria-describedby={errors.content ? "comment-content-error" : undefined} className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-[var(--blue)] focus:outline-none focus:ring-2 focus:ring-blue-100" {...register("content", { required: true })}></textarea>
+                  {errors.content && <span id="comment-content-error" className="text-sm text-red-600">This field is required</span>}
                 </section>
-                <button type="submit" className="rounded-md border border-[var(--blue)] bg-[var(--blue)] px-3 py-1.5 text-white hover:bg-[#252f6b]">Submit</button>
+                <div className="flex flex-wrap justify-end gap-3">
+                  <button type="button" className="cursor-pointer rounded-md border border-gray-300 bg-gray-100 px-3 py-1.5 text-gray-700 transition-colors hover:bg-gray-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--blue)] focus-visible:ring-offset-2" onClick={() => setIsOpen(false)}>Cancel</button>
+                  <button type="submit" className="cursor-pointer rounded-md border border-[var(--blue)] bg-[var(--blue)] px-3 py-1.5 text-white transition-colors hover:border-[#3153a4] hover:bg-[#3153a4] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--blue)] focus-visible:ring-offset-2">Submit</button>
+                </div>
               </form>
             </div>
           </Popup>
@@ -252,10 +256,10 @@ function SessionDetails() {
               <strong className="block text-xl font-semibold text-[var(--blue)]">Confirm Delete</strong>
               <p className="my-4 text-base text-gray-700">Are you sure you want to delete this comment?</p>
               <div className="flex justify-center gap-3">
-                <button className="rounded-md bg-red-600 px-3 py-1.5 text-white hover:bg-red-700" onClick={removeComment}>
+                <button type="button" className="cursor-pointer rounded-md bg-red-600 px-3 py-1.5 text-white transition-colors hover:bg-red-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--blue)] focus-visible:ring-offset-2" onClick={removeComment}>
                   Delete
                 </button>
-                <button className="rounded-md border border-gray-300 bg-gray-100 px-3 py-1.5 text-gray-700 hover:bg-gray-200" onClick={() => setIsRemoveOpen(false)}>
+                <button type="button" className="cursor-pointer rounded-md border border-gray-300 bg-gray-100 px-3 py-1.5 text-gray-700 transition-colors hover:bg-gray-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--blue)] focus-visible:ring-offset-2" onClick={() => setIsRemoveOpen(false)}>
                   Cancel
                 </button>
               </div>

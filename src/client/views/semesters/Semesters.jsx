@@ -62,10 +62,10 @@ function Semesters() {
                     <div className="mx-auto max-w-7xl px-4">
                         <div className="mb-4 rounded-lg border border-gray-200 bg-white shadow-sm">
                             <div className="border-b border-gray-200 px-4 py-3">
-                                <div className="flex items-center justify-between">
+                                <div className="flex flex-wrap items-center justify-between gap-3">
                                     <h2 className="m-0 text-lg font-medium">Semesters</h2>
-                                    <Link to="/terms/add" className="inline-flex items-center gap-2 rounded border border-[var(--blue)] px-2.5 py-1 text-sm text-[var(--blue)] hover:bg-[var(--blue)] hover:text-white">
-                                        <i className='bx bx-calendar-plus'></i>
+                                    <Link to="/terms/add" className="inline-flex cursor-pointer items-center gap-2 rounded border border-[var(--blue)] px-2.5 py-1 text-sm text-[var(--blue)] transition-colors hover:bg-[var(--blue)] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--blue)] focus-visible:ring-offset-2">
+                                        <i className='bx bx-calendar-plus' aria-hidden="true"></i>
                                         Add Semester
                                     </Link>
                                 </div>
@@ -76,7 +76,7 @@ function Semesters() {
                                     <p className="m-0 text-muted-foreground">No semesters yet. Click "Add Semester" to create the first one.</p>
                                 ) : (
                                     <div className="overflow-x-auto">
-                                        <table className="m-0 w-full [&_th]:px-4 [&_th]:py-2 [&_th]:text-left [&_td]:px-4 [&_td]:py-2 [&_td]:align-middle [&_tr]:border-b [&_tr]:border-gray-200 [&_tr:hover]:bg-gray-50">
+                                        <table className="m-0 w-full [&_th]:px-4 [&_th]:py-2 [&_th]:text-left [&_td]:px-4 [&_td]:py-2 [&_td]:align-middle [&_tr]:border-b [&_tr]:border-gray-200 [&_tbody_tr:hover]:bg-gray-50">
                                             <thead>
                                                 <tr>
                                                     <th scope="col">ID</th>
@@ -106,15 +106,21 @@ function Semesters() {
                                                         </td>
                                                         <td>
                                                             {!term.is_current &&
-                                                                <button className="rounded border border-green-600 px-2.5 py-1 text-sm text-green-700 hover:bg-green-600 hover:text-white" onClick={() => handleSetCurrent(term)}>
+                                                                <button type="button" className="cursor-pointer rounded border border-green-600 px-2.5 py-1 text-sm text-green-700 transition-colors hover:bg-green-600 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--blue)] focus-visible:ring-offset-2" onClick={() => handleSetCurrent(term)}>
                                                                     Set Current
                                                                 </button>}
                                                         </td>
                                                         <td>
                                                             {!term.is_current &&
-                                                                <i className='bx bx-trash cursor-pointer text-lg text-[var(--dark-gray)] transition-colors hover:text-red-600'
+                                                                <button
+                                                                    type="button"
+                                                                    className="inline-flex cursor-pointer items-center justify-center rounded border-0 bg-transparent p-0 text-lg text-[var(--dark-gray)] transition-colors hover:text-red-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--blue)] focus-visible:ring-offset-2"
+                                                                    aria-label={`Delete ${term.semester_type} ${term.semester_year} semester`}
                                                                     title="Delete semester"
-                                                                    onClick={() => handleDelete(term)}></i>}
+                                                                    onClick={() => handleDelete(term)}
+                                                                >
+                                                                    <i className='bx bx-trash' aria-hidden="true"></i>
+                                                                </button>}
                                                         </td>
                                                     </tr>
                                                 )}
