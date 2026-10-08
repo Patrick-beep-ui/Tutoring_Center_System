@@ -8,10 +8,10 @@ return (
 
     <>
 
-            <h1 className="page-title">Tutors Activity</h1>
+            <h1 className="my-[30px] mb-[25px] text-left text-[22px]">Tutors Activity</h1>
 
 
-            <div className= "tutor-grid">
+            <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
 
 
                 <TutorBox

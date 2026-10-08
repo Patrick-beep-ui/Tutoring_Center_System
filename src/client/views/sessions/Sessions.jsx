@@ -20,6 +20,7 @@ function Session() {
 
     //const [layout, setLayout] = useState("undefined");
     const { layout } = useLayout();
+    const layoutBackground = layout === "electron" ? "bg-green-100" : layout === "web" ? "bg-blue-100" : "";
     
 
     useEffect(() => {
@@ -53,7 +54,7 @@ function Session() {
     return(
         <>
         <Header/>
-        <section className={`sessions-container section ${layout}`}>
+        <section className={`section ${layoutBackground}`}>
             <Link to={`/profile/${role}/${tutor_id}`} >Go Back</Link>
             <SessionTable session={session} isEditable={true} tutorId={tutor_id} source={'edit'} />
 

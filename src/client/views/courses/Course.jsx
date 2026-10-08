@@ -13,7 +13,6 @@ import Header from "../../components/shared/Header";
 import UserNavigators from "../../components/users/admin/UsersNavigators";
 import { SemesterContext } from "../../context/currentSemester";
 import { matchesCourseFilters } from "../../lib/courseFilters";
-import '../../App.css';
 
 function ClassName() {
     const { user: contextUser } = useOutletContext();
@@ -234,7 +233,7 @@ function ClassName() {
                                     type="button"
                                     variant="outline"
                                     size="sm"
-                                    className="inline-flex h-8 w-[88px] items-center justify-center gap-1 px-2 leading-none has-[>svg]:px-2"
+                                    className="inline-flex h-8 w-[88px] cursor-pointer items-center justify-center gap-1 px-2 leading-none has-[>svg]:px-2 disabled:cursor-not-allowed"
                                     onClick={prevPage}
                                     disabled={currentPage === 0}
                                 >
@@ -251,7 +250,7 @@ function ClassName() {
                                     type="button"
                                     variant="outline"
                                     size="sm"
-                                    className="inline-flex h-8 w-[88px] items-center justify-center gap-1 px-2 leading-none has-[>svg]:px-2"
+                                    className="inline-flex h-8 w-[88px] cursor-pointer items-center justify-center gap-1 px-2 leading-none has-[>svg]:px-2 disabled:cursor-not-allowed"
                                     onClick={nextPage}
                                     disabled={currentPage >= totalPages - 1}
                                 >

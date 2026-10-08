@@ -42,18 +42,18 @@ function AddSession() {
     return(
         <>
          <Header />
-        <section className="add-session-container section">
-            <div className="add-session-form-container">
-                <form onSubmit={handleSubmit(processData)} className="form-container add-session-form">
-                <h1>Add Tutoring Session</h1>
-                <div className="session-data-container">
+        <section className="section flex items-start justify-center pt-20">
+            <div className="max-w-[600px] items-center rounded-2xl border border-[var(--gray)] bg-[var(--white)] px-[9%] py-0.5 shadow-[0_4px_12px_rgba(0,0,0,0.08)] transition hover:-translate-y-0.5 hover:shadow-[0_6px_16px_rgba(0,0,0,0.12)]">
+                <form onSubmit={handleSubmit(processData)} className="w-full max-w-[500px] px-5 pb-2.5 pt-5 text-left [&_label]:mb-1 [&_label]:font-semibold [&_label]:text-[var(--black)] [&_section]:mb-3 [&_section]:flex [&_section]:flex-col [&_span]:mt-0.5 [&_span]:text-sm [&_span]:text-red-600 [&_input]:rounded-lg [&_input]:border [&_input]:border-[var(--gray)] [&_input]:bg-white [&_input]:px-2.5 [&_input]:py-1.5 [&_input]:text-[0.95rem] [&_input:focus]:border-[var(--blue)] [&_input:focus]:outline-none [&_textarea]:rounded-lg [&_textarea]:border [&_textarea]:border-[var(--gray)] [&_textarea]:bg-white [&_textarea]:px-2.5 [&_textarea]:py-1.5 [&_textarea]:text-[0.95rem] [&_textarea:focus]:border-[var(--blue)] [&_textarea:focus]:outline-none">
+                <h1 className="inline-block border-b-2 border-[var(--yellow)] text-[1.4rem] font-semibold text-[var(--blue)]">Add Tutoring Session</h1>
+                <div>
                     <section>
                         <label>Student ID:</label>
                         <input type="text" {...register("student_id", {required: true})}/>
                         {errors.student_id && <span>{errors.student_id.message}</span>}
                     </section>
 
-                    <div className="datetime-data"> 
+                    <div className="flex gap-5 max-md:flex-col max-md:gap-3 [&_section]:flex-1">
                         <section id="date-form-group">
                             <label>Date:</label>
                             <input type="date" {...register("session_date", {required: true})}/>
@@ -77,19 +77,22 @@ function AddSession() {
                     </section>
                 </div>
 
-                    <div className="session-outcomes-container">
-                        <section>
+                    <div className="flex items-center justify-center border-b border-[#dbd8d8ef]">
+                        <section className="w-full text-left">
                             <label>Outcomes:</label>
                             <textarea cols="30" rows="3" {...register("feedback", {required: true})}></textarea>
                             {errors.feedback && <span>{errors.feedback.message}</span>}
                         </section>
                     </div>
 
-                    <div className="add-session-btns">
-                        <Link to={`/sessions/${source}/${tutor_id}/${course_id}`}>
-                            <button className="btn btn-danger cancel-btn">Cancel</button>
+                    <div className="mt-4 flex justify-end gap-3">
+                        <Link
+                            to={`/sessions/${source}/${tutor_id}/${course_id}`}
+                            className="inline-flex items-center rounded-lg bg-[#f5f5f5] px-[18px] py-2 text-sm font-semibold text-[var(--dark-gray)] transition-colors hover:bg-[var(--gray)] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--blue)] focus-visible:ring-offset-2"
+                        >
+                            Cancel
                         </Link>
-                        <button type="submit">
+                        <button type="submit" className="cursor-pointer rounded-lg border-0 bg-[var(--blue)] px-[18px] py-2 text-sm font-semibold text-[var(--white)] transition-colors hover:bg-[var(--yellow)] hover:text-[var(--black)]">
                             {isloading ? <LoadingSpinner /> : 'Save Session'}
                         </button> 
                     </div>

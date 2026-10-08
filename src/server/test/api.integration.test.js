@@ -44,6 +44,7 @@ vi.mock('../utils/currentSemester.js', () => ({
 }));
 
 import { getCatalogWithSemesterFlag } from '../controllers/coursesController.js';
+import { getAllSchedules } from '../controllers/schedulesController.js';
 import isAdmin from '../middlewares/admin.js';
 import jwtAuth from '../middlewares/jwtAuth.js';
 import semesterScope from '../middlewares/semesterScope.js';
@@ -51,6 +52,11 @@ import semesterScope from '../middlewares/semesterScope.js';
 const catalogRows = [
   { course_id: 1, course_name: 'Algebra', course_code: 'MAT101', credits: 3, major_id: 1, major_name: 'Mathematics', offered: 1, tutors_counter: 2 },
   { course_id: 2, course_name: 'Physics', course_code: 'FIS201', credits: 4, major_id: 2, major_name: 'Physics', offered: 0, tutors_counter: 0 },
+];
+
+const scheduleRows = [
+  { schedule_id: 1, day: 'Monday', start_time: '09:00:00', end_time: '11:00:00', tutor_name: 'Jane Doe', tutor_id: 'KU001', id: 7, tutor_major: 'Mathematics' },
+  { schedule_id: 2, day: 'Wednesday', start_time: '14:00:00', end_time: '16:00:00', tutor_name: 'John Smith', tutor_id: 'KU002', id: 8, tutor_major: 'Physics' },
 ];
 
 function sign(payload) {
@@ -118,6 +124,64 @@ describe('GET /catalog (integration: jwtAuth + semesterScope + catalog controlle
     const token = sign({ role: 'admin' });
     const res = await request(catalogApp).get('/catalog').set('Authorization', `Bearer ${token}`).query({ semester_id: '9' });
     expect(res.status).toBe(404);
+  });
+});
+
+describe('GET /api/schedules (batch: jwtAuth + semesterScope + getAllSchedules)', () => {
+  let schedulesApp;
+
+  beforeAll(() => {
+    schedulesApp = express();
+    schedulesApp.use(express.json());
+    schedulesApp.get('/schedules', jwtAuth, semesterScope, getAllSchedules);
+  });
+
+  beforeEach(() => {
+    mocks.query.mockReset();
+    mocks.resolveSemesterId.mockReset();
+    mocks.getCurrentSemesterId.mockReset();
+  });
+
+  it('returns 401 when no token is provided', async () => {
+    const res = await request(schedulesApp).get('/schedules');
+    expect(res.status).toBe(401);
+  });
+
+  it('returns 403 for an invalid token', async () => {
+    const res = await request(schedulesApp).get('/schedules').set('Authorization', 'Bearer not.a.jwt').query({ semester_id: '1' });
+    expect(res.status).toBe(403);
+  });
+
+  it('blocks a student from a non-current semester with 403', async () => {
+    mocks.getCurrentSemesterId.mockResolvedValue(12);
+    mocks.resolveSemesterId.mockImplementation((r) => (r ? Number(r) : mocks.getCurrentSemesterId()));
+    const token = sign({ role: 'student' });
+    const res = await request(schedulesApp).get('/schedules').set('Authorization', `Bearer ${token}`).query({ semester_id: '1' });
+    expect(res.status).toBe(403);
+  });
+
+  it('returns all schedules with expected shape for an allowed request', async () => {
+    mocks.getCurrentSemesterId.mockResolvedValue(12);
+    mocks.resolveSemesterId.mockImplementation((r) => (r ? Number(r) : mocks.getCurrentSemesterId()));
+    mocks.query.mockResolvedValue(scheduleRows);
+    const token = sign({ role: 'admin' });
+    const res = await request(schedulesApp).get('/schedules').set('Authorization', `Bearer ${token}`).query({ semester_id: '12' });
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveProperty('schedules');
+    expect(Array.isArray(res.body.schedules)).toBe(true);
+    expect(res.body.schedules).toHaveLength(2);
+    const first = res.body.schedules[0];
+    expect(first).toMatchObject({ day: 'Monday', start_time: '09:00:00', end_time: '11:00:00', tutor_name: 'Jane Doe', tutor_id: 'KU001', id: 7, tutor_major: 'Mathematics' });
+    expect(mocks.query).toHaveBeenCalled();
+  });
+
+  it('returns 404 when no current semester is set', async () => {
+    mocks.getCurrentSemesterId.mockRejectedValue(new Error('No current semester is set'));
+    mocks.resolveSemesterId.mockRejectedValue(new Error('No current semester is set'));
+    const token = sign({ role: 'admin' });
+    const res = await request(schedulesApp).get('/schedules').set('Authorization', `Bearer ${token}`).query({ semester_id: '9' });
+    expect(res.status).toBe(404);
+    expect(res.body).toEqual({ error: 'No current semester is set' });
   });
 });
 
