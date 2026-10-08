@@ -24,3 +24,7 @@ tutoring_center_model.mwb.bak
 *.sln
 *.sw?
 .env
+
+# opencode
+AGENTS.md
+opencode.json
