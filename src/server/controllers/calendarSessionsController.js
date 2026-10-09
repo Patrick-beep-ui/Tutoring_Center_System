@@ -10,6 +10,7 @@ import Semester from "../models/Semester.js";
 import { sendEmail, sendSessionRequestEmail } from "../mail.js";
 import { sanitizeUserInput } from "../utils/sanitize.js";
 import { resolveSemesterId } from "../utils/currentSemester.js";
+import { resolveSessionStudents } from "../utils/sessionStudents.js";
 import { sendSessionCancelationEmail } from "../mail.js";
 
 import jwt from "jsonwebtoken";
@@ -70,28 +71,16 @@ export const createSession = async (req, res) => {
         })
 
         const session_type = req.body.session_type || 'individual';
-        const MAX_STUDENTS_PER_SESSION = 100;
-        let studentList = [];
-        if (Array.isArray(req.body.student_ids) && req.body.student_ids.length > 0) {
-            studentList = req.body.student_ids.filter(
-                (id) => (typeof id === 'string' || typeof id === 'number') && String(id).trim() !== ''
-            );
-        } else if (typeof req.body.student_id === 'string' || typeof req.body.student_id === 'number') {
-            studentList = [req.body.student_id];
-        } else if (typeof req.body.created_by === 'string' || typeof req.body.created_by === 'number') {
-            studentList = [req.body.created_by];
+        const participants = resolveSessionStudents({
+            sessionType: session_type,
+            studentIds: req.body.student_ids,
+            studentId: req.body.student_id,
+            fallbackStudentId: req.body.created_by
+        });
+        if (participants.error) {
+            return res.status(400).json({ error: participants.error });
         }
-
-        if (!Array.isArray(studentList) || studentList.length > MAX_STUDENTS_PER_SESSION) {
-            return res.status(400).json({ error: `A maximum of ${MAX_STUDENTS_PER_SESSION} students is allowed` });
-        }
-
-        if (session_type === 'individual' && studentList.length !== 1) {
-            return res.status(400).json({ error: 'Individual session must have exactly 1 student' });
-        }
-        if (session_type === 'group' && studentList.length < 2) {
-            return res.status(400).json({ error: 'Group session must have at least 2 students' });
-        }
+        const studentList = participants.studentIds;
 
         const session = new TutorSession({
             tutor_id: tutor_id,
@@ -127,8 +116,7 @@ export const createSession = async (req, res) => {
         }
         if (studentList.length > 0) {
             const studentsToInsert = [];
-            const safeStudentCount = Math.min(studentList.length, MAX_STUDENTS_PER_SESSION);
-            for (let i = 0; i < safeStudentCount; i++) {
+            for (let i = 0; i < studentList.length; i++) {
                 const sid = studentList[i];
                 let user_id = null;
                 try {
@@ -345,4 +333,3 @@ export const sendDeclineJustification = async (req, res) => {
       res.status(500).json({ msg: "Internal server error while sending justification." });
     }
   };
-  

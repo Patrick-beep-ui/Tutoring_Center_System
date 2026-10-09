@@ -12,11 +12,10 @@ import { sendFeedbackEmail, sendSessionCancelationEmail, sendSessionReassignedTo
 import { QueryTypes } from "sequelize";
 import { sanitizeUserInput } from "../utils/sanitize.js";
 import { resolveSemesterId } from "../utils/currentSemester.js";
+import { resolveSessionStudents } from "../utils/sessionStudents.js";
 import moment from 'moment';
 
 import os from 'os';
-
-const MAX_STUDENTS_PER_SESSION = 100;
 
 function getLocalIPAddress() {
     const interfaces = os.networkInterfaces();
@@ -389,25 +388,16 @@ export const addSession = async (req, res) => {
         const course_id = req.params.course_id
 
         const session_type = req.body.session_type || 'individual';
-        let studentList = [];
-        if (Array.isArray(req.body.student_ids) && req.body.student_ids.length > 0) {
-            studentList = req.body.student_ids.filter(Boolean);
-        } else if (req.body.student_id) {
-            studentList = [req.body.student_id];
-        } else if (Array.isArray(req.body.students) && req.body.students.length > 0) {
-            studentList = req.body.students.map(s => s.student_id).filter(Boolean);
+        const participants = resolveSessionStudents({
+            sessionType: session_type,
+            studentIds: req.body.student_ids,
+            students: req.body.students,
+            studentId: req.body.student_id
+        });
+        if (participants.error) {
+            return res.status(400).json({ error: participants.error });
         }
-
-        if (!Array.isArray(studentList) || studentList.length > MAX_STUDENTS_PER_SESSION) {
-            return res.status(400).json({ error: `A session can include at most ${MAX_STUDENTS_PER_SESSION} students` });
-        }
-
-        if (session_type === 'individual' && studentList.length !== 1) {
-            return res.status(400).json({ error: 'Individual session must have exactly 1 student' });
-        }
-        if (session_type === 'group' && studentList.length < 2) {
-            return res.status(400).json({ error: 'Group session must have at least 2 students' });
-        }
+        const studentList = participants.studentIds;
 
         const session = new TutorSession({
             tutor_id: tutor_id,
@@ -499,37 +489,17 @@ export const editSession = async (req, res) => {
         const old_tutor_id = session.tutor_id;
         const tutorChanged = new_tutor_id && Number(new_tutor_id) !== Number(old_tutor_id);
         const requestedSessionType = req.body.session_type || 'individual';
-        let studentList = [];
-
-        if (Array.isArray(req.body.student_ids)) {
-            studentList = req.body.student_ids.filter(Boolean);
-        } else if (Array.isArray(req.body.students)) {
-            studentList = req.body.students.map(student => student.student_id).filter(Boolean);
-        } else if (req.body.student_id) {
-            studentList = [req.body.student_id];
-        } else if (new_student_id) {
-            studentList = [new_student_id];
+        const participants = resolveSessionStudents({
+            sessionType: requestedSessionType,
+            studentIds: req.body.student_ids,
+            students: req.body.students,
+            studentId: req.body.student_id,
+            fallbackStudentId: new_student_id
+        });
+        if (participants.error) {
+            return res.status(400).json({ error: participants.error });
         }
-
-        if (!Array.isArray(studentList)) {
-            return res.status(400).json({ error: 'Invalid students payload' });
-        }
-
-        const MAX_STUDENTS_PER_SESSION = 100;
-        if (studentList.length > MAX_STUDENTS_PER_SESSION) {
-            return res.status(400).json({ error: `Too many students. Maximum allowed is ${MAX_STUDENTS_PER_SESSION}` });
-        }
-
-        if (requestedSessionType === 'individual' && studentList.length !== 1) {
-            return res.status(400).json({ error: 'Individual session must have exactly 1 student' });
-        }
-        if (requestedSessionType === 'group' && studentList.length < 2) {
-            return res.status(400).json({ error: 'Group session must have at least 2 students' });
-        }
-
-        if (new Set(studentList).size !== studentList.length) {
-            return res.status(400).json({ error: 'A student can only be added once per session' });
-        }
+        const studentList = participants.studentIds;
 
         const updateData = {
             session_date: session_date,
