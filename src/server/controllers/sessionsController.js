@@ -511,6 +511,15 @@ export const editSession = async (req, res) => {
             studentList = [new_student_id];
         }
 
+        if (!Array.isArray(studentList)) {
+            return res.status(400).json({ error: 'Invalid students payload' });
+        }
+
+        const MAX_STUDENTS_PER_SESSION = 100;
+        if (studentList.length > MAX_STUDENTS_PER_SESSION) {
+            return res.status(400).json({ error: `Too many students. Maximum allowed is ${MAX_STUDENTS_PER_SESSION}` });
+        }
+
         if (requestedSessionType === 'individual' && studentList.length !== 1) {
             return res.status(400).json({ error: 'Individual session must have exactly 1 student' });
         }
