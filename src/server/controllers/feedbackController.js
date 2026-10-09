@@ -1,5 +1,7 @@
 import SessionFeedback from "../models/SessionFeedback.js";
 import TutorSession from "../models/TutorSession.js";
+import SessionDetail from "../models/SessionDetail.js";
+import SessionStudent from "../models/SessionStudent.js";
 import User from "../models/User.js";
 import connection from "../connection.js";
 
@@ -7,15 +9,35 @@ export const createFeedback = async (req, res) => {
     const { sessionId, rating, feedback, user_id } = req.body;
 
     try {
-        // Get the session to verify if the user is a student in that session
-        const session = await TutorSession.findOne({
-            where: {
-                session_id: sessionId,
-                student_id: user_id
-            }
-        });
+        // Determine session type and verify membership
+        const sessionDetail = await SessionDetail.findByPk(sessionId);
 
-        if (!session) {
+        let isAuthorized = false;
+
+        if (sessionDetail && sessionDetail.session_type === 'group') {
+            const member = await SessionStudent.findOne({
+                where: {
+                    session_id: sessionId,
+                    student_id: user_id
+                }
+            });
+            if (member) {
+                isAuthorized = true;
+            }
+        } else {
+            // individual or default
+            const session = await TutorSession.findOne({
+                where: {
+                    session_id: sessionId,
+                    student_id: user_id
+                }
+            });
+            if (session) {
+                isAuthorized = true;
+            }
+        }
+
+        if (!isAuthorized) {
             return res.status(404).send('Session not found');
         }
         

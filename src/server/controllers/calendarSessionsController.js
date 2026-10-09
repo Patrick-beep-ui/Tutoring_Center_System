@@ -1,6 +1,7 @@
 import { QueryTypes } from "sequelize";
 import connection from "../connection.js";
 import SessionDetail from "../models/SessionDetail.js";
+import SessionStudent from "../models/SessionStudent.js";
 import TutorSession from "../models/TutorSession.js";
 import Tutor from "../models/Tutor.js";
 import User from "../models/User.js";
@@ -68,11 +69,35 @@ export const createSession = async (req, res) => {
             }
         })
 
+        const session_type = req.body.session_type || 'individual';
+        const MAX_STUDENTS_PER_SESSION = 100;
+        let studentList = [];
+        if (Array.isArray(req.body.student_ids) && req.body.student_ids.length > 0) {
+            studentList = req.body.student_ids.filter(
+                (id) => (typeof id === 'string' || typeof id === 'number') && String(id).trim() !== ''
+            );
+        } else if (typeof req.body.student_id === 'string' || typeof req.body.student_id === 'number') {
+            studentList = [req.body.student_id];
+        } else if (typeof req.body.created_by === 'string' || typeof req.body.created_by === 'number') {
+            studentList = [req.body.created_by];
+        }
+
+        if (!Array.isArray(studentList) || studentList.length > MAX_STUDENTS_PER_SESSION) {
+            return res.status(400).json({ error: `A maximum of ${MAX_STUDENTS_PER_SESSION} students is allowed` });
+        }
+
+        if (session_type === 'individual' && studentList.length !== 1) {
+            return res.status(400).json({ error: 'Individual session must have exactly 1 student' });
+        }
+        if (session_type === 'group' && studentList.length < 2) {
+            return res.status(400).json({ error: 'Group session must have at least 2 students' });
+        }
+
         const session = new TutorSession({
-            tutor_id:tutor_id,
-            student_id: req.body.student_id,
+            tutor_id: tutor_id,
+            student_id: studentList.length > 0 ? studentList[0] : req.body.student_id,
             course_id: req.body.course,
-            semester_id: current_semester.semester_id,
+            semester_id: current_semester ? current_semester.semester_id : null,
             session_date: req.body.session_date,
             session_totalhours: req.body.session_hours,
             topics: req.body.session_topics,
@@ -84,12 +109,43 @@ export const createSession = async (req, res) => {
             session_id: session.session_id,
             session_time: req.body.session_time,
             session_status: 'pending',
+            session_type: session_type,
             createdBy: req.body.created_by,
             createdAt: new Date(),
             updatedAt: new Date(),
         })
 
         await session_detail.save()
+
+        const feedbackMap = {};
+        if (Array.isArray(req.body.students)) {
+            req.body.students.forEach(s => {
+                if (s.student_id) {
+                    feedbackMap[s.student_id] = s.feedback || null;
+                }
+            });
+        }
+        if (studentList.length > 0) {
+            const studentsToInsert = [];
+            const safeStudentCount = Math.min(studentList.length, MAX_STUDENTS_PER_SESSION);
+            for (let i = 0; i < safeStudentCount; i++) {
+                const sid = studentList[i];
+                let user_id = null;
+                try {
+                    const user = await User.findOne({ where: { ku_id: sid } });
+                    if (user) user_id = user.user_id;
+                } catch (e) {
+                    // ignore
+                }
+                studentsToInsert.push({
+                    session_id: session.session_id,
+                    student_id: sid,
+                    user_id: user_id,
+                    feedback: feedbackMap[sid] !== undefined ? feedbackMap[sid] : null
+                });
+            }
+            await SessionStudent.bulkCreate(studentsToInsert, { ignoreDuplicates: true });
+        }
 
         const tutor = await Tutor.findByPk(tutor_id);
         const tutor_user = await User.findByPk(tutor.user_id);

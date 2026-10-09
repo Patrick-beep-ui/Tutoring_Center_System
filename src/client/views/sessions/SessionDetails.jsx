@@ -9,6 +9,7 @@ import { toast } from "sonner";
 function SessionDetails() {
   const { register, handleSubmit, formState: { errors } } = useForm({ mode: "onChange" });
   const [session, setSession] = useState([]);
+  const [students, setStudents] = useState([]);
   const [comment, setComment] = useState([]);
   const { session_id } = useParams();
   const [isOpen, setIsOpen] = useState(false);
@@ -27,6 +28,7 @@ function SessionDetails() {
   
         console.log("Session: ", sessionData);
         setSession(sessionData);
+        setStudents(sessionResponse.data.students || []);
 
         if (sessionData[0].student_name && sessionData[0].student_user_id != null) {
           setStudentIsOnSystem(true);
@@ -108,26 +110,37 @@ function SessionDetails() {
       <section className="section">
       <div className="mb-5 w-full">
         {session.map(s => (
-          <div className="grid w-full grid-cols-1 items-center rounded-lg border border-[#ddd] bg-white p-2 pt-5 md:grid-cols-2" key={s.id}>
+          <div className="grid w-full grid-cols-1 items-center rounded-lg border border-[#ddd] bg-white p-2 pt-5 md:grid-cols-2" key={s.id || s.session_id}>
             <div className="flex h-full w-full flex-col text-left [&_.form-group]:mb-2 [&_.form-group]:flex [&_.form-group]:flex-col [&_.form-group_label]:pb-0 [&_.form-group_label]:pl-0 [&_.form-group_label]:text-sm [&_.form-group_label]:font-medium [&_.form-group_label]:text-[#574f4f] [&_.form-group_p]:mb-0.5 [&_.form-group_p]:text-[1.4rem] [&_.form-group_p]:font-medium">
               <div className="form-group mb-[30px]!">
                 <p>{s.course_name} Tutoring Session</p>
                 <span className="text-xl font-medium text-[var(--dark-gray)]">Tutor: {s.tutor_name}</span>
+                {s.session_type && (
+                  <span className="text-sm text-gray-600 mt-1">Type: {s.session_type}</span>
+                )}
               </div>
               <div className="form-group flex-row! items-center justify-start gap-5">
                 <div id="student-id-container" className="w-[250px]">
-                  {studentIsOnSystem ? (
-                    <>
-                      <label>Student: </label>
-                      <Link to={`/profile/${s.student_user_id}`}>
-                      <div className="flex items-center rounded-[5px] bg-[#c9ccce] p-1 [&_p]:text-[1.1rem]!">
-                        <img src={`/profile/tutor${s.student_user_id}.jpg`} alt="" className="h-10 w-[45px] rounded-full object-cover"/>
-                        <div className="ms-4">
-                          <p>{s.student_name}</p>
+                  <label>Students:</label>
+                  {s.session_type === 'group' && students.length > 0 ? (
+                    <div className="flex flex-col gap-2">
+                      {students.map((st, idx) => (
+                        <div key={idx}>
+                          {st.student_user_id != null ? (
+                            <Link to={`/profile/${st.student_user_id}`}>
+                              <div className="flex items-center rounded-[5px] bg-[#c9ccce] p-1 [&_p]:text-[1.1rem]!">
+                                <img src={`/profile/tutor${st.student_user_id}.jpg`} alt="" className="h-10 w-[45px] rounded-full object-cover"/>
+                                <div className="ms-4">
+                                  <p>{st.student_name}</p>
+                                </div>
+                              </div>
+                            </Link>
+                          ) : (
+                            <p>{st.student_ku_id || st.student_id}</p>
+                          )}
                         </div>
-                      </div>
-                      </Link>
-                    </>
+                      ))}
+                    </div>
                   ) : (
                     <>
                       <label htmlFor={`student-id-${s.id}`}>Student ID:</label>
@@ -155,12 +168,21 @@ function SessionDetails() {
             </div>
             <div className="flex h-full w-full flex-col text-left [&_.form-group]:mb-2 [&_.form-group]:flex [&_.form-group]:flex-col [&_.form-group_label]:text-sm [&_.form-group_label]:font-medium [&_.form-group_label]:text-[#574f4f] [&_.form-group_p]:mb-0.5 [&_.form-group_p]:text-[1.4rem] [&_.form-group_p]:font-medium">
             <div className="form-group">
-                <label htmlFor={`session-feedback-${s.id}`}>Session Topics:</label>
+                <label htmlFor={`session-topics-${s.id}`}>Session Topics:</label>
                 <p className="h-auto text-base! font-normal!" >{s.session_topics}</p>
               </div>
               <div className="form-group">
-                <label htmlFor={`session-feedback-${s.id}`}>Session Outcomes:</label>
-                <p className="h-auto text-base! font-normal!" >{s.session_feedback}</p>
+                <label htmlFor={`session-outcomes-${s.id}`}>Session Outcomes (Tutor feedback per student):</label>
+                {s.session_type === 'group' && students.length > 0 ? (
+                  students.map((st, idx) => (
+                    <div key={idx} className="mb-2 p-2 border border-gray-200 rounded">
+                      <p className="text-sm font-semibold">{st.student_name || st.student_ku_id || st.student_id}</p>
+                      <p className="h-auto text-base! font-normal!">{st.feedback || '—'}</p>
+                    </div>
+                  ))
+                ) : (
+                  <p className="h-auto text-base! font-normal!" >{s.session_feedback || '—'}</p>
+                )}
               </div>
             </div>
           </div>

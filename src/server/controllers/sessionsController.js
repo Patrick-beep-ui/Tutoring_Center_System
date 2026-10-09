@@ -3,6 +3,7 @@ import User from "../models/User.js";
 import Tutor from "../models/Tutor.js";
 import Course from "../models/Course.js";
 import SessionDetail from "../models/SessionDetail.js";
+import SessionStudent from "../models/SessionStudent.js";
 import Semester from "../models/Semester.js";
 import Comment from "../models/Comment.js";
 import SessionFeedback from "../models/SessionFeedback.js";
@@ -14,6 +15,8 @@ import { resolveSemesterId } from "../utils/currentSemester.js";
 import moment from 'moment';
 
 import os from 'os';
+
+const MAX_STUDENTS_PER_SESSION = 100;
 
 function getLocalIPAddress() {
     const interfaces = os.networkInterfaces();
@@ -46,6 +49,7 @@ export const getSessions = async (req, res) => {
                 )) AS 'session_duration',
                 ANY_VALUE(s.session_date) AS 'session_date',
                 ANY_VALUE(sd.session_status) AS 'session_status',
+                ANY_VALUE(sd.session_type) AS 'session_type',
                 ANY_VALUE(WEEK(s.session_date, 1) - WEEK(semester.start_date, 1) + 1) AS 'week_number',
                 ANY_VALUE(s.topics) AS 'session_topics',
                 ANY_VALUE(s.feedback) AS 'session_feedback',
@@ -169,13 +173,13 @@ export const getTutorSessionById = async (req, res) => {
             where: { ku_id: sessionElement.student_id }
         })
 
-        const session = await connection.query(`SELECT s.session_id as 'session_id', c.course_name as 'course_name', c.course_id as 'course_id', CONCAT(u.first_name, ' ', u.last_name) as 'scheduled_by', sd.session_time as 'session_time', FORMAT(s.session_totalhours, 0) as 'session_durarion' ,s.session_date as 'session_date', sd.session_status as 'session_status', s.topics as 'session_topics', s.feedback as 'session_feedback'
+        const session = await connection.query(`SELECT s.session_id as 'session_id', c.course_name as 'course_name', c.course_id as 'course_id', CONCAT(u.first_name, ' ', u.last_name) as 'scheduled_by', sd.session_time as 'session_time', FORMAT(s.session_totalhours, 0) as 'session_durarion' ,s.session_date as 'session_date', sd.session_status as 'session_status', sd.session_type as 'session_type', s.topics as 'session_topics', s.feedback as 'session_feedback'
             FROM sessions s JOIN tutors t on s.tutor_id = t.tutor_id
             JOIN courses c ON s.course_id = c.course_id
             JOIN session_details sd ON s.session_id = sd.session_id
             JOIN users u ON u.user_id = sd.createdBy
             WHERE s.session_id = :session_id
-            GROUP BY session_id, course_name, scheduled_by, session_time, session_date, session_status, session_topics, course_id;`, {
+            GROUP BY session_id, course_name, scheduled_by, session_time, session_date, session_status, session_type, session_topics, course_id;`, {
                 type: QueryTypes.SELECT,
                 replacements: { session_id: sanitizedSessionId }
             })
@@ -192,9 +196,37 @@ export const getTutorSessionById = async (req, res) => {
               };
             }
 
+            const participants = await SessionStudent.findAll({
+                where: { session_id: sanitizedSessionId }
+            });
+            let studentsInfo = [];
+            if (participants.length > 0) {
+                for (let i = 0; i < participants.length; i++) {
+                    const p = participants[i];
+                    let userInfo = null;
+                    try {
+                        userInfo = await User.findOne({ where: { ku_id: p.student_id } });
+                    } catch (e) {
+                        // ignore
+                    }
+                    studentsInfo.push({
+                        student_ku_id: p.student_id,
+                        student_name: userInfo ? `${userInfo.first_name} ${userInfo.last_name}` : undefined,
+                        feedback: p.feedback
+                    });
+                }
+            } else if (sessionElement.student_id) {
+                studentsInfo.push({
+                    student_ku_id: sessionElement.student_id,
+                    student_name: student ? `${student.first_name} ${student.last_name}` : undefined,
+                    feedback: sessionElement.feedback
+                });
+            }
+
             res.status(200).json({ 
                 session,
-                studentInfo
+                studentInfo,
+                students: studentsInfo
             });
 
     }
@@ -220,19 +252,50 @@ export const getSessionDetails = async (req, res) => {
         if(session_id) {
             const session = await connection.query(`SELECT CONCAT(u.first_name, ' ', u.last_name) as 'tutor_name', c.course_name as 'course_name', s.session_date as 'session_date', s.student_id as 'student_id', FORMAT(s.session_totalhours, 0) as 'session_hours', 
             s.feedback as 'session_feedback', sd.session_time as 'session_time', su.user_id AS 'student_user_id', u.user_id as 'tutor_id',
-            CONCAT(su.first_name, ' ', su.last_name) AS 'student_name', s.topics as 'session_topics'
+            CONCAT(su.first_name, ' ', su.last_name) AS 'student_name', s.topics as 'session_topics', sd.session_type as 'session_type'
             FROM sessions s LEFT JOIN session_details sd ON s.session_id = sd.session_id
             JOIN courses c ON s.course_id = c.course_id
             JOIN tutors t ON s.tutor_id = t.tutor_id
             JOIN users u ON u.user_id = t.user_id
             LEFT JOIN users su ON su.ku_id = s.student_id
             WHERE s.session_id = :session_id
-            GROUP BY tutor_name, course_name, session_date, student_id, session_hours, session_time, student_user_id, student_name, session_status, session_topics, tutor_id;`, 
+            GROUP BY tutor_name, course_name, session_date, student_id, session_hours, session_time, student_user_id, student_name, session_status, session_type, session_topics, tutor_id;`, 
             {
                 type: QueryTypes.SELECT,
                 replacements: { session_id: sanitizedSessionId }
             })
-            res.status(200).json({ session });
+
+            const participants = await SessionStudent.findAll({
+                where: { session_id: sanitizedSessionId }
+            });
+            let students = [];
+            if (participants.length > 0) {
+                for (let i = 0; i < participants.length; i++) {
+                    const p = participants[i];
+                    let userInfo = null;
+                    try {
+                        userInfo = await User.findOne({ where: { ku_id: p.student_id } });
+                    } catch (e) {
+                        // ignore
+                    }
+                    students.push({
+                        student_id: p.student_id,
+                        student_ku_id: p.student_id,
+                        student_name: userInfo ? `${userInfo.first_name} ${userInfo.last_name}` : undefined,
+                        student_user_id: userInfo ? userInfo.user_id : null,
+                        feedback: p.feedback
+                    });
+                }
+            } else if (session.length > 0 && session[0].student_id) {
+                students.push({
+                    student_id: session[0].student_id,
+                    student_ku_id: session[0].student_id,
+                    student_name: session[0].student_name,
+                    student_user_id: session[0].student_user_id || null,
+                    feedback: session[0].session_feedback
+                });
+            }
+            res.status(200).json({ session, students });
         }
     }
     catch(e) {
@@ -324,12 +387,33 @@ export const addSession = async (req, res) => {
         
         const tutor_id = req.params.tutor_id
         const course_id = req.params.course_id
-    
+
+        const session_type = req.body.session_type || 'individual';
+        let studentList = [];
+        if (Array.isArray(req.body.student_ids) && req.body.student_ids.length > 0) {
+            studentList = req.body.student_ids.filter(Boolean);
+        } else if (req.body.student_id) {
+            studentList = [req.body.student_id];
+        } else if (Array.isArray(req.body.students) && req.body.students.length > 0) {
+            studentList = req.body.students.map(s => s.student_id).filter(Boolean);
+        }
+
+        if (!Array.isArray(studentList) || studentList.length > MAX_STUDENTS_PER_SESSION) {
+            return res.status(400).json({ error: `A session can include at most ${MAX_STUDENTS_PER_SESSION} students` });
+        }
+
+        if (session_type === 'individual' && studentList.length !== 1) {
+            return res.status(400).json({ error: 'Individual session must have exactly 1 student' });
+        }
+        if (session_type === 'group' && studentList.length < 2) {
+            return res.status(400).json({ error: 'Group session must have at least 2 students' });
+        }
+
         const session = new TutorSession({
             tutor_id: tutor_id,
-            student_id: req.body.student_id,
+            student_id: studentList.length > 0 ? studentList[0] : null,
             course_id: course_id,
-            semester_id: current_semester.semester_id,
+            semester_id: current_semester ? current_semester.semester_id : null,
             session_date: req.body.session_date,
             session_totalhours: req.body.session_hours,
             feedback: req.body.feedback,
@@ -342,12 +426,44 @@ export const addSession = async (req, res) => {
             session_id: session.session_id,
             session_time: req.body.session_time,
             session_status: 'completed',
-            createdBy:tutor_id,
+            session_type: session_type,
+            createdBy: tutor_id,
             createdAt: new Date(),
             updatedAt: new Date(),
         })
     
         await session_detail.save();
+
+        // Prepare per-student tutor feedback (tutor->student)
+        const feedbackMap = {};
+        if (Array.isArray(req.body.students)) {
+            req.body.students.forEach(s => {
+                if (s.student_id) {
+                    feedbackMap[s.student_id] = s.feedback || null;
+                }
+            });
+        }
+
+        if (studentList.length > 0) {
+            const studentsToInsert = [];
+            for (let i = 0; i < studentList.length; i++) {
+                const sid = studentList[i];
+                let user_id = null;
+                try {
+                    const user = await User.findOne({ where: { ku_id: sid } });
+                    if (user) user_id = user.user_id;
+                } catch (e) {
+                    // ignore
+                }
+                studentsToInsert.push({
+                    session_id: session.session_id,
+                    student_id: sid,
+                    user_id: user_id,
+                    feedback: feedbackMap[sid] !== undefined ? feedbackMap[sid] : (req.body.feedback || null)
+                });
+            }
+            await SessionStudent.bulkCreate(studentsToInsert, { ignoreDuplicates: true });
+        }
     
         const sessions = await TutorSession.findAll()
     
@@ -358,6 +474,7 @@ export const addSession = async (req, res) => {
         }
         catch(e) {
             console.error(e)
+            res.status(500).json({ error: 'Internal server error' });
         }
 }
 
@@ -381,11 +498,45 @@ export const editSession = async (req, res) => {
 
         const old_tutor_id = session.tutor_id;
         const tutorChanged = new_tutor_id && Number(new_tutor_id) !== Number(old_tutor_id);
+        const requestedSessionType = req.body.session_type || 'individual';
+        let studentList = [];
+
+        if (Array.isArray(req.body.student_ids)) {
+            studentList = req.body.student_ids.filter(Boolean);
+        } else if (Array.isArray(req.body.students)) {
+            studentList = req.body.students.map(student => student.student_id).filter(Boolean);
+        } else if (req.body.student_id) {
+            studentList = [req.body.student_id];
+        } else if (new_student_id) {
+            studentList = [new_student_id];
+        }
+
+        if (!Array.isArray(studentList)) {
+            return res.status(400).json({ error: 'Invalid students payload' });
+        }
+
+        const MAX_STUDENTS_PER_SESSION = 100;
+        if (studentList.length > MAX_STUDENTS_PER_SESSION) {
+            return res.status(400).json({ error: `Too many students. Maximum allowed is ${MAX_STUDENTS_PER_SESSION}` });
+        }
+
+        if (requestedSessionType === 'individual' && studentList.length !== 1) {
+            return res.status(400).json({ error: 'Individual session must have exactly 1 student' });
+        }
+        if (requestedSessionType === 'group' && studentList.length < 2) {
+            return res.status(400).json({ error: 'Group session must have at least 2 students' });
+        }
+
+        if (new Set(studentList).size !== studentList.length) {
+            return res.status(400).json({ error: 'A student can only be added once per session' });
+        }
 
         const updateData = {
             session_date: session_date,
             session_totalhours: session_hours,
-            feedback: feedback,
+            feedback: requestedSessionType === 'individual'
+                ? (req.body.students?.[0]?.feedback ?? feedback)
+                : null,
             topics: topics
         };
 
@@ -401,11 +552,52 @@ export const editSession = async (req, res) => {
             }
         })
 
+        // Update session type and participants if provided
+        const sessionTypeUpdate = {};
+        if (req.body.session_type) {
+            sessionTypeUpdate.session_type = req.body.session_type;
+        }
         await session_detail.update({
             session_status: 'completed',
             session_time,
-            updatedAt: new Date()  
+            updatedAt: new Date(),
+            ...sessionTypeUpdate
         });
+
+        // session_students is only populated for group sessions.
+        if (requestedSessionType === 'group') {
+            await SessionStudent.destroy({ where: { session_id: session_id } });
+            const feedbackMap = {};
+            if (Array.isArray(req.body.students)) {
+                req.body.students.forEach(s => {
+                    if (s.student_id) {
+                        feedbackMap[s.student_id] = s.feedback || null;
+                    }
+                });
+            }
+            const studentsToInsert = [];
+            for (let i = 0; i < studentList.length; i++) {
+                const sid = studentList[i];
+                let user_id = null;
+                try {
+                    const user = await User.findOne({ where: { ku_id: sid } });
+                    if (user) user_id = user.user_id;
+                } catch (e) {
+                    // ignore
+                }
+                studentsToInsert.push({
+                    session_id: session_id,
+                    student_id: sid,
+                    user_id: user_id,
+                    feedback: feedbackMap[sid] !== undefined ? feedbackMap[sid] : null
+                });
+            }
+            await SessionStudent.bulkCreate(studentsToInsert, { ignoreDuplicates: false });
+            await session.update({ student_id: studentList[0] });
+        } else {
+            await SessionStudent.destroy({ where: { session_id: session_id } });
+            await session.update({ student_id: studentList[0] });
+        }
 
         const student = await User.findOne({
             where: {
@@ -413,35 +605,65 @@ export const editSession = async (req, res) => {
             }
         })
 
-        if(source === 'scheduled' && student) {
+        if (source === 'scheduled') {
+            const participants = await SessionStudent.findAll({ where: { session_id: session_id } });
             const tutor = await User.findOne({
                 where: {
                     user_id: session.tutor_id
                 }
             })
-
             const course = await Course.findOne({
                 where: {
                     course_id: session.course_id
                 }
             })
-
             const localIP = getLocalIPAddress();
-            const feedbackUrl = `http://${localIP}:3000/feedback/${session.session_id}/${student.ku_id}`;
+            const baseDate = new Date(session.session_date).toLocaleDateString('en-US', { timeZone: 'UTC' });
+            const baseDuration = session_hours || session.session_totalhours;
 
-            try {
-                await sendFeedbackEmail(student.email, {
-                    tutorName: `${tutor.first_name} ${tutor.last_name}`,
-                    studentName: `${student.first_name} ${student.last_name}`,
-                    courseName: course.course_name,
-                    topics: session.topics,
-                    date: new Date(session.session_date).toLocaleDateString('en-US', { timeZone: 'UTC' }),
-                    time: session_time,
-                    duration: session_hours,
-                    feedbackUrl: feedbackUrl,
-                });
-            } catch (emailErr) {
-                console.error('Feedback email failed (non-blocking):', emailErr.message);
+            if (participants.length > 0) {
+                for (let i = 0; i < participants.length; i++) {
+                    const p = participants[i];
+                    let studentUser = null;
+                    try {
+                        studentUser = await User.findOne({ where: { ku_id: p.student_id } });
+                    } catch (e) {
+                        // ignore
+                    }
+                    if (studentUser && studentUser.email) {
+                        const feedbackUrl = `http://${localIP}:3000/feedback/${session.session_id}/${p.student_id}`;
+                        try {
+                            await sendFeedbackEmail(studentUser.email, {
+                                tutorName: tutor ? `${tutor.first_name} ${tutor.last_name}` : 'Tutor',
+                                studentName: `${studentUser.first_name} ${studentUser.last_name}`,
+                                courseName: course ? course.course_name : 'N/A',
+                                topics: session.topics,
+                                date: baseDate,
+                                time: session_time,
+                                duration: baseDuration,
+                                feedbackUrl: feedbackUrl,
+                            });
+                        } catch (emailErr) {
+                            console.error('Feedback email failed (non-blocking):', emailErr.message);
+                        }
+                    }
+                }
+            } else if (student) {
+                const feedbackUrl = `http://${localIP}:3000/feedback/${session.session_id}/${student.ku_id}`;
+                try {
+                    await sendFeedbackEmail(student.email, {
+                        tutorName: tutor ? `${tutor.first_name} ${tutor.last_name}` : 'Tutor',
+                        studentName: `${student.first_name} ${student.last_name}`,
+                        courseName: course ? course.course_name : 'N/A',
+                        topics: session.topics,
+                        date: baseDate,
+                        time: session_time,
+                        duration: baseDuration,
+                        feedbackUrl: feedbackUrl,
+                    });
+                } catch (emailErr) {
+                    console.error('Feedback email failed (non-blocking):', emailErr.message);
+                }
             }
         }
 
@@ -622,4 +844,3 @@ export const deleteSession = async (req, res) => {
       return res.status(500).json({ error: 'Internal Server Error' });
     }
   };
-  

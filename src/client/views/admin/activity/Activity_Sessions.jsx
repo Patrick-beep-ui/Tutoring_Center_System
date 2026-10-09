@@ -7,6 +7,7 @@ import { SemesterContext } from "../../../context/currentSemester";
 const DEFAULT_FILTERS = {
     search: "",
     status: [],
+    sessionType: "",
     tutor: "",
     course: "",
     dateFrom: "",
@@ -57,6 +58,10 @@ const Activity_Sessions = () => {
 
         if (filters.status.length > 0) {
             result = result.filter(s => filters.status.includes(s.session_status));
+        }
+
+        if (filters.sessionType) {
+            result = result.filter(s => (s.session_type || 'individual') === filters.sessionType);
         }
 
         if (filters.tutor) {
