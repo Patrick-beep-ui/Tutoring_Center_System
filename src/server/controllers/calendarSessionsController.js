@@ -70,13 +70,20 @@ export const createSession = async (req, res) => {
         })
 
         const session_type = req.body.session_type || 'individual';
+        const MAX_STUDENTS_PER_SESSION = 100;
         let studentList = [];
         if (Array.isArray(req.body.student_ids) && req.body.student_ids.length > 0) {
-            studentList = req.body.student_ids.filter(Boolean);
-        } else if (req.body.student_id) {
+            studentList = req.body.student_ids.filter(
+                (id) => (typeof id === 'string' || typeof id === 'number') && String(id).trim() !== ''
+            );
+        } else if (typeof req.body.student_id === 'string' || typeof req.body.student_id === 'number') {
             studentList = [req.body.student_id];
-        } else if (req.body.created_by) {
+        } else if (typeof req.body.created_by === 'string' || typeof req.body.created_by === 'number') {
             studentList = [req.body.created_by];
+        }
+
+        if (!Array.isArray(studentList) || studentList.length > MAX_STUDENTS_PER_SESSION) {
+            return res.status(400).json({ error: `A maximum of ${MAX_STUDENTS_PER_SESSION} students is allowed` });
         }
 
         if (session_type === 'individual' && studentList.length !== 1) {
@@ -120,7 +127,8 @@ export const createSession = async (req, res) => {
         }
         if (studentList.length > 0) {
             const studentsToInsert = [];
-            for (let i = 0; i < studentList.length; i++) {
+            const safeStudentCount = Math.min(studentList.length, MAX_STUDENTS_PER_SESSION);
+            for (let i = 0; i < safeStudentCount; i++) {
                 const sid = studentList[i];
                 let user_id = null;
                 try {
