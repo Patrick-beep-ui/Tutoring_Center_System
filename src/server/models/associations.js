@@ -1,5 +1,6 @@
 import TutorSession from "./TutorSession.js";
 import SessionDetail from "./SessionDetail.js";
+import SessionStudent from "./SessionStudent.js";
 import Tutor from "./Tutor.js";
 import Major from "./Major.js";
 import User from "./User.js";
@@ -65,6 +66,12 @@ SessionFeedback.belongsTo(User, { foreignKey: "user_id" });
 
 TutorSession.hasMany(SessionFeedback, { foreignKey: "session_id" });
 User.hasMany(SessionFeedback, { foreignKey: "user_id" });
+
+// Session participants
+TutorSession.hasMany(SessionStudent, { foreignKey: "session_id" });
+SessionStudent.belongsTo(TutorSession, { foreignKey: "session_id" });
+User.hasMany(SessionStudent, { foreignKey: "user_id" });
+SessionStudent.belongsTo(User, { foreignKey: "user_id" });
 
 // Alert ↔ AlertCategory
 Alert.belongsTo(AlertCategory, { foreignKey: "category_id" });
