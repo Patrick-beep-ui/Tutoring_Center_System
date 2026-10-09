@@ -170,13 +170,13 @@ export const getTutorSessionById = async (req, res) => {
             where: { ku_id: sessionElement.student_id }
         })
 
-        const session = await connection.query(`SELECT s.session_id as 'session_id', c.course_name as 'course_name', c.course_id as 'course_id', CONCAT(u.first_name, ' ', u.last_name) as 'scheduled_by', sd.session_time as 'session_time', FORMAT(s.session_totalhours, 0) as 'session_durarion' ,s.session_date as 'session_date', sd.session_status as 'session_status', s.topics as 'session_topics', s.feedback as 'session_feedback'
+        const session = await connection.query(`SELECT s.session_id as 'session_id', c.course_name as 'course_name', c.course_id as 'course_id', CONCAT(u.first_name, ' ', u.last_name) as 'scheduled_by', sd.session_time as 'session_time', FORMAT(s.session_totalhours, 0) as 'session_durarion' ,s.session_date as 'session_date', sd.session_status as 'session_status', sd.session_type as 'session_type', s.topics as 'session_topics', s.feedback as 'session_feedback'
             FROM sessions s JOIN tutors t on s.tutor_id = t.tutor_id
             JOIN courses c ON s.course_id = c.course_id
             JOIN session_details sd ON s.session_id = sd.session_id
             JOIN users u ON u.user_id = sd.createdBy
             WHERE s.session_id = :session_id
-            GROUP BY session_id, course_name, scheduled_by, session_time, session_date, session_status, session_topics, course_id;`, {
+            GROUP BY session_id, course_name, scheduled_by, session_time, session_date, session_status, session_type, session_topics, course_id;`, {
                 type: QueryTypes.SELECT,
                 replacements: { session_id: sanitizedSessionId }
             })
@@ -491,11 +491,36 @@ export const editSession = async (req, res) => {
 
         const old_tutor_id = session.tutor_id;
         const tutorChanged = new_tutor_id && Number(new_tutor_id) !== Number(old_tutor_id);
+        const requestedSessionType = req.body.session_type || 'individual';
+        let studentList = [];
+
+        if (Array.isArray(req.body.student_ids)) {
+            studentList = req.body.student_ids.filter(Boolean);
+        } else if (Array.isArray(req.body.students)) {
+            studentList = req.body.students.map(student => student.student_id).filter(Boolean);
+        } else if (req.body.student_id) {
+            studentList = [req.body.student_id];
+        } else if (new_student_id) {
+            studentList = [new_student_id];
+        }
+
+        if (requestedSessionType === 'individual' && studentList.length !== 1) {
+            return res.status(400).json({ error: 'Individual session must have exactly 1 student' });
+        }
+        if (requestedSessionType === 'group' && studentList.length < 2) {
+            return res.status(400).json({ error: 'Group session must have at least 2 students' });
+        }
+
+        if (new Set(studentList).size !== studentList.length) {
+            return res.status(400).json({ error: 'A student can only be added once per session' });
+        }
 
         const updateData = {
             session_date: session_date,
             session_totalhours: session_hours,
-            feedback: feedback,
+            feedback: requestedSessionType === 'individual'
+                ? (req.body.students?.[0]?.feedback ?? feedback)
+                : null,
             topics: topics
         };
 
@@ -523,26 +548,8 @@ export const editSession = async (req, res) => {
             ...sessionTypeUpdate
         });
 
-        // Update participants if provided
-        let studentList = [];
-        if (Array.isArray(req.body.student_ids) && req.body.student_ids.length > 0) {
-            studentList = req.body.student_ids.filter(Boolean);
-        } else if (req.body.student_id) {
-            studentList = [req.body.student_id];
-        } else if (Array.isArray(req.body.students) && req.body.students.length > 0) {
-            studentList = req.body.students.map(s => s.student_id).filter(Boolean);
-        } else if (new_student_id) {
-            studentList = [new_student_id];
-        }
-
-        const session_type_val = req.body.session_type || session_detail.session_type || 'individual';
-        if (studentList.length > 0) {
-            if (session_type_val === 'individual' && studentList.length !== 1) {
-                return res.status(400).json({ error: 'Individual session must have exactly 1 student' });
-            }
-            if (session_type_val === 'group' && studentList.length < 2) {
-                return res.status(400).json({ error: 'Group session must have at least 2 students' });
-            }
+        // session_students is only populated for group sessions.
+        if (requestedSessionType === 'group') {
             await SessionStudent.destroy({ where: { session_id: session_id } });
             const feedbackMap = {};
             if (Array.isArray(req.body.students)) {
@@ -571,14 +578,9 @@ export const editSession = async (req, res) => {
             }
             await SessionStudent.bulkCreate(studentsToInsert, { ignoreDuplicates: false });
             await session.update({ student_id: studentList[0] });
-        } else if (Array.isArray(req.body.students) && req.body.students.length > 0) {
-            // update feedbacks only
-            for (let i = 0; i < req.body.students.length; i++) {
-                const s = req.body.students[i];
-                if (s.student_id !== undefined) {
-                    await SessionStudent.update({ feedback: s.feedback || null }, { where: { session_id: session_id, student_id: s.student_id } });
-                }
-            }
+        } else {
+            await SessionStudent.destroy({ where: { session_id: session_id } });
+            await session.update({ student_id: studentList[0] });
         }
 
         const student = await User.findOne({
@@ -826,4 +828,3 @@ export const deleteSession = async (req, res) => {
       return res.status(500).json({ error: 'Internal Server Error' });
     }
   };
-  

@@ -150,36 +150,6 @@ const EditSessionForm = ({ session, session_id, tutor_id, navigate, source, user
                             ))}
                         </select>
                     </section>
-                    <section>
-                        <label>Session Type</label>
-                        <div className="flex gap-4">
-                            <label className="flex items-center gap-2">
-                                <input type="radio" value="individual" checked={sessionType === 'individual'} onChange={() => { setSessionType('individual'); setStudents(students.slice(0,1)); }}/>
-                                Individual
-                            </label>
-                            <label className="flex items-center gap-2">
-                                <input type="radio" value="group" checked={sessionType === 'group'} onChange={() => { setSessionType('group'); if (students.length < 2) setStudents(students.concat([{ student_id: '', feedback: '' }])); }}/>
-                                Group
-                            </label>
-                        </div>
-                    </section>
-                    <section>
-                        <label>Students</label>
-                        {students.map((s, idx) => (
-                            <div key={idx} className="mb-2 flex flex-col gap-2 border border-[var(--gray)] rounded-lg p-2">
-                                <div className="flex gap-2">
-                                    <input type="text" placeholder="Student ID (KU ID)" value={s.student_id} onChange={(e) => handleStudentChange(idx, 'student_id', e.target.value)}/>
-                                    {sessionType === 'group' && students.length > 1 && (
-                                        <button type="button" className="px-2 py-1 bg-red-500 text-white rounded" onClick={() => removeStudentField(idx)}>Remove</button>
-                                    )}
-                                </div>
-                                <textarea placeholder="Tutor feedback for this student" rows="2" value={s.feedback} onChange={(e) => handleStudentChange(idx, 'feedback', e.target.value)}></textarea>
-                            </div>
-                        ))}
-                        {sessionType === 'group' && (
-                            <button type="button" className="mt-1 px-2 py-1 bg-[var(--blue)] text-white rounded" onClick={addStudentField}>Add Student</button>
-                        )}
-                    </section>
                 </>
             ) : (
                 <>
@@ -199,6 +169,36 @@ const EditSessionForm = ({ session, session_id, tutor_id, navigate, source, user
                     </section>
                 </>
             )}
+            <section>
+                <label>Session Type</label>
+                <div className="flex gap-4">
+                    <label className="flex items-center gap-2">
+                        <input type="radio" value="individual" checked={sessionType === 'individual'} onChange={() => { setSessionType('individual'); setStudents(students.slice(0, 1)); }}/>
+                        Individual
+                    </label>
+                    <label className="flex items-center gap-2">
+                        <input type="radio" value="group" checked={sessionType === 'group'} onChange={() => { setSessionType('group'); if (students.length < 2) setStudents(students.concat([{ student_id: '', feedback: '' }])); }}/>
+                        Group
+                    </label>
+                </div>
+            </section>
+            <section>
+                <label>Students</label>
+                {students.map((s, idx) => (
+                    <div key={idx} className="mb-2 flex flex-col gap-2 rounded-lg border border-[var(--gray)] p-2">
+                        <div className="flex gap-2">
+                            <input type="text" placeholder="Student ID (KU ID)" value={s.student_id} onChange={(e) => handleStudentChange(idx, 'student_id', e.target.value)} required />
+                            {sessionType === 'group' && students.length > 1 && (
+                                <button type="button" className="rounded bg-red-500 px-2 py-1 text-white" onClick={() => removeStudentField(idx)}>Remove</button>
+                            )}
+                        </div>
+                        <textarea placeholder="Tutor feedback for this student" rows="2" value={s.feedback} onChange={(e) => handleStudentChange(idx, 'feedback', e.target.value)} />
+                    </div>
+                ))}
+                {sessionType === 'group' && (
+                    <button type="button" className="mt-1 rounded bg-[var(--blue)] px-2 py-1 text-white" onClick={addStudentField}>Add Student</button>
+                )}
+            </section>
             <div className="flex gap-5 max-md:flex-col max-md:gap-3 [&_section]:flex-1">
                 <section>
                     <label>Date: </label>

@@ -20,7 +20,8 @@ function EditSession() {
                 const { data } = response;
                 setSession({
                   ...data.session[0],  
-                  ...data.studentInfo  
+                  ...data.studentInfo,
+                  students: data.students || []
                 });
                 
                 console.log(data.session);
