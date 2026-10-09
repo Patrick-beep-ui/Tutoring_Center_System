@@ -16,6 +16,8 @@ import moment from 'moment';
 
 import os from 'os';
 
+const MAX_STUDENTS_PER_SESSION = 100;
+
 function getLocalIPAddress() {
     const interfaces = os.networkInterfaces();
     for (const iface of Object.values(interfaces)) {
@@ -394,6 +396,10 @@ export const addSession = async (req, res) => {
             studentList = [req.body.student_id];
         } else if (Array.isArray(req.body.students) && req.body.students.length > 0) {
             studentList = req.body.students.map(s => s.student_id).filter(Boolean);
+        }
+
+        if (!Array.isArray(studentList) || studentList.length > MAX_STUDENTS_PER_SESSION) {
+            return res.status(400).json({ error: `A session can include at most ${MAX_STUDENTS_PER_SESSION} students` });
         }
 
         if (session_type === 'individual' && studentList.length !== 1) {
