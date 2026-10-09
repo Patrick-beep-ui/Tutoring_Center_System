@@ -39,6 +39,10 @@ const SessionFilters = ({ filters, onFilterChange, tutors, courses, resultCount,
         onFilterChange({ ...filters, tutor: e.target.value });
     }, [filters, onFilterChange]);
 
+    const handleSessionTypeChange = useCallback((e) => {
+        onFilterChange({ ...filters, sessionType: e.target.value });
+    }, [filters, onFilterChange]);
+
     const handleCourseChange = useCallback((e) => {
         onFilterChange({ ...filters, course: e.target.value });
     }, [filters, onFilterChange]);
@@ -59,6 +63,7 @@ const SessionFilters = ({ filters, onFilterChange, tutors, courses, resultCount,
         onFilterChange({
             search: "",
             status: [],
+            sessionType: "",
             tutor: "",
             course: "",
             dateFrom: "",
@@ -67,7 +72,7 @@ const SessionFilters = ({ filters, onFilterChange, tutors, courses, resultCount,
         });
     }, [onFilterChange]);
 
-    const hasActiveFilters = filters.search || filters.status.length > 0 || filters.tutor || filters.course || filters.dateFrom || filters.dateTo;
+    const hasActiveFilters = filters.search || filters.status.length > 0 || filters.sessionType || filters.tutor || filters.course || filters.dateFrom || filters.dateTo;
 
     return (
         <div className="mx-5 mt-2.5 rounded-[10px] bg-white px-5 py-4 shadow-[0_2px_8px_rgba(0,0,0,0.08)] max-md:mx-2.5 max-md:p-3">
@@ -100,6 +105,15 @@ const SessionFilters = ({ filters, onFilterChange, tutors, courses, resultCount,
                         {courses.map(c => (
                             <option key={c} value={c}>{c}</option>
                         ))}
+                    </select>
+                </div>
+
+                <div className="flex flex-col gap-1">
+                    <label className="text-[11px] font-semibold uppercase tracking-[0.5px] text-[#666]">Session Type</label>
+                    <select className="min-w-[140px] cursor-pointer rounded-md border border-[#ddd] bg-white px-2.5 py-2 text-[13px] outline-none focus:border-[#0a84ff] max-md:min-w-full" value={filters.sessionType || ''} onChange={handleSessionTypeChange}>
+                        <option value="">All Types</option>
+                        <option value="individual">Individual</option>
+                        <option value="group">Group</option>
                     </select>
                 </div>
 

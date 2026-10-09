@@ -47,6 +47,7 @@ export const getSessions = async (req, res) => {
                 )) AS 'session_duration',
                 ANY_VALUE(s.session_date) AS 'session_date',
                 ANY_VALUE(sd.session_status) AS 'session_status',
+                ANY_VALUE(sd.session_type) AS 'session_type',
                 ANY_VALUE(WEEK(s.session_date, 1) - WEEK(semester.start_date, 1) + 1) AS 'week_number',
                 ANY_VALUE(s.topics) AS 'session_topics',
                 ANY_VALUE(s.feedback) AS 'session_feedback',
