@@ -36,6 +36,7 @@ export const getSessions = async (req, res) => {
             SELECT
                 s.session_id AS 'session_id',
                 ANY_VALUE(CONCAT(tutor.first_name, ' ', tutor.last_name)) AS 'tutor_name',
+                ANY_VALUE(m.major_name) AS 'tutor_major',
                 ANY_VALUE(s.student_id) AS 'student_id',
                 ANY_VALUE(CONCAT(student.first_name, ' ', student.last_name)) AS 'student_name',
                 ANY_VALUE(c.course_name) AS 'course_name',
@@ -57,6 +58,7 @@ export const getSessions = async (req, res) => {
                      JOIN session_details sd ON s.session_id = sd.session_id
                      JOIN tutors t ON s.tutor_id = t.tutor_id
                      JOIN users tutor ON tutor.user_id = t.user_id
+                     LEFT JOIN majors m ON m.major_id = tutor.major_id
                      JOIN users student ON student.ku_id = s.student_id
                      JOIN courses c ON s.course_id = c.course_id
                      JOIN semester semester ON semester.semester_id = s.semester_id

@@ -21,7 +21,7 @@ const STATUS_ACTIVE_STYLES = {
     canceled: "bg-[#dc143c] text-white",
 };
 
-const SessionFilters = ({ filters, onFilterChange, tutors, courses, resultCount, totalCount }) => {
+const SessionFilters = ({ filters, onFilterChange, tutors, majors, courses, resultCount, totalCount }) => {
 
     const handleSearchChange = useCallback((e) => {
         onFilterChange({ ...filters, search: e.target.value });
@@ -37,6 +37,10 @@ const SessionFilters = ({ filters, onFilterChange, tutors, courses, resultCount,
 
     const handleTutorChange = useCallback((e) => {
         onFilterChange({ ...filters, tutor: e.target.value });
+    }, [filters, onFilterChange]);
+
+    const handleMajorChange = useCallback((e) => {
+        onFilterChange({ ...filters, major: e.target.value });
     }, [filters, onFilterChange]);
 
     const handleSessionTypeChange = useCallback((e) => {
@@ -65,6 +69,7 @@ const SessionFilters = ({ filters, onFilterChange, tutors, courses, resultCount,
             status: [],
             sessionType: "",
             tutor: "",
+            major: "",
             course: "",
             dateFrom: "",
             dateTo: "",
@@ -72,7 +77,7 @@ const SessionFilters = ({ filters, onFilterChange, tutors, courses, resultCount,
         });
     }, [onFilterChange]);
 
-    const hasActiveFilters = filters.search || filters.status.length > 0 || filters.sessionType || filters.tutor || filters.course || filters.dateFrom || filters.dateTo;
+    const hasActiveFilters = filters.search || filters.status.length > 0 || filters.sessionType || filters.tutor || filters.major || filters.course || filters.dateFrom || filters.dateTo;
 
     return (
         <div className="mx-5 mt-2.5 rounded-[10px] bg-white px-5 py-4 shadow-[0_2px_8px_rgba(0,0,0,0.08)] max-md:mx-2.5 max-md:p-3">
@@ -94,6 +99,16 @@ const SessionFilters = ({ filters, onFilterChange, tutors, courses, resultCount,
                         <option value="">All Tutors</option>
                         {tutors.map(t => (
                             <option key={t} value={t}>{t}</option>
+                        ))}
+                    </select>
+                </div>
+
+                <div className="flex flex-col gap-1">
+                    <label className="text-[11px] font-semibold uppercase tracking-[0.5px] text-[#666]">Major</label>
+                    <select className="min-w-[140px] cursor-pointer rounded-md border border-[#ddd] bg-white px-2.5 py-2 text-[13px] outline-none focus:border-[#0a84ff] max-md:min-w-full" value={filters.major || ''} onChange={handleMajorChange}>
+                        <option value="">All Majors</option>
+                        {(majors || []).map(major => (
+                            <option key={major} value={major}>{major}</option>
                         ))}
                     </select>
                 </div>

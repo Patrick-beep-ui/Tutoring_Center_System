@@ -9,6 +9,7 @@ const DEFAULT_FILTERS = {
     status: [],
     sessionType: "",
     tutor: "",
+    major: "",
     course: "",
     dateFrom: "",
     dateTo: "",
@@ -43,6 +44,11 @@ const Activity_Sessions = () => {
         return names.sort();
     }, [sessions]);
 
+    const majors = useMemo(() => {
+        const names = [...new Set(sessions.map(s => s.tutor_major).filter(Boolean))];
+        return names.sort();
+    }, [sessions]);
+
     const filteredSessions = useMemo(() => {
         let result = [...sessions];
 
@@ -66,6 +72,10 @@ const Activity_Sessions = () => {
 
         if (filters.tutor) {
             result = result.filter(s => s.tutor_name === filters.tutor);
+        }
+
+        if (filters.major) {
+            result = result.filter(s => s.tutor_major === filters.major);
         }
 
         if (filters.course) {
@@ -123,6 +133,7 @@ const Activity_Sessions = () => {
                 filters={filters}
                 onFilterChange={handleFilterChange}
                 tutors={tutors}
+                majors={majors}
                 courses={courses}
                 resultCount={filteredSessions.length}
                 totalCount={sessions.length}
