@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useMemo, memo, useRef, useContext } from "react";
 import api from "../../../axiosService";
 import { SemesterContext } from "../../../context/currentSemester";
+import { buildReportUrl, reportDateRangeSuffix } from "../../../lib/reportDateRange";
 import { ReportSummaryCard, ReportSummaryGrid, ReportTabs } from "./ReportUI";
 import {
   Bar,
@@ -56,7 +57,7 @@ import {
     { name: "One-time", value: 35, color: "#94a3b8" },
   ];
 
-const StudentsReport = () => {
+const StudentsReport = ({ dateRange, refreshKey }) => {
   const [chartType, setChartType] = useState("bar");
   const [loading, setLoading] = useState(true);
 
@@ -81,7 +82,7 @@ const StudentsReport = () => {
     const getReportData = async () => {
       try {
         setLoading(true);
-        const response = await api.get(`/report/students${selectedSemesterId ? `?semester_id=${selectedSemesterId}` : ''}`);
+        const response = await api.get(buildReportUrl("/report/students", selectedSemesterId, dateRange));
         const data = response.data;
 
         const formatRates = (value) => {
@@ -135,7 +136,7 @@ const StudentsReport = () => {
     }
 
     getReportData()
-  }, [selectedSemesterId])
+  }, [selectedSemesterId, dateRange, refreshKey])
 
   const attendanceChart = useMemo(() => (
     <ResponsiveContainer width="100%" height="100%" minHeight="400px">
@@ -211,6 +212,7 @@ const StudentsReport = () => {
       <ReportTabs
         tabs={tabs}
         chartType={chartType}
+        exportSuffix={reportDateRangeSuffix(dateRange)}
         onTabChange={(tab) => setChartType(tab.chartType)}
       />
     </div>

@@ -48,7 +48,7 @@ const ExportButtons = memo(({ data, refEl, filename, chartType }) => (
   </div>
 ));
 
-export function ReportTabs({ tabs, chartType, onTabChange }) {
+export function ReportTabs({ tabs, chartType, exportSuffix = "", onTabChange }) {
   return (
     <Tab.Group onChange={(index) => onTabChange?.(tabs[index])}>
       <Tab.List className="mb-4 flex flex-wrap border-b border-border" aria-label="Report charts">
@@ -74,7 +74,7 @@ export function ReportTabs({ tabs, chartType, onTabChange }) {
             <ExportButtons
               data={tab.data}
               refEl={tab.refEl}
-              filename={tab.filename}
+              filename={`${tab.filename}_${exportSuffix}`}
               chartType={chartType}
             />
           </Tab.Panel>

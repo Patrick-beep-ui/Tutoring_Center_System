@@ -13,6 +13,7 @@ import {literal, fn, col, Op} from "sequelize";
 import connection from "../connection.js";
 import safeQuery from "../utils/safeQuery.js";
 import { resolveSemesterId } from "../utils/currentSemester.js";
+import { getReportDateRange, reportSessionSql } from "../utils/reportDateRange.js";
 
 export const getReportData = async (req, res) => {
     try {
@@ -117,7 +118,7 @@ export const getMajorSessions = async (req, res) => {
 
 // Sessions Reports
 
-export const getSessionsReport = async (req, res) => {
+export const getSessionsReportLegacy = async (req, res) => {
     try {
         const semester_id = await resolveSemesterId(req.query.semester_id);
 
@@ -309,7 +310,7 @@ export const getSessionsReport = async (req, res) => {
     }
 }
 
-export const getTutorsReport = async (req, res) => {
+export const getTutorsReportLegacy = async (req, res) => {
   try {
     const semester_id = await resolveSemesterId(req.query.semester_id);
 
@@ -473,7 +474,7 @@ export const getTutorsReport = async (req, res) => {
   }
 }
 
-export const getStudentsReport = async (req, res) => {
+export const getStudentsReportLegacy = async (req, res) => {
   try {
     const semester_id = await resolveSemesterId(req.query.semester_id);
 
@@ -644,7 +645,7 @@ export const getStudentsReport = async (req, res) => {
   }
 }
 
-export const getMajorsReport = async (req, res) => {
+export const getMajorsReportLegacy = async (req, res) => {
   try {
     const semester_id = await resolveSemesterId(req.query.semester_id);
 
@@ -796,6 +797,149 @@ export const getMajorsReport = async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 }
+
+const reportQuery = (sql, replacements) => safeQuery(connection.query(sql, { replacements }), [[]]);
+
+const reportRange = (req, res) => {
+  const range = getReportDateRange(req.query);
+  if (!range) {
+    res.status(400).json({ error: 'Invalid date range' });
+    return null;
+  }
+  return range;
+};
+
+const reportError = (error, res) => {
+  if (error.message === 'No current semester is set') return res.status(404).json({ error: error.message });
+  console.error(error);
+  return res.status(500).json({ error: 'Internal server error' });
+};
+
+// session_students holds group membership; the scalar student_id is only an individual-session participant.
+const participantSessionsSql = (dateSql) => `
+  SELECT ss.student_id, s.session_id, s.course_id, s.session_date, s.session_totalhours, sd.session_status
+  FROM sessions s
+  JOIN session_details sd ON sd.session_id = s.session_id
+  JOIN session_students ss ON ss.session_id = s.session_id
+  WHERE s.semester_id = :semester_id${dateSql}
+  UNION ALL
+  SELECT s.student_id, s.session_id, s.course_id, s.session_date, s.session_totalhours, sd.session_status
+  FROM sessions s
+  JOIN session_details sd ON sd.session_id = s.session_id
+  WHERE s.semester_id = :semester_id${dateSql}
+    AND s.student_id IS NOT NULL
+    AND NOT EXISTS (SELECT 1 FROM session_students ss WHERE ss.session_id = s.session_id)`;
+
+export const getSessionsReport = async (req, res) => {
+  const range = reportRange(req, res);
+  if (!range) return;
+  try {
+    const dateSql = reportSessionSql('s', range);
+    const replacements = { semester_id: await resolveSemesterId(req.query.semester_id), ...range };
+    const [[summary], [weeklyData], [hourlyData], [completionData], [feedbackCounts]] = await Promise.all([
+      reportQuery(`SELECT COUNT(*) AS sessionsAmount,
+        COALESCE(ROUND(100 * SUM(sd.session_status = 'completed') / NULLIF(COUNT(*), 0), 2), 0) AS completionRate,
+        COALESCE(ROUND(AVG(CASE WHEN sd.session_status = 'completed' THEN s.session_totalhours END), 2), 0) AS averageDuration,
+        COALESCE(ROUND(AVG(f.rating), 1), 0) AS averageRating
+        FROM sessions s JOIN session_details sd ON sd.session_id = s.session_id
+        LEFT JOIN session_feedback f ON f.session_id = s.session_id
+        WHERE s.semester_id = :semester_id${dateSql}`, replacements),
+      reportQuery(`SELECT CONCAT('Week ', WEEK(s.session_date, 1) - WEEK(sem.start_date, 1) + 1) AS name,
+        WEEK(s.session_date, 1) - WEEK(sem.start_date, 1) + 1 AS week_num, COUNT(*) AS sessions,
+        SUM(sd.session_status = 'completed') AS completed, SUM(sd.session_status = 'canceled') AS cancelled
+        FROM sessions s JOIN session_details sd ON sd.session_id = s.session_id JOIN semester sem ON sem.semester_id = s.semester_id
+        WHERE s.semester_id = :semester_id${dateSql} GROUP BY name, week_num ORDER BY week_num`, replacements),
+      reportQuery(`SELECT TIME_FORMAT(sd.session_time, '%l %p') AS session_duration, COUNT(*) AS sessions
+        FROM sessions s JOIN session_details sd ON sd.session_id = s.session_id
+        WHERE s.semester_id = :semester_id AND sd.session_status = 'completed'${dateSql}
+        GROUP BY session_duration ORDER BY STR_TO_DATE(session_duration, '%l %p')`, replacements),
+      reportQuery(`SELECT sd.session_status AS name, COUNT(*) AS value FROM sessions s JOIN session_details sd ON sd.session_id = s.session_id
+        WHERE s.semester_id = :semester_id${dateSql} GROUP BY sd.session_status`, replacements),
+      reportQuery(`SELECT f.rating, COUNT(*) AS count FROM session_feedback f JOIN sessions s ON s.session_id = f.session_id
+        WHERE s.semester_id = :semester_id AND f.rating IS NOT NULL${dateSql} GROUP BY f.rating`, replacements)
+    ]);
+    res.json({ sessionsAmount: Number(summary?.sessionsAmount || 0), completionRate: Number(summary?.completionRate || 0), averageDuration: Number(summary?.averageDuration || 0).toFixed(2), averageRating: summary?.averageRating || 0, weeklyData, hourlyData, completionData, feedbackCounts });
+  } catch (e) { return reportError(e, res); }
+};
+
+export const getTutorsReport = async (req, res) => {
+  const range = reportRange(req, res);
+  if (!range) return;
+  try {
+    const dateSql = reportSessionSql('s', range);
+    const replacements = { semester_id: await resolveSemesterId(req.query.semester_id), ...range };
+    const countSql = range.date_from || range.date_to
+      ? `SELECT COUNT(DISTINCT s.tutor_id) AS tutorsAmount FROM sessions s WHERE s.semester_id = :semester_id${dateSql}`
+      : `SELECT COUNT(*) AS tutorsAmount FROM users WHERE role = 'tutor'`;
+    const [[totals], [tutorsPerformance], [tutorsHours], [sessionsPerMajor], [availabilityData]] = await Promise.all([
+      (async () => {
+        const [countRows] = await reportQuery(countSql, replacements);
+        const [metricRows] = await reportQuery(`SELECT COUNT(*) AS sessionsAmount, COALESCE(SUM(s.session_totalhours), 0) AS totalHours,
+          COALESCE(ROUND(AVG(f.rating), 1), 0) AS avgRatingPerTutor FROM sessions s JOIN session_details sd ON sd.session_id=s.session_id
+          LEFT JOIN session_feedback f ON f.session_id=s.session_id WHERE s.semester_id=:semester_id AND sd.session_status='completed'${dateSql}`, replacements);
+        return [{ ...metricRows[0], tutorsAmount: countRows[0]?.tutorsAmount || 0 }];
+      })(),
+      reportQuery(`SELECT CONCAT(u.first_name, ' ', u.last_name) AS tutor_name, COUNT(DISTINCT s.session_id) AS sessions_amount, ROUND(AVG(f.rating), 2) AS avg_rating,
+        COUNT(DISTINCT p.student_id) AS students_count FROM sessions s JOIN session_details sd ON sd.session_id=s.session_id JOIN users u ON u.user_id=s.tutor_id
+        LEFT JOIN session_feedback f ON f.session_id=s.session_id LEFT JOIN (${participantSessionsSql(dateSql)}) p ON p.session_id=s.session_id
+        WHERE s.semester_id=:semester_id AND sd.session_status='completed'${dateSql} GROUP BY u.user_id, tutor_name ORDER BY sessions_amount DESC, avg_rating DESC`, replacements),
+      reportQuery(`SELECT CONCAT(u.first_name, ' ', u.last_name) AS tutor_name, SUM(s.session_totalhours) AS total_hours FROM sessions s JOIN session_details sd ON sd.session_id=s.session_id JOIN users u ON u.user_id=s.tutor_id WHERE s.semester_id=:semester_id AND sd.session_status='completed'${dateSql} GROUP BY u.user_id, tutor_name`, replacements),
+      reportQuery(`SELECT m.major_name, COUNT(*) AS sessions_amount FROM sessions s JOIN courses c ON c.course_id=s.course_id JOIN majors m ON m.major_id=c.major_id WHERE s.semester_id=:semester_id${dateSql} GROUP BY m.major_id, m.major_name`, replacements),
+      reportQuery(`SELECT TIME_FORMAT(sd.session_time, '%l %p') AS time_block, COUNT(DISTINCT s.tutor_id) AS tutors_count FROM sessions s JOIN session_details sd ON sd.session_id=s.session_id WHERE s.semester_id=:semester_id${dateSql} GROUP BY time_block ORDER BY tutors_count DESC LIMIT 4`, replacements)
+    ]);
+    const total = totals?.[0] || {};
+    res.json({ tutorsAmount: Number(total.tutorsAmount || 0), avgSessionsPerTutor: (Number(total.sessionsAmount || 0) / Number(total.tutorsAmount || 1)).toFixed(2), avgRatingPerTutor: Number(total.avgRatingPerTutor || 0).toFixed(1), totalHours: total.totalHours || 0, tutorsPerformance, tutorsHours, sessionsPerMajor, availabilityData });
+  } catch (e) { return reportError(e, res); }
+};
+
+export const getStudentsReport = async (req, res) => {
+  const range = reportRange(req, res);
+  if (!range) return;
+  try {
+    const dateSql = reportSessionSql('s', range);
+    const replacements = { semester_id: await resolveSemesterId(req.query.semester_id), ...range };
+    const participants = participantSessionsSql(dateSql);
+    const hasRange = range.date_from || range.date_to;
+    const studentsCountSql = hasRange
+      ? `SELECT COUNT(DISTINCT student_id) AS studentsAmount FROM (${participants}) p`
+      : `SELECT COUNT(*) AS studentsAmount FROM users WHERE role = 'student'`;
+    const [[summary], [weeklyData], [popularCourses], [studentsByMajor], [studentRetention]] = await Promise.all([
+      reportQuery(`SELECT (${studentsCountSql}) AS studentsAmount,
+        (SELECT COALESCE(ROUND(100 * SUM(p.session_status='completed') / NULLIF(SUM(p.session_status IN ('scheduled','completed')), 0), 2), 0) FROM (${participants}) p) AS attendanceRate,
+        (SELECT COALESCE(ROUND(AVG(session_count), 2), 0) FROM (SELECT student_id, COUNT(*) AS session_count FROM (${participants}) p WHERE p.session_status='completed' GROUP BY student_id) counts) AS avgSessionsPerStudent,
+        (SELECT COALESCE(ROUND(100 * AVG(session_count > 1), 2), 0) FROM (SELECT student_id, COUNT(*) AS session_count FROM (${participants}) p WHERE p.session_status='completed' GROUP BY student_id) counts) AS retentionRate`, replacements),
+      reportQuery(`SELECT CONCAT('Week ', WEEK(p.session_date, 1) - WEEK(sem.start_date, 1) + 1) AS name, WEEK(p.session_date, 1) - WEEK(sem.start_date, 1) + 1 AS week_num,
+        SUM(p.session_status='completed') AS attended, SUM(p.session_status='scheduled') AS scheduled, SUM(p.session_status='canceled') AS missed
+        FROM (${participants}) p JOIN sessions s ON s.session_id=p.session_id JOIN semester sem ON sem.semester_id=s.semester_id GROUP BY name, week_num ORDER BY week_num`, replacements),
+      reportQuery(`SELECT c.course_name, COUNT(*) AS sessions_count, SUM(sd.session_status='completed') AS completed, SUM(sd.session_status='scheduled') AS scheduled, SUM(sd.session_status='pending') AS pending
+        FROM sessions s JOIN courses c ON c.course_id=s.course_id JOIN session_details sd ON sd.session_id=s.session_id
+        WHERE s.semester_id=:semester_id AND sd.session_status IN ('completed','scheduled','pending')${dateSql} GROUP BY c.course_id, c.course_name ORDER BY sessions_count DESC LIMIT 8`, replacements),
+      reportQuery(`SELECT m.major_name, COUNT(DISTINCT p.student_id) AS students_count FROM (${participants}) p JOIN users u ON u.ku_id=p.student_id JOIN majors m ON m.major_id=u.major_id GROUP BY m.major_id, m.major_name`, replacements),
+      reportQuery(`SELECT SUM(session_count=1) AS one_time_students, SUM(session_count>1) AS returning_students FROM (SELECT student_id, COUNT(*) AS session_count FROM (${participants}) p WHERE p.session_status='completed' GROUP BY student_id) counts`, replacements)
+    ]);
+    res.json({ studentsAmount: Number(summary?.studentsAmount || 0), attendanceRate: Number(summary?.attendanceRate || 0).toFixed(2), retentionRate: summary?.retentionRate || 0, avgSessionsPerStudent: summary?.avgSessionsPerStudent || 0, weeklyData, popularCourses, studentsByMajor, studentRetention });
+  } catch (e) { return reportError(e, res); }
+};
+
+export const getMajorsReport = async (req, res) => {
+  const range = reportRange(req, res);
+  if (!range) return;
+  try {
+    const dateSql = reportSessionSql('s', range);
+    const replacements = { semester_id: await resolveSemesterId(req.query.semester_id), ...range };
+    const activeMajorFrom = `FROM sessions s JOIN courses c ON c.course_id=s.course_id JOIN majors m ON m.major_id=c.major_id JOIN session_details sd ON sd.session_id=s.session_id`;
+    const activeMajorWhere = `WHERE s.semester_id=:semester_id AND sd.session_status='completed'${dateSql}`;
+    const [[summary], [sessionsUsage], [tutorsByMajor], [sessionsByMajor], [satisfactionByMajor]] = await Promise.all([
+      reportQuery(`SELECT COUNT(DISTINCT major_id) AS majorsCount, COALESCE(ROUND(AVG(sessions_count), 2), 0) AS avgSessionsPerMajor, COALESCE(SUM(session_hours), 0) AS totalHours, COALESCE(ROUND(AVG(major_rating), 1), 0) AS avgRatingPerMajor FROM (
+        SELECT m.major_id, COUNT(*) AS sessions_count, SUM(s.session_totalhours) AS session_hours, AVG(f.rating) AS major_rating ${activeMajorFrom} LEFT JOIN session_feedback f ON f.session_id=s.session_id ${activeMajorWhere} GROUP BY m.major_id) major_metrics`, replacements),
+      reportQuery(`SELECT m.major_name, COUNT(*) AS sessions_count, SUM(s.session_totalhours) AS session_hours ${activeMajorFrom} ${activeMajorWhere} GROUP BY m.major_id, m.major_name`, replacements),
+      reportQuery(`SELECT m.major_name, COUNT(DISTINCT s.tutor_id) AS tutors_count ${activeMajorFrom} ${activeMajorWhere} GROUP BY m.major_id, m.major_name`, replacements),
+      reportQuery(`SELECT m.major_name, COUNT(*) AS sessions_count ${activeMajorFrom} ${activeMajorWhere} GROUP BY m.major_id, m.major_name`, replacements),
+      reportQuery(`SELECT m.major_name, ROUND(AVG(f.rating), 2) AS major_rating ${activeMajorFrom} JOIN session_feedback f ON f.session_id=s.session_id ${activeMajorWhere} GROUP BY m.major_id, m.major_name`, replacements)
+    ]);
+    res.json({ majorsCount: Number(summary?.majorsCount || 0), avgSessionsPerMajor: Number(summary?.avgSessionsPerMajor || 0).toFixed(2), totalHours: Number(summary?.totalHours || 0), avgRatingPerMajor: Number(summary?.avgRatingPerMajor || 0).toFixed(1), sessionsUsage, tutorsByMajor, sessionsByMajor, satisfactionByMajor });
+  } catch (e) { return reportError(e, res); }
+};
 
 // Monday of the week containing the given date
 const startOfWeek = (date) => {

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useMemo, memo, useContext } from "react";
 import api from "../../../axiosService";
 import { SemesterContext } from "../../../context/currentSemester";
+import { buildReportUrl, reportDateRangeSuffix } from "../../../lib/reportDateRange";
 import { ReportSummaryCard, ReportSummaryGrid, ReportTabs } from "./ReportUI";
 import {
   BarChart,
@@ -27,7 +28,7 @@ const weeklySampleData = [
   { name: "Week 8", sessions: 90, completed: 85, cancelled: 5 },
 ];
 
-function SessionsReportComponent() {
+function SessionsReportComponent({ dateRange, refreshKey }) {
   const [chartType, setChartType] = useState("bar");
 
   const [hourlyData, setHourlyData] = useState([]);
@@ -50,7 +51,7 @@ function SessionsReportComponent() {
   useEffect(() => {
     const getReportData = async () => {
       try {
-        const { data } = await api.get(`/report/sessions${selectedSemesterId ? `?semester_id=${selectedSemesterId}` : ''}`);
+        const { data } = await api.get(buildReportUrl("/report/sessions", selectedSemesterId, dateRange));
 
         setWeeklyData(data.weeklyData || []);
 
@@ -91,7 +92,7 @@ function SessionsReportComponent() {
       }
     };
     getReportData();
-  }, [selectedSemesterId]);
+  }, [selectedSemesterId, dateRange, refreshKey]);
 
   // Memoizar charts
   const weeklyChart = useMemo(
@@ -203,6 +204,7 @@ function SessionsReportComponent() {
       <ReportTabs
         tabs={tabs}
         chartType={chartType}
+        exportSuffix={reportDateRangeSuffix(dateRange)}
         onTabChange={(tab) => setChartType(tab.chartType)}
       />
     </div>

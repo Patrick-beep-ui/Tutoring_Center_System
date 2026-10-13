@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useMemo, memo, useRef, useContext } from "react"
 import api from "../../../axiosService"
 import { SemesterContext } from "../../../context/currentSemester"
+import { buildReportUrl, reportDateRangeSuffix } from "../../../lib/reportDateRange"
 import { ReportSummaryCard, ReportSummaryGrid, ReportTabs } from "./ReportUI"
 import {
   Bar,
@@ -58,7 +59,7 @@ const satisfactionSampleData = [
   { name: "Economics", rating: 4.5 },
 ]
 
-const DepartmentReport = () => {
+const DepartmentReport = ({ dateRange, refreshKey }) => {
     const [chartType, setChartType] = useState("bar");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -83,7 +84,7 @@ const DepartmentReport = () => {
     useEffect(() => {
       const getReportData = async () => {
         try {
-          const response = await api.get(`/report/majors${selectedSemesterId ? `?semester_id=${selectedSemesterId}` : ''}`);
+          const response = await api.get(buildReportUrl("/report/majors", selectedSemesterId, dateRange));
           const data = response.data;
 
           const formatRates = (value) => {
@@ -130,7 +131,7 @@ const DepartmentReport = () => {
       }
 
       getReportData()
-    }, [selectedSemesterId])
+    }, [selectedSemesterId, dateRange, refreshKey])
 
     const usageChart = useMemo(() => (
       <ResponsiveContainer width="100%" height="100%" minHeight="400px">
@@ -216,7 +217,7 @@ const DepartmentReport = () => {
   return (
     <div className="mx-auto my-6 w-full max-w-[1320px]">
       <ReportSummaryGrid>
-        <ReportSummaryCard title="Total Departments" value={totalMajors} change="+1" />
+        <ReportSummaryCard title="Active Departments" value={totalMajors} change="+1" />
         <ReportSummaryCard title="Avg. Sessions per Major" value={avgSessionsByMajor} change="+12%" />
         <ReportSummaryCard title="Total Hours" value={totalHours} change="+15%" />
         <ReportSummaryCard title="Avg. Satisfaction" value={`${avgSatisfaction}/5`} change="+0.2%" />
@@ -224,6 +225,7 @@ const DepartmentReport = () => {
       <ReportTabs
         tabs={tabs}
         chartType={chartType}
+        exportSuffix={reportDateRangeSuffix(dateRange)}
         onTabChange={(tab) => setChartType(tab.chartType)}
       />
     </div>

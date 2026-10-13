@@ -1,5 +1,5 @@
-import { memo, useContext } from 'react';
-import { FaDownload, FaCalendarAlt, FaSyncAlt } from 'react-icons/fa';
+import { memo, useContext, useState } from 'react';
+import { FaSyncAlt } from 'react-icons/fa';
 import { Tab } from '@headlessui/react';
 import Header from '../../../components/shared/Header';
 import SessionsReport from "../../../components/admin/reports/SessionsReport";
@@ -7,9 +7,12 @@ import TutorsReport from "../../../components/admin/reports/TutorsReport";
 import StudentsReport from "../../../components/admin/reports/StudentsReport";
 import DepartmentReport from "../../../components/admin/reports/DepartmentReports";
 import { SemesterContext } from '../../../context/currentSemester';
+import DateRangeSelector from '../../../components/shared/filters/DateRangeSelector';
 
 function ReportsPage() {
   const { semesters, selectedSemesterId, setSelectedSemesterId } = useContext(SemesterContext);
+  const [dateRange, setDateRange] = useState({ from: "", to: "" });
+  const [refreshKey, setRefreshKey] = useState(0);
 
   return (
     <>
@@ -36,15 +39,13 @@ function ReportsPage() {
                         </option>
                       ))}
                     </select>
-                    <button type="button" className="inline-flex h-9 cursor-pointer items-center gap-2 rounded-md border border-border bg-transparent px-3 text-sm font-medium text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
-                      <FaCalendarAlt className="text-lg" />
-                      Date Range
-                    </button>
-                    <button type="button" className="inline-flex h-9 cursor-pointer items-center gap-2 rounded-md border border-border bg-transparent px-3 text-sm font-medium text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
-                      <FaDownload className="text-lg" />
-                      Export
-                    </button>
-                    <button type="button" className="inline-flex h-9 cursor-pointer items-center gap-2 rounded-md border border-border bg-transparent px-3 text-sm font-medium text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                    <DateRangeSelector
+                      from={dateRange.from}
+                      to={dateRange.to}
+                      onFromChange={(from) => setDateRange((current) => ({ ...current, from }))}
+                      onToChange={(to) => setDateRange((current) => ({ ...current, to }))}
+                    />
+                    <button type="button" onClick={() => setRefreshKey((current) => current + 1)} className="inline-flex h-9 cursor-pointer items-center gap-2 rounded-md border border-border bg-transparent px-3 text-sm font-medium text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
                       <FaSyncAlt className="text-lg" />
                       Refresh
                     </button>
@@ -70,10 +71,10 @@ function ReportsPage() {
                   ))}
                   </Tab.List>
                   <Tab.Panels>
-                    <Tab.Panel><SessionsReport /></Tab.Panel>
-                    <Tab.Panel><TutorsReport /></Tab.Panel>
-                    <Tab.Panel><StudentsReport /></Tab.Panel>
-                    <Tab.Panel><DepartmentReport /></Tab.Panel>
+                    <Tab.Panel><SessionsReport dateRange={dateRange} refreshKey={refreshKey} /></Tab.Panel>
+                    <Tab.Panel><TutorsReport dateRange={dateRange} refreshKey={refreshKey} /></Tab.Panel>
+                    <Tab.Panel><StudentsReport dateRange={dateRange} refreshKey={refreshKey} /></Tab.Panel>
+                    <Tab.Panel><DepartmentReport dateRange={dateRange} refreshKey={refreshKey} /></Tab.Panel>
                   </Tab.Panels>
                 </Tab.Group>
               </div>

@@ -51,6 +51,7 @@ import { getAlerts } from '../controllers/alertController.js';
 import isAdmin from '../middlewares/admin.js';
 import jwtAuth from '../middlewares/jwtAuth.js';
 import semesterScope from '../middlewares/semesterScope.js';
+import { getSessionsReport, getTutorsReport, getStudentsReport, getMajorsReport } from '../controllers/reportsController.js';
 
 const catalogRows = [
   { course_id: 1, course_name: 'Algebra', course_code: 'MAT101', credits: 3, major_id: 1, major_name: 'Mathematics', offered: 1, tutors_counter: 2 },
@@ -236,6 +237,23 @@ describe('activity date-range controllers', () => {
       expect.stringContaining('a.created_at < DATE_ADD(:date_to, INTERVAL 1 DAY)'),
       expect.objectContaining({ replacements: expect.objectContaining({ date_from: '2026-01-01', date_to: '2026-01-31' }) })
     );
+  });
+});
+
+describe('report date-range controllers', () => {
+  const handlers = [getSessionsReport, getTutorsReport, getStudentsReport, getMajorsReport];
+
+  it('rejects invalid and inverted ranges before resolving a semester', async () => {
+    mocks.resolveSemesterId.mockReset();
+    const app = express();
+    handlers.forEach((handler, index) => app.get(`/report-${index}`, handler));
+
+    for (let index = 0; index < handlers.length; index += 1) {
+      const response = await request(app).get(`/report-${index}`).query({ date_from: '2026-04-02', date_to: '2026-04-01' });
+      expect(response.status).toBe(400);
+      expect(response.body).toEqual({ error: 'Invalid date range' });
+    }
+    expect(mocks.resolveSemesterId).not.toHaveBeenCalled();
   });
 });
 

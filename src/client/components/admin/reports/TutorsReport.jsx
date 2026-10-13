@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useMemo, memo, useContext } from "react"
 import api from "../../../axiosService";
 import { SemesterContext } from "../../../context/currentSemester";
+import { buildReportUrl, reportDateRangeSuffix } from "../../../lib/reportDateRange";
 import { ReportSummaryCard, ReportSummaryGrid, ReportTabs } from "./ReportUI";
 import {
   Bar,
@@ -55,7 +56,7 @@ const availabilitySampleData = [
   { name: "Evening (4PM-8PM)", value: 25, color: "#a78bfa" },
 ]
 
-const TutorsReport = () => {
+const TutorsReport = ({ dateRange, refreshKey }) => {
   const [chartType, setChartType] = useState("bar")
 
   // State variables for summary cards
@@ -82,7 +83,7 @@ const TutorsReport = () => {
     const getReportData = async () => {
       try {
         setLoading(true);
-        const {data} = await api.get(`/report/tutors${selectedSemesterId ? `?semester_id=${selectedSemesterId}` : ''}`);
+        const {data} = await api.get(buildReportUrl("/report/tutors", selectedSemesterId, dateRange));
 
         const total_hours = data.totalHours || 0;
 
@@ -136,19 +137,8 @@ const TutorsReport = () => {
 
         setAvailabilityData(
           (data.availabilityData || []).map((t, index) => {
-            // Split the time block into start and end
-            const [start, end] = t.time_block.split('-');
-        
-            // Convert to AM/PM
-            const formatTime = (timeStr) => {
-              const [hour, minute] = timeStr.split(':').map(Number);
-              const ampm = hour >= 12 ? 'PM' : 'AM';
-              const hour12 = hour % 12 === 0 ? 12 : hour % 12;
-              return `${hour12}:${minute.toString().padStart(2, '0')} ${ampm}`;
-            };
-        
             return {
-              name: `${formatTime(start)} - ${formatTime(end)}`,
+              name: t.time_block,
               value: t.tutors_count,
               color: [
                 "#60a5fa",
@@ -169,7 +159,7 @@ const TutorsReport = () => {
     }
 
     getReportData();
-  }, [selectedSemesterId])
+  }, [selectedSemesterId, dateRange, refreshKey])
 
   const performanceChart = useMemo(
     () => (
@@ -262,7 +252,7 @@ const TutorsReport = () => {
     { key: "weekly", label: "Tutor Performance", title: "Tutor Performance", description: "Sessions conducted and average ratings by tutor", chart: performanceChart, data: performanceData, refEl: performanceRef, filename: "tutors_performance", chartType: "bar" },
     { key: "hourly", label: "Hours by Tutor", title: "Hours by Tutors", description: "Total tutoring hours provided by each tutor", chart: hoursDataChart, data: hoursData, refEl: hoursRef, filename: "tutors_hours", chartType: "bar" },
     { key: "completion", label: "Majors Covered", title: "Majors Covered", description: "Distribution of tutoring sessions by subject area", chart: <div className="flex min-h-[400px] w-full items-center justify-center">{majorsDataChart}</div>, data: majorsData, refEl: majorsRef, filename: "tutors_by_major", chartType: "pie" },
-    { key: "feedback", label: "Availability Analysis", title: "Tutor Availability", description: "Distribution of tutor availability throughout the day", chart: <div className="flex min-h-[400px] w-full items-center justify-center">{availabilityDataChart}</div>, data: availabilityData, refEl: availabilityRef, filename: "tutors_availability", chartType: "pie" },
+    { key: "feedback", label: "Session Times", title: "Session Time Distribution", description: "Tutors with sessions by scheduled time", chart: <div className="flex min-h-[400px] w-full items-center justify-center">{availabilityDataChart}</div>, data: availabilityData, refEl: availabilityRef, filename: "session_time_distribution", chartType: "pie" },
   ];
 
   return (
@@ -276,6 +266,7 @@ const TutorsReport = () => {
       <ReportTabs
         tabs={tabs}
         chartType={chartType}
+        exportSuffix={reportDateRangeSuffix(dateRange)}
         onTabChange={(tab) => setChartType(tab.chartType)}
       />
     </div>
