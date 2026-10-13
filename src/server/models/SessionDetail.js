@@ -13,6 +13,11 @@ const SessionDetail = connection.define('SessionDetail', {
     session_status: {
         type: DataTypes.ENUM('scheduled', 'completed', 'pending', 'canceled')
     },
+    session_type: {
+        type: DataTypes.ENUM('individual', 'group'),
+        allowNull: false,
+        defaultValue: 'individual'
+    },
     createdAt: {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW,

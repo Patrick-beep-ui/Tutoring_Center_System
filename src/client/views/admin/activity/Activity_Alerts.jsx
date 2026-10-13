@@ -1,6 +1,5 @@
 import { useState, useEffect, useContext } from "react";
 import AlertBox from "../../../components/shared/alerts/AlertBox.jsx";
-import Header from "../../../components/shared/Header.jsx";
 import api from "../../../axiosService";
 import { alertCategoryLabel } from "../../../services/alertLabels";
 import { SemesterContext } from "../../../context/currentSemester";
@@ -28,7 +27,7 @@ const activityToDetails = (a) => {
     return details;
 };
 
-const Activity_Alerts = () => {
+const Activity_Alerts = ({ dateRange }) => {
     const { selectedSemesterId } = useContext(SemesterContext);
     const [alerts, setAlerts] = useState([]);
     const [window, setWindow] = useState("recent");
@@ -36,7 +35,11 @@ const Activity_Alerts = () => {
     useEffect(() => {
         const fetchAlerts = async () => {
             try {
-                const url = `/alerts${selectedSemesterId ? `?semester_id=${selectedSemesterId}` : ''}`;
+                const params = new URLSearchParams();
+                if (selectedSemesterId) params.set('semester_id', selectedSemesterId);
+                if (dateRange.from) params.set('date_from', dateRange.from);
+                if (dateRange.to) params.set('date_to', dateRange.to);
+                const url = `/alerts${params.size ? `?${params}` : ''}`;
                 const { data } = await api.get(url);
                 setAlerts(data.alerts || []);
                 setWindow(data.window || "recent");
@@ -46,13 +49,12 @@ const Activity_Alerts = () => {
             }
         };
         fetchAlerts();
-    }, [selectedSemesterId]);
+    }, [selectedSemesterId, dateRange]);
 
     return (
         <>
-            <Header />
-            <section className="ml-[var(--sidebar-content-offset)] h-screen w-[calc(100%-var(--sidebar-content-offset))] overflow-y-auto p-5 max-[991.98px]:ml-0 max-[991.98px]:w-full">
-                <h1 className="my-[30px] mb-[25px] text-left text-[22px] text-[#333]">System Alerts</h1>
+            <section>
+                <h1 className="mb-5 mt-6 text-left text-[22px] text-[#333]">System Alerts</h1>
                 {window === "fallback" && alerts.length > 0 && (
                     <p className="mb-2.5 text-sm text-amber-700">No recent activity in the past week — showing latest.</p>
                 )}
@@ -67,7 +69,9 @@ const Activity_Alerts = () => {
                         />
                     ))
                 ) : (
-                    <p className="text-muted-foreground">No alerts yet.</p>
+                    <p className="text-muted-foreground">
+                        {dateRange.from || dateRange.to ? "No alerts match the selected date range." : "No alerts yet."}
+                    </p>
                 )}
             </section>
         </>

@@ -1,6 +1,7 @@
 import { QueryTypes } from "sequelize";
 import connection from "../connection.js";
 import SessionDetail from "../models/SessionDetail.js";
+import SessionStudent from "../models/SessionStudent.js";
 import TutorSession from "../models/TutorSession.js";
 import Tutor from "../models/Tutor.js";
 import User from "../models/User.js";
@@ -9,6 +10,7 @@ import Semester from "../models/Semester.js";
 import { sendEmail, sendSessionRequestEmail } from "../mail.js";
 import { sanitizeUserInput } from "../utils/sanitize.js";
 import { resolveSemesterId } from "../utils/currentSemester.js";
+import { resolveSessionStudents } from "../utils/sessionStudents.js";
 import { sendSessionCancelationEmail } from "../mail.js";
 
 import jwt from "jsonwebtoken";
@@ -68,11 +70,23 @@ export const createSession = async (req, res) => {
             }
         })
 
+        const session_type = req.body.session_type || 'individual';
+        const participants = resolveSessionStudents({
+            sessionType: session_type,
+            studentIds: req.body.student_ids,
+            studentId: req.body.student_id,
+            fallbackStudentId: req.body.created_by
+        });
+        if (participants.error) {
+            return res.status(400).json({ error: participants.error });
+        }
+        const studentList = participants.studentIds;
+
         const session = new TutorSession({
-            tutor_id:tutor_id,
-            student_id: req.body.student_id,
+            tutor_id: tutor_id,
+            student_id: studentList.length > 0 ? studentList[0] : req.body.student_id,
             course_id: req.body.course,
-            semester_id: current_semester.semester_id,
+            semester_id: current_semester ? current_semester.semester_id : null,
             session_date: req.body.session_date,
             session_totalhours: req.body.session_hours,
             topics: req.body.session_topics,
@@ -84,12 +98,42 @@ export const createSession = async (req, res) => {
             session_id: session.session_id,
             session_time: req.body.session_time,
             session_status: 'pending',
+            session_type: session_type,
             createdBy: req.body.created_by,
             createdAt: new Date(),
             updatedAt: new Date(),
         })
 
         await session_detail.save()
+
+        const feedbackMap = {};
+        if (Array.isArray(req.body.students)) {
+            req.body.students.forEach(s => {
+                if (s.student_id) {
+                    feedbackMap[s.student_id] = s.feedback || null;
+                }
+            });
+        }
+        if (studentList.length > 0) {
+            const studentsToInsert = [];
+            for (let i = 0; i < studentList.length; i++) {
+                const sid = studentList[i];
+                let user_id = null;
+                try {
+                    const user = await User.findOne({ where: { ku_id: sid } });
+                    if (user) user_id = user.user_id;
+                } catch (e) {
+                    // ignore
+                }
+                studentsToInsert.push({
+                    session_id: session.session_id,
+                    student_id: sid,
+                    user_id: user_id,
+                    feedback: feedbackMap[sid] !== undefined ? feedbackMap[sid] : null
+                });
+            }
+            await SessionStudent.bulkCreate(studentsToInsert, { ignoreDuplicates: true });
+        }
 
         const tutor = await Tutor.findByPk(tutor_id);
         const tutor_user = await User.findByPk(tutor.user_id);
@@ -289,4 +333,3 @@ export const sendDeclineJustification = async (req, res) => {
       res.status(500).json({ msg: "Internal server error while sending justification." });
     }
   };
-  

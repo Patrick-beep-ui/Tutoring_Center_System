@@ -6,12 +6,14 @@ import ConfirmAlert from "../ui-snippets/ConfirmAlert";
 import auth from "../../authService";
 
 const EditSessionForm = ({ session, session_id, tutor_id, navigate, source, userRole }) => {
-    const { register, handleSubmit, formState: { errors }, watch } = useForm({ mode: "onChange" });
+    const { register, handleSubmit, formState: { errors }, watch, setValue } = useForm({ mode: "onChange" });
     const [isloading, setIsloading] = useState(false);
     const [showAlert, setShowAlert] = useState(false);
     const [cancelMessage, setCancelMessage] = useState('');
     const [allTutors, setAllTutors] = useState([]);
     const [allCourses, setAllCourses] = useState([]);
+    const [sessionType, setSessionType] = useState(session.session_type || 'individual');
+    const [students, setStudents] = useState([]);
 
     const isAdmin = userRole === 'admin' || userRole === 'dev';
 
@@ -32,10 +34,48 @@ const EditSessionForm = ({ session, session_id, tutor_id, navigate, source, user
         fetchData();
     }, [isAdmin]);
 
+    useEffect(() => {
+        if (session) {
+            setSessionType(session.session_type || 'individual');
+            if (Array.isArray(session.students) && session.students.length > 0) {
+                setStudents(session.students.map(s => ({ student_id: s.student_ku_id || s.student_id, feedback: s.feedback || '' })));
+            } else if (session.student_ku_id || session.student_id) {
+                setStudents([{ student_id: session.student_ku_id || session.student_id, feedback: session.session_feedback || '' }]);
+            } else {
+                setStudents([{ student_id: '', feedback: '' }]);
+            }
+        }
+    }, [session]);
+
+    const addStudentField = () => {
+        if (sessionType === 'individual') return;
+        setStudents([...students, { student_id: '', feedback: '' }]);
+    }
+
+    const removeStudentField = (index) => {
+        if (students.length <= 1) return;
+        setStudents(students.filter((_, i) => i !== index));
+    }
+
+    const handleStudentChange = (index, field, value) => {
+        const updated = [...students];
+        updated[index][field] = value;
+        setStudents(updated);
+    }
+
     const processData = async (formData) => {
         setIsloading(true);
         try {            
-            const response = await auth.put(`/api/sessions/session/${session_id}`, formData);
+            const payload = { ...formData, session_type: sessionType };
+            if (sessionType === 'group') {
+                payload.students = students;
+                payload.student_ids = students.map(s => s.student_id).filter(Boolean);
+            } else {
+                payload.students = students.slice(0,1).map(s => ({ student_id: s.student_id, feedback: s.feedback }));
+                payload.student_ids = [students[0]?.student_id].filter(Boolean);
+                payload.student_id = students[0]?.student_id;
+            }
+            const response = await auth.put(`/api/sessions/session/${session_id}`, payload);
             const {session: updatedSession} = response.data;
 
             toast.success('Session updated successfully!', {
@@ -110,10 +150,6 @@ const EditSessionForm = ({ session, session_id, tutor_id, navigate, source, user
                             ))}
                         </select>
                     </section>
-                    <section>
-                        <label>Student ID: </label>
-                        <input type="text" {...register("student_id")} defaultValue={session.student_ku_id || session.student_id || ''} />
-                    </section>
                 </>
             ) : (
                 <>
@@ -133,6 +169,36 @@ const EditSessionForm = ({ session, session_id, tutor_id, navigate, source, user
                     </section>
                 </>
             )}
+            <section>
+                <label>Session Type</label>
+                <div className="flex gap-4">
+                    <label className="flex items-center gap-2">
+                        <input type="radio" value="individual" checked={sessionType === 'individual'} onChange={() => { setSessionType('individual'); setStudents(students.slice(0, 1)); }}/>
+                        Individual
+                    </label>
+                    <label className="flex items-center gap-2">
+                        <input type="radio" value="group" checked={sessionType === 'group'} onChange={() => { setSessionType('group'); if (students.length < 2) setStudents(students.concat([{ student_id: '', feedback: '' }])); }}/>
+                        Group
+                    </label>
+                </div>
+            </section>
+            <section>
+                <label>Students</label>
+                {students.map((s, idx) => (
+                    <div key={idx} className="mb-2 flex flex-col gap-2 rounded-lg border border-[var(--gray)] p-2">
+                        <div className="flex gap-2">
+                            <input type="text" placeholder="Student ID (KU ID)" value={s.student_id} onChange={(e) => handleStudentChange(idx, 'student_id', e.target.value)} required />
+                            {sessionType === 'group' && students.length > 1 && (
+                                <button type="button" className="rounded bg-red-500 px-2 py-1 text-white" onClick={() => removeStudentField(idx)}>Remove</button>
+                            )}
+                        </div>
+                        <textarea placeholder="Tutor feedback for this student" rows="2" value={s.feedback} onChange={(e) => handleStudentChange(idx, 'feedback', e.target.value)} />
+                    </div>
+                ))}
+                {sessionType === 'group' && (
+                    <button type="button" className="mt-1 rounded bg-[var(--blue)] px-2 py-1 text-white" onClick={addStudentField}>Add Student</button>
+                )}
+            </section>
             <div className="flex gap-5 max-md:flex-col max-md:gap-3 [&_section]:flex-1">
                 <section>
                     <label>Date: </label>
@@ -151,10 +217,12 @@ const EditSessionForm = ({ session, session_id, tutor_id, navigate, source, user
                 <label>Topics: </label>
                 <textarea className="h-[60px] w-full" cols="30" rows="10" {...register("topics")} defaultValue={session.session_topics}></textarea>
             </section>
-            <section className="mb-1! w-full">
-                <label>Feedback: </label>
-                <textarea className="h-[100px] w-full" cols="30" rows="10" {...register("feedback")}>{session.session_feedback}</textarea>
-            </section>
+            {sessionType === 'individual' && (
+                <section className="mb-1! w-full">
+                    <label>Feedback (Tutor): </label>
+                    <textarea className="h-[100px] w-full" cols="30" rows="10" value={students[0]?.feedback || session.session_feedback || ''} onChange={(e) => handleStudentChange(0, 'feedback', e.target.value)}></textarea>
+                </section>
+            )}
             <section className="mb-0!">
                 <button type="submit" className="mt-5 self-start rounded-lg border-0 bg-[var(--blue)] px-[18px] py-2 text-sm font-semibold text-[var(--white)] transition-colors hover:bg-[var(--yellow)] hover:text-[var(--black)]">
                     {isloading ? <LoadingSpinner /> : 'Save'}

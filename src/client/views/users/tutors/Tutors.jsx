@@ -4,6 +4,7 @@ import auth from "../../../authService";
 import Header from "../../../components/shared/Header";
 import TutorScheduleFilters from "../../../components/users/tutors/TutorScheduleFilters";
 import TutorScheduleGrid from "../../../components/users/tutors/TutorScheduleGrid";
+import TutorScheduleCards from "../../../components/users/tutors/TutorScheduleCards";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SemesterContext } from "../../../context/currentSemester";
 import {
@@ -23,6 +24,7 @@ function Tutors() {
     const [courses, setCourses] = useState([]);
     const [majors, setMajors] = useState([]);
     const [filters, setFilters] = useState(EMPTY_FILTERS);
+    const [viewMode, setViewMode] = useState("calendar");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
 
@@ -155,6 +157,28 @@ function Tutors() {
                     totalCount={totalCount}
                 />
 
+                <div className="mx-5 mt-4 flex items-center justify-between gap-3 max-md:flex-col max-md:items-stretch">
+                    <p className="m-0 text-[12px] text-[#777]">Showing availability blocks matching the selected filters.</p>
+                    <div className="inline-flex self-end overflow-hidden rounded-md border border-[#ddd] bg-white max-md:self-stretch">
+                        <button
+                            type="button"
+                            aria-pressed={viewMode === "calendar"}
+                            className={`inline-flex items-center gap-1.5 px-3 py-2 text-[12px] font-semibold transition-colors ${viewMode === "calendar" ? "bg-[#0a84ff] text-white" : "text-[#555] hover:bg-[#f0f0f0]"}`}
+                            onClick={() => setViewMode("calendar")}
+                        >
+                            <i className="bx bx-calendar-week text-[15px]"></i> Calendar Week
+                        </button>
+                        <button
+                            type="button"
+                            aria-pressed={viewMode === "cards"}
+                            className={`inline-flex items-center gap-1.5 border-l border-[#ddd] px-3 py-2 text-[12px] font-semibold transition-colors ${viewMode === "cards" ? "bg-[#0a84ff] text-white" : "text-[#555] hover:bg-[#f0f0f0]"}`}
+                            onClick={() => setViewMode("cards")}
+                        >
+                            <i className="bx bx-grid-alt text-[15px]"></i> Tutor Cards
+                        </button>
+                    </div>
+                </div>
+
                 {loading ? (
                     <div className="mx-5 mt-2.5 rounded-[10px] border border-[#ddd] bg-white p-5 shadow-[0_2px_8px_rgba(0,0,0,0.08)]">
                         <Skeleton className="mb-3 h-8 w-1/3" />
@@ -163,7 +187,9 @@ function Tutors() {
                         </div>
                     </div>
                 ) : (
-                    <TutorScheduleGrid schedules={filteredSchedules} timeRows={timeRows} />
+                    viewMode === "calendar"
+                        ? <TutorScheduleGrid schedules={filteredSchedules} timeRows={timeRows} />
+                        : <TutorScheduleCards schedules={filteredSchedules} />
                 )}
             </section>
         </>
