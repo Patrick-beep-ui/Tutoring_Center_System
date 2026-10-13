@@ -1,4 +1,5 @@
 import { useCallback, memo } from "react";
+import DateRangeSelector from "../shared/filters/DateRangeSelector";
 
 const STATUS_OPTIONS = [
     { value: "completed", label: "Completed" },
@@ -49,14 +50,6 @@ const SessionFilters = ({ filters, onFilterChange, tutors, majors, courses, resu
 
     const handleCourseChange = useCallback((e) => {
         onFilterChange({ ...filters, course: e.target.value });
-    }, [filters, onFilterChange]);
-
-    const handleDateFromChange = useCallback((e) => {
-        onFilterChange({ ...filters, dateFrom: e.target.value });
-    }, [filters, onFilterChange]);
-
-    const handleDateToChange = useCallback((e) => {
-        onFilterChange({ ...filters, dateTo: e.target.value });
     }, [filters, onFilterChange]);
 
     const handleSortChange = useCallback((e) => {
@@ -132,15 +125,16 @@ const SessionFilters = ({ filters, onFilterChange, tutors, majors, courses, resu
                     </select>
                 </div>
 
-                <div className="flex flex-col gap-1">
-                    <label className="text-[11px] font-semibold uppercase tracking-[0.5px] text-[#666]">From</label>
-                    <input className="min-w-[140px] cursor-pointer rounded-md border border-[#ddd] bg-white px-2.5 py-2 text-[13px] outline-none focus:border-[#0a84ff] max-md:min-w-full" type="date" value={filters.dateFrom} onChange={handleDateFromChange} />
-                </div>
-
-                <div className="flex flex-col gap-1">
-                    <label className="text-[11px] font-semibold uppercase tracking-[0.5px] text-[#666]">To</label>
-                    <input className="min-w-[140px] cursor-pointer rounded-md border border-[#ddd] bg-white px-2.5 py-2 text-[13px] outline-none focus:border-[#0a84ff] max-md:min-w-full" type="date" value={filters.dateTo} onChange={handleDateToChange} />
-                </div>
+                <DateRangeSelector
+                    from={filters.dateFrom}
+                    to={filters.dateTo}
+                    onFromChange={(dateFrom) => onFilterChange({
+                        ...filters,
+                        dateFrom,
+                        dateTo: filters.dateTo && dateFrom && filters.dateTo < dateFrom ? "" : filters.dateTo
+                    })}
+                    onToChange={(dateTo) => onFilterChange({ ...filters, dateTo })}
+                />
 
                 <div className="flex flex-col gap-1">
                     <label className="text-[11px] font-semibold uppercase tracking-[0.5px] text-[#666]">Sort</label>
