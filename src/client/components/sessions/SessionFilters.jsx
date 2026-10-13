@@ -1,5 +1,4 @@
 import { useCallback, memo } from "react";
-import DateRangeSelector from "../shared/filters/DateRangeSelector";
 
 const STATUS_OPTIONS = [
     { value: "completed", label: "Completed" },
@@ -64,13 +63,11 @@ const SessionFilters = ({ filters, onFilterChange, tutors, majors, courses, resu
             tutor: "",
             major: "",
             course: "",
-            dateFrom: "",
-            dateTo: "",
             sortBy: "date-desc",
         });
     }, [onFilterChange]);
 
-    const hasActiveFilters = filters.search || filters.status.length > 0 || filters.sessionType || filters.tutor || filters.major || filters.course || filters.dateFrom || filters.dateTo;
+    const hasActiveFilters = filters.search || filters.status.length > 0 || filters.sessionType || filters.tutor || filters.major || filters.course;
 
     return (
         <div className="mx-5 mt-2.5 rounded-[10px] bg-white px-5 py-4 shadow-[0_2px_8px_rgba(0,0,0,0.08)] max-md:mx-2.5 max-md:p-3">
@@ -124,17 +121,6 @@ const SessionFilters = ({ filters, onFilterChange, tutors, majors, courses, resu
                         <option value="group">Group</option>
                     </select>
                 </div>
-
-                <DateRangeSelector
-                    from={filters.dateFrom}
-                    to={filters.dateTo}
-                    onFromChange={(dateFrom) => onFilterChange({
-                        ...filters,
-                        dateFrom,
-                        dateTo: filters.dateTo && dateFrom && filters.dateTo < dateFrom ? "" : filters.dateTo
-                    })}
-                    onToChange={(dateTo) => onFilterChange({ ...filters, dateTo })}
-                />
 
                 <div className="flex flex-col gap-1">
                     <label className="text-[11px] font-semibold uppercase tracking-[0.5px] text-[#666]">Sort</label>

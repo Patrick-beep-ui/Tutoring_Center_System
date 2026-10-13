@@ -35,6 +35,7 @@ vi.mock('../connection.js', () => ({
     transaction: mocks.transaction,
     define: mocks.define,
     authenticate: mocks.authenticate,
+    QueryTypes: { SELECT: 'SELECT' },
   },
 }));
 
@@ -45,6 +46,8 @@ vi.mock('../utils/currentSemester.js', () => ({
 
 import { getCatalogWithSemesterFlag } from '../controllers/coursesController.js';
 import { getAllSchedules } from '../controllers/schedulesController.js';
+import { getFeedbacks } from '../controllers/feedbackController.js';
+import { getAlerts } from '../controllers/alertController.js';
 import isAdmin from '../middlewares/admin.js';
 import jwtAuth from '../middlewares/jwtAuth.js';
 import semesterScope from '../middlewares/semesterScope.js';
@@ -182,6 +185,57 @@ describe('GET /api/schedules (batch: jwtAuth + semesterScope + getAllSchedules)'
     const res = await request(schedulesApp).get('/schedules').set('Authorization', `Bearer ${token}`).query({ semester_id: '9' });
     expect(res.status).toBe(404);
     expect(res.body).toEqual({ error: 'No current semester is set' });
+  });
+});
+
+describe('activity date-range controllers', () => {
+  let activityApp;
+
+  beforeAll(() => {
+    activityApp = express();
+    activityApp.get('/feedback', getFeedbacks);
+    activityApp.get('/alerts', getAlerts);
+  });
+
+  beforeEach(() => {
+    mocks.query.mockReset();
+    mocks.resolveSemesterId.mockReset();
+  });
+
+  it('rejects invalid feedback date ranges', async () => {
+    const res = await request(activityApp).get('/feedback').query({ date_from: 'not-a-date' });
+    expect(res.status).toBe(400);
+    expect(res.body).toEqual({ error: 'Invalid date range' });
+    expect(mocks.query).not.toHaveBeenCalled();
+  });
+
+  it('uses an inclusive end date for feedback queries', async () => {
+    mocks.query.mockResolvedValue([]);
+    const res = await request(activityApp)
+      .get('/feedback')
+      .query({ date_from: '2026-01-01', date_to: '2026-01-31' });
+
+    expect(res.status).toBe(200);
+    expect(mocks.query).toHaveBeenCalledWith(
+      expect.stringContaining('f.created_at < DATE_ADD(:date_to, INTERVAL 1 DAY)'),
+      expect.objectContaining({ replacements: { date_from: '2026-01-01', date_to: '2026-01-31' } })
+    );
+  });
+
+  it('uses explicit alert date ranges instead of the recency fallback', async () => {
+    mocks.resolveSemesterId.mockResolvedValue(12);
+    mocks.query.mockResolvedValue([[]]);
+    const res = await request(activityApp)
+      .get('/alerts')
+      .query({ date_from: '2026-01-01', date_to: '2026-01-31' });
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual({ alerts: [], window: 'range' });
+    expect(mocks.query).toHaveBeenCalledTimes(1);
+    expect(mocks.query).toHaveBeenCalledWith(
+      expect.stringContaining('a.created_at < DATE_ADD(:date_to, INTERVAL 1 DAY)'),
+      expect.objectContaining({ replacements: expect.objectContaining({ date_from: '2026-01-01', date_to: '2026-01-31' }) })
+    );
   });
 });
 
