@@ -31,6 +31,7 @@ import SessionDetails from "./views/sessions/SessionDetails";
 import Settings  from "./views/settings/Settings";
 import Feedback from "./views/feedback/Feedback.jsx";
 import ThanksFeedback from "./views/feedback/ThanksFeedback.jsx";
+import Announcements from "./views/announcements/Announcements.jsx";
 
 // Admin Views
 import Users from "./views/users/User";
@@ -92,6 +93,13 @@ const router = createBrowserRouter([
       {
         path: "/tutors",
         element: <Tutors />
+      },
+      {
+        path: "/announcements",
+        element: <RequireRole allowedRoles={["admin", "dev", "tutor", "student"]} />,
+        children: [
+          { index: true, element: <Announcements /> }
+        ]
       },
       {
         path: "/tutors/add",

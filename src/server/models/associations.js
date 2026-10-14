@@ -13,6 +13,7 @@ import SemesterCourse from "./SemesterCourse.js";
 import Schedule from "./Schedule.js";
 import Alert from "./Alert.js";
 import AlertCategory from "./AlertCategory.js";
+import Announcement from "./Announcement.js";
 
 // User ↔ Major
 User.belongsTo(Major, { foreignKey: "major_id" });
@@ -80,3 +81,9 @@ AlertCategory.hasMany(Alert, { foreignKey: "category_id" });
 // Alert ↔ User (optional affected user)
 Alert.belongsTo(User, { foreignKey: "user_id" });
 User.hasMany(Alert, { foreignKey: "user_id" });
+
+// Announcements can apply globally or to a semester and always retain their author.
+Announcement.belongsTo(Semester, { foreignKey: "semester_id" });
+Semester.hasMany(Announcement, { foreignKey: "semester_id" });
+Announcement.belongsTo(User, { foreignKey: "author_id", as: "author" });
+User.hasMany(Announcement, { foreignKey: "author_id", as: "authoredAnnouncements" });
