@@ -35,6 +35,17 @@
                         
                     },
                     {
+                        "label": "Announcements",
+                        "url": "/announcements",
+                        "icon": "bx bxs-message-rounded-dots",
+                        "role": [
+                            "admin",
+                            "dev",
+                            "tutor",
+                            "student"
+                        ]
+                    },
+                    {
                         "label": "Home",
                         "url": "/",
                         "icon": "bx bxs-chalkboard",
