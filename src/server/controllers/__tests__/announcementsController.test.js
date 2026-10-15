@@ -4,6 +4,7 @@ import express from 'express';
 import request from 'supertest';
 import jwt from 'jsonwebtoken';
 import { Op } from 'sequelize';
+import rateLimit from 'express-rate-limit';
 
 const mocks = vi.hoisted(() => ({
     findAll: vi.fn(),
@@ -41,9 +42,13 @@ function token(role) {
 
 function app() {
     const server = express();
+    const limiter = rateLimit({
+        windowMs: 15 * 60 * 1000,
+        max: 100,
+    });
     server.use(express.json());
-    server.get('/announcements', jwtAuth, getAnnouncements);
-    server.post('/announcements', jwtAuth, isAdmin, createAnnouncement);
+    server.get('/announcements', limiter, jwtAuth, getAnnouncements);
+    server.post('/announcements', limiter, jwtAuth, isAdmin, createAnnouncement);
     return server;
 }
 
