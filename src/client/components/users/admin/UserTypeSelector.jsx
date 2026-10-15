@@ -7,8 +7,8 @@ import {
 } from "@/components/ui/select";
 
 const USER_TYPE_OPTIONS = [
-  { value: "student", label: "Students" },
   { value: "tutor", label: "Tutors" },
+  { value: "student", label: "Students" },
 ];
 
 function UserTypeSelector({ value, onValueChange, canViewTutors }) {
