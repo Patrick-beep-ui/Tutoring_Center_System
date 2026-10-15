@@ -8,15 +8,16 @@ import {
     sendDeclineJustification
 } from "../controllers/calendarSessionsController.js";
 import semesterScope from "../middlewares/semesterScope.js";
+import { sessionDeclineJustificationLimiter, sessionRequestLimiter } from "../middlewares/rateLimiters.js";
 
 const CalendarSessionsRouter = express.Router();
 
 CalendarSessionsRouter.route("/:tutor_id?")
     .get(passport.authenticate("jwt", { session: false }), semesterScope, getSessionsByTutor)
-    .post(createSession);
+    .post(sessionRequestLimiter, createSession);
 
 CalendarSessionsRouter.get("/accept/:session_id", acceptSession);
 CalendarSessionsRouter.get("/decline/:session_id", declineSession);
-CalendarSessionsRouter.post("/decline/justification/:session_id", sendDeclineJustification);
+CalendarSessionsRouter.post("/decline/justification/:session_id", sessionDeclineJustificationLimiter, sendDeclineJustification);
 
 export default CalendarSessionsRouter;
