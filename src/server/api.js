@@ -31,8 +31,11 @@ import SchedulesRouter from './routes/schedulesRoutes.js';
 import StudentRouter from './routes/studentRoutes.js';
 import AlertRouter from './routes/alertRoutes.js';
 import AnnouncementsRouter from './routes/announcementsRoutes.js';
+import { apiLimiter, emailLimiter } from './middlewares/rateLimiters.js';
 
 const api = express.Router({mergeParams: true});
+
+api.use(apiLimiter);
 
 api.use("/calendar-session", CalendarSessionsRouter);
 api.use("/report", ReportRouter)
@@ -81,7 +84,7 @@ api.route('/auth')
 //Prueba branch
 
 
-api.post('/send-email', async (req, res) => {
+api.post('/send-email', emailLimiter, async (req, res) => {
     const { to, subject, text } = req.body;
   
     try {

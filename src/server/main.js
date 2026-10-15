@@ -12,10 +12,14 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 
 import { generateToken } from "./utils/jwt.js";
+import { loginLimiter } from "./middlewares/rateLimiters.js";
 
 const port = process.env.PORT || 3000;
 
 const app = express();
+
+// Enable only after production proxy topology is confirmed. Prefer a known hop count over `true`.
+// app.set("trust proxy", true);
 
 app.use(expressSession({
   resave: false,
@@ -133,6 +137,7 @@ passport.deserializeUser(async (id, done) => {
 // Routes
 app.post(
   "/login",
+  loginLimiter,
   passport.authenticate("local", { session: true }),  // Disable passport session management
   (req, res) => {
     req.session.name = req.body.email;
