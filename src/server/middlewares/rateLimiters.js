@@ -43,3 +43,23 @@ export const emailLimiter = createRateLimiter({
     windowMs: FIFTEEN_MINUTES,
     limit: 5,
 });
+
+export const sessionRequestLimiter = createRateLimiter({
+    windowMs: FIFTEEN_MINUTES,
+    limit: 5,
+});
+
+export const sessionCompletionLimiter = createRateLimiter({
+    windowMs: FIFTEEN_MINUTES,
+    limit: 5,
+});
+
+export const sessionCancellationLimiter = createRateLimiter({
+    windowMs: FIFTEEN_MINUTES,
+    limit: 15,
+});
+
+export const sessionDeclineJustificationLimiter = createRateLimiter({
+    windowMs: FIFTEEN_MINUTES,
+    limit: 15,
+});

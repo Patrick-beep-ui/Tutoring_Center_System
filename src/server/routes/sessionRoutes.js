@@ -13,6 +13,7 @@ import {
     deleteSession } from "../controllers/sessionsController.js";
 import passport from "passport";
 import semesterScope from "../middlewares/semesterScope.js";
+import { sessionCancellationLimiter, sessionCompletionLimiter } from "../middlewares/rateLimiters.js";
 
 const SessionsRouter = express.Router();
 
@@ -20,8 +21,8 @@ SessionsRouter.route("/").get(passport.authenticate("jwt", { session: false }), 
 SessionsRouter.route("/:tutor_id").get(getSessionsByTutor);
 SessionsRouter.route("/session/:session_id") // This is for session details on the Tutor Sessions part
 .get(getTutorSessionById)
-.put(editSession)
-.patch(cancelSession)
+.put(sessionCompletionLimiter, editSession)
+.patch(sessionCancellationLimiter, cancelSession)
 .delete(deleteSession);
 //Future .delete for session deletion
 
