@@ -30,8 +30,12 @@ import FeedbackRouter from './routes/feedbackRoutes.js';
 import SchedulesRouter from './routes/schedulesRoutes.js';
 import StudentRouter from './routes/studentRoutes.js';
 import AlertRouter from './routes/alertRoutes.js';
+import AnnouncementsRouter from './routes/announcementsRoutes.js';
+import { apiLimiter, emailLimiter } from './middlewares/rateLimiters.js';
 
 const api = express.Router({mergeParams: true});
+
+api.use(apiLimiter);
 
 api.use("/calendar-session", CalendarSessionsRouter);
 api.use("/report", ReportRouter)
@@ -46,6 +50,7 @@ api.use("/feedback", FeedbackRouter);
 api.use("/schedules", SchedulesRouter);
 api.use("/students", StudentRouter);
 api.use("/alerts", AlertRouter);
+api.use("/announcements", AnnouncementsRouter);
 
 
 // Endpoint to check authentication
@@ -79,7 +84,7 @@ api.route('/auth')
 //Prueba branch
 
 
-api.post('/send-email', async (req, res) => {
+api.post('/send-email', emailLimiter, async (req, res) => {
     const { to, subject, text } = req.body;
   
     try {

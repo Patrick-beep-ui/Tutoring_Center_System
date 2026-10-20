@@ -1,7 +1,37 @@
 import Schedule from '../models/Schedule.js';
 import Tutor from '../models/Tutor.js';
+import connection from '../connection.js';
+import { QueryTypes } from 'sequelize';
 import { sanitizeUserInput } from '../utils/sanitize.js';
 import { resolveSemesterId } from '../utils/currentSemester.js';
+
+export const getAllSchedules = async (req, res) => {
+    try {
+        const semester_id = await resolveSemesterId(req.query.semester_id);
+        const schedules = await connection.query(`
+        SELECT s.schedule_id, s.day, s.start_time, s.end_time,
+            CONCAT(u.first_name, ' ', u.last_name) AS tutor_name,
+            u.ku_id AS tutor_id,
+            t.tutor_id AS id,
+            m.major_name AS tutor_major
+        FROM schedules s
+        JOIN tutors t ON t.tutor_id = s.user_id
+        JOIN users u ON u.user_id = t.user_id
+        LEFT JOIN majors m ON m.major_id = u.major_id
+        WHERE s.semester_id = :semester_id
+        ORDER BY FIELD(s.day, 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'), s.start_time;`, {
+            type: QueryTypes.SELECT,
+            replacements: { semester_id },
+        });
+        res.json({ schedules });
+    } catch (error) {
+        if (error.message === 'No current semester is set') {
+            return res.status(404).json({ error: error.message });
+        }
+        console.error('Error fetching schedules:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+}
 
 export const getSchedules = async (req, res) => {
     const { tutor_id } = req.params;

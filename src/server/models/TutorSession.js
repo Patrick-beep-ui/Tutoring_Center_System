@@ -13,7 +13,8 @@ const TutorSession = connection.define('TutorSession', {
         allowNull: true,
     },
     student_id: {
-        type: DataTypes.STRING
+        type: DataTypes.STRING,
+        allowNull: true
     }, 
     course_id: {
         type: DataTypes.INTEGER

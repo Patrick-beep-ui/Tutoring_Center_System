@@ -7,14 +7,14 @@ import { SemesterContext } from "../../../context/currentSemester";
 const DEFAULT_FILTERS = {
     search: "",
     status: [],
+    sessionType: "",
     tutor: "",
+    major: "",
     course: "",
-    dateFrom: "",
-    dateTo: "",
     sortBy: "date-desc",
 };
 
-const Activity_Sessions = () => {
+const Activity_Sessions = ({ dateRange }) => {
     const [sessions, setSessions] = useState([]);
     const [filters, setFilters] = useState(DEFAULT_FILTERS);
     const { selectedSemesterId } = useContext(SemesterContext);
@@ -42,6 +42,11 @@ const Activity_Sessions = () => {
         return names.sort();
     }, [sessions]);
 
+    const majors = useMemo(() => {
+        const names = [...new Set(sessions.map(s => s.tutor_major).filter(Boolean))];
+        return names.sort();
+    }, [sessions]);
+
     const filteredSessions = useMemo(() => {
         let result = [...sessions];
 
@@ -59,20 +64,28 @@ const Activity_Sessions = () => {
             result = result.filter(s => filters.status.includes(s.session_status));
         }
 
+        if (filters.sessionType) {
+            result = result.filter(s => (s.session_type || 'individual') === filters.sessionType);
+        }
+
         if (filters.tutor) {
             result = result.filter(s => s.tutor_name === filters.tutor);
+        }
+
+        if (filters.major) {
+            result = result.filter(s => s.tutor_major === filters.major);
         }
 
         if (filters.course) {
             result = result.filter(s => s.course_name === filters.course);
         }
 
-        if (filters.dateFrom) {
-            result = result.filter(s => s.session_date >= filters.dateFrom);
+        if (dateRange.from) {
+            result = result.filter(s => s.session_date >= dateRange.from);
         }
 
-        if (filters.dateTo) {
-            result = result.filter(s => s.session_date <= filters.dateTo);
+        if (dateRange.to) {
+            result = result.filter(s => s.session_date <= dateRange.to);
         }
 
         switch (filters.sortBy) {
@@ -99,7 +112,7 @@ const Activity_Sessions = () => {
         }
 
         return result;
-    }, [sessions, filters]);
+    }, [sessions, filters, dateRange]);
 
     const removeSessionFromState = useCallback(
         (sessionId) => {
@@ -118,6 +131,7 @@ const Activity_Sessions = () => {
                 filters={filters}
                 onFilterChange={handleFilterChange}
                 tutors={tutors}
+                majors={majors}
                 courses={courses}
                 resultCount={filteredSessions.length}
                 totalCount={sessions.length}

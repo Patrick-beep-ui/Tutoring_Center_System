@@ -49,6 +49,22 @@ export const sendEmail = async (to, subject, text) => {
   }
 };
 
+export async function sendAnnouncementEmail(to, data) {
+  const templatePath = path.resolve(__dirname, './emails/announcement.hbs');
+  const source = await fs.readFile(templatePath, 'utf8');
+  const template = handlebars.compile(source);
+  const html = template(data);
+  const text = `Hello ${data.recipientName},\n\n${data.title}\n\n${data.body}${data.expiresAt ? `\n\nThis announcement expires on ${new Date(data.expiresAt).toLocaleString()}.` : ''}`;
+
+  return transporter.sendMail({
+    from: process.env.MAIL_USER,
+    to,
+    subject: data.title,
+    text,
+    html,
+  });
+}
+
 // Session request email using Handlebars template
 export async function sendSessionRequestEmail(to, data) {
   try {

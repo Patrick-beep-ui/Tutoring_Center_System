@@ -7,17 +7,43 @@ import LoadingSpinner from "../../components/ui-snippets/LoadingSpinner";
 import auth from "../../authService";
 
 function AddSession() {
-    const {register, handleSubmit, formState: { errors }} = useForm({model: "onChange"});
+    const {register, handleSubmit, formState: { errors }, setValue, watch} = useForm({model: "onChange", defaultValues: { session_type: 'individual', student_id: '', student_ids: [''] }});
     const navigate = useNavigate();
     const { tutor_id, course_id } = useParams();
     const [isloading, setIsloading] = useState(false);
     const location = useLocation();
     const source = location.state?.source || "tutor";
+    const sessionType = watch('session_type') || 'individual';
+    const [students, setStudents] = useState([{ student_id: '', feedback: '' }]);
+
+    const addStudentField = () => {
+        if (sessionType === 'individual') return;
+        setStudents([...students, { student_id: '', feedback: '' }]);
+    }
+
+    const removeStudentField = (index) => {
+        if (students.length <= 1) return;
+        setStudents(students.filter((_, i) => i !== index));
+    }
+
+    const handleStudentChange = (index, field, value) => {
+        const updated = [...students];
+        updated[index][field] = value;
+        setStudents(updated);
+    }
 
     const processData = async (formData) => {
         setIsloading(true);
         try {
-            const response = await auth.post(`/api/sessions/${tutor_id}/${course_id}`, formData);
+            const payload = { ...formData };
+            if (sessionType === 'group') {
+                payload.students = students;
+                payload.student_ids = students.map(s => s.student_id).filter(Boolean);
+            } else {
+                payload.student_ids = [students[0]?.student_id || formData.student_id].filter(Boolean);
+                payload.students = students.slice(0,1).map(s => ({ student_id: s.student_id || formData.student_id, feedback: s.feedback || formData.feedback }));
+            }
+            const response = await auth.post(`/api/sessions/${tutor_id}/${course_id}`, payload);
 
             const {data} = response;
             console.log(data);
@@ -28,7 +54,7 @@ function AddSession() {
               setTimeout(() => {
                 navigate(`/sessions/tutor/${tutor_id}/${course_id}`);
               }, 1000);
-              
+               
         }
         catch(e) {
             console.error(e);
@@ -48,9 +74,35 @@ function AddSession() {
                 <h1 className="inline-block border-b-2 border-[var(--yellow)] text-[1.4rem] font-semibold text-[var(--blue)]">Add Tutoring Session</h1>
                 <div>
                     <section>
-                        <label>Student ID:</label>
-                        <input type="text" {...register("student_id", {required: true})}/>
-                        {errors.student_id && <span>{errors.student_id.message}</span>}
+                        <label>Session Type</label>
+                        <div className="flex gap-4">
+                            <label className="flex items-center gap-2">
+                                <input type="radio" value="individual" {...register("session_type")} onChange={() => { setValue('session_type','individual'); setStudents([{ student_id: '', feedback: '' }]); }}/>
+                                Individual
+                            </label>
+                            <label className="flex items-center gap-2">
+                                <input type="radio" value="group" {...register("session_type")} onChange={() => { setValue('session_type','group'); if (students.length < 2) setStudents([{ student_id: '', feedback: '' }, { student_id: '', feedback: '' }]); }}/>
+                                Group
+                            </label>
+                        </div>
+                    </section>
+
+                    <section>
+                        <label>Students</label>
+                        {students.map((s, idx) => (
+                            <div key={idx} className="mb-2 flex flex-col gap-2 border border-[var(--gray)] rounded-lg p-2">
+                                <div className="flex gap-2">
+                                    <input type="text" placeholder="Student ID (KU ID)" value={s.student_id} onChange={(e) => handleStudentChange(idx, 'student_id', e.target.value)} required/>
+                                    {sessionType === 'group' && students.length > 1 && (
+                                        <button type="button" className="px-2 py-1 bg-red-500 text-white rounded" onClick={() => removeStudentField(idx)}>Remove</button>
+                                    )}
+                                </div>
+                                <textarea placeholder="Tutor feedback for this student (optional)" rows="2" value={s.feedback} onChange={(e) => handleStudentChange(idx, 'feedback', e.target.value)}></textarea>
+                            </div>
+                        ))}
+                        {sessionType === 'group' && (
+                            <button type="button" className="mt-1 px-2 py-1 bg-[var(--blue)] text-white rounded" onClick={addStudentField}>Add Student</button>
+                        )}
                     </section>
 
                     <div className="flex gap-5 max-md:flex-col max-md:gap-3 [&_section]:flex-1">
@@ -77,13 +129,15 @@ function AddSession() {
                     </section>
                 </div>
 
-                    <div className="flex items-center justify-center border-b border-[#dbd8d8ef]">
-                        <section className="w-full text-left">
-                            <label>Outcomes:</label>
-                            <textarea cols="30" rows="3" {...register("feedback", {required: true})}></textarea>
-                            {errors.feedback && <span>{errors.feedback.message}</span>}
-                        </section>
-                    </div>
+                    {sessionType === 'individual' && (
+                        <div className="flex items-center justify-center border-b border-[#dbd8d8ef]">
+                            <section className="w-full text-left">
+                                <label>Outcomes (Tutor feedback):</label>
+                                <textarea cols="30" rows="3" {...register("feedback", {required: false})} onChange={(e) => handleStudentChange(0, 'feedback', e.target.value)}></textarea>
+                                {errors.feedback && <span>{errors.feedback.message}</span>}
+                            </section>
+                        </div>
+                    )}
 
                     <div className="mt-4 flex justify-end gap-3">
                         <Link

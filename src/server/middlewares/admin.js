@@ -8,7 +8,7 @@ export default function isAdmin(req, res, next) {
   
       // Allow both admin and tutor roles
       if (req.user.role !== "admin" && req.user.role !== "dev") {
-        return res.status(403).json({ message: "Access denied. Admins or tutors only." });
+        return res.status(403).json({ message: "Access denied. Admins or devs only." });
       }
   
       next();

@@ -11,7 +11,7 @@ import { Button } from "../../components/ui/button";
 function Users() { 
     const [majors, setMajors] = useState([]);
     const [courses, setCourses] = useState([]);
-    const [userType, setUserType] = useState("student");
+    const [userType, setUserType] = useState("tutor");
     const { user } = useOutletContext();
     const viewerRole = user?.user_role ?? user?.role;
     const canViewTutors = viewerRole !== "student";

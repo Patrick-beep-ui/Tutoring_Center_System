@@ -34,6 +34,7 @@
     "cross-env": "^7.0.3",
     "dotenv": "^16.4.7",
     "express": "^4.19.2",
+    "express-rate-limit": "^8.7.1",
     "express-session": "^1.18.0",
     "file-saver": "^2.0.5",
     "handlebars": "^4.7.8",

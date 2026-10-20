@@ -49,7 +49,13 @@ const mapAlertRow = (r) => ({
 export const getAlerts = async (req, res) => {
     try {
         const semester_id = await resolveSemesterId(req.query.semester_id);
-        const limit = Math.min(Math.max(Number(req.query.limit) || 10, 1), 50);
+        const { date_from, date_to } = req.query;
+        const isDate = (value) => /^\d{4}-\d{2}-\d{2}$/.test(value || '');
+        if ((date_from && !isDate(date_from)) || (date_to && !isDate(date_to)) || (date_from && date_to && date_from > date_to)) {
+            return res.status(400).json({ error: 'Invalid date range' });
+        }
+        const hasDateRange = Boolean(date_from || date_to);
+        const limit = Math.min(Math.max(Number(req.query.limit) || (hasDateRange ? 50 : 10), 1), 50);
         const status = req.query.status; // optional filter: unread|read|pending
 
         const base = `
@@ -74,10 +80,23 @@ export const getAlerts = async (req, res) => {
                 sql += ` AND a.created_at >= (NOW() - INTERVAL :rc HOUR)`;
                 replacements.rc = ALERT_RECENCY_HOURS;
             }
+            if (date_from) {
+                sql += ` AND a.created_at >= :date_from`;
+                replacements.date_from = date_from;
+            }
+            if (date_to) {
+                sql += ` AND a.created_at < DATE_ADD(:date_to, INTERVAL 1 DAY)`;
+                replacements.date_to = date_to;
+            }
             sql += ` ORDER BY a.created_at DESC, a.alert_id DESC LIMIT :limit`;
             const [rows] = await connection.query(sql, { replacements });
             return rows.map(mapAlertRow);
         };
+
+        if (hasDateRange) {
+            const alerts = await run(false);
+            return res.json({ alerts, window: "range" });
+        }
 
         let alerts = await run(true);
         if (alerts.length > 0) {
